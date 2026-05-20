@@ -352,16 +352,15 @@ namespace TopDownShooter.Player
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// ► ICombat : Forward the attack event to the injected combat handler.
-        /// Bind &lt;Mouse&gt;/leftButton and &lt;Gamepad&gt;/buttonWest in the
-        /// Input Asset to the "Attack" action in the Player action map.
+        /// Intentional stub — attack input is handled by <see cref="TopDownShooter.Combat.PlayerCombat"/>.
+        ///
+        /// PlayerInput (Send Messages) broadcasts OnAttack to ALL MonoBehaviours on
+        /// this GameObject. PlayerCombat.OnAttack() contains the real logic.
+        /// This stub prevents Unity from logging a "Method not found" warning
+        /// while keeping this script's Single Responsibility (locomotion only).
         /// </summary>
-        private void OnAttack(InputValue value)
-        {
-            if (!value.isPressed) return;
-            // ► ICombat : _combatHandler?.PerformAttack();
-            // Example: GetComponent<ICombatHandler>()?.PerformAttack();
-        }
+        // ReSharper disable once UnusedMember.Local
+        private void OnAttack(InputValue value) { /* Intentional no-op. See PlayerCombat.cs */ }
 
         /// <summary>
         /// ► FSM : Notify the state machine that a sprint was requested.
