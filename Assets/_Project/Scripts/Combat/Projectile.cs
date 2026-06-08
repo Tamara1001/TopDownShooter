@@ -192,16 +192,15 @@ namespace TopDownShooter.Combat
         /// </summary>
         private void OnTriggerEnter(Collider other)
         {
-            // Ignore layers that are explicitly filtered (e.g. the Player layer).
-            // The bitmask check: if the other object's layer IS in ignoreLayers, skip.
+            // Ignorar capas filtradas (ej. para no golpear a Lunaria)
             if (((1 << other.gameObject.layer) & ignoreLayers.value) != 0) return;
 
-            // ► ICombat : Attempt damage delivery before returning to pool.
-            // IDamageable target = other.GetComponent<IDamageable>();
-            // target?.TakeDamage(_weaponData.Damage);
-
-            // ► VFX : Instantiate or pool a hit-particle at this position.
-            // VFXManager.Instance?.PlayHitEffect(transform.position);
+            // Buscar la interfaz y aplicar daño
+            if (other.TryGetComponent<IDamageable>(out IDamageable target))
+            {
+                // Por ahora hardcodeamos 10 de daño. Luego lo leeremos de un ScriptableObject
+                target.TakeDamage(10);
+            }
 
             ReturnToPool();
         }
