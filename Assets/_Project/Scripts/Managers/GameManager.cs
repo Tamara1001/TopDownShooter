@@ -40,6 +40,14 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public static event Action<GameState> OnStateChanged;
 
+    /// <summary>
+    /// Fired whenever <see cref="RegisterPlayer"/> is called — including on
+    /// respawn. Systems that need an immediate reference to the player
+    /// (e.g. EnemyBrain in Tier-3 resolution) can subscribe here instead
+    /// of polling every frame.
+    /// </summary>
+    public static event Action<Transform> OnPlayerRegistered;
+
     // -------------------------------------------------------------------------
     // Variables Internas
     // -------------------------------------------------------------------------
@@ -159,4 +167,61 @@ public class GameManager : MonoBehaviour
     /// Devuelve los segundos transcurridos en la partida actual.
     /// </summary>
     public float SessionTime => _sessionTimer;
+
+    // -------------------------------------------------------------------------
+    // Player Registry (FIX-2)
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// The current player's Transform, registered at runtime by
+    /// <see cref="PlayerRegistration"/> via <see cref="RegisterPlayer"/>.
+    /// <para>
+    /// Read-only to all external systems. Only <see cref="RegisterPlayer"/>
+    /// and <see cref="UnregisterPlayer"/> may write this value, ensuring
+    /// a single, authoritative reference that survives scene reloads,
+    /// respawns, and arbitrary enemy spawn order.
+    /// </para>
+    /// </summary>
+    public Transform PlayerTransform { get; private set; }
+
+    /// <summary>
+    /// Called by <see cref="PlayerRegistration"/> (attached to the Player
+    /// prefab) in Awake/Start to publish the player's Transform.
+    /// Safe to call multiple times: respawning with a new instance simply
+    /// replaces the old reference and fires <see cref="OnPlayerRegistered"/>
+    /// again so all subscribers (EnemyBrain, minimap, etc.) update.
+    /// </summary>
+    /// <param name="player">The player's root Transform. Must not be null.</param>
+    public void RegisterPlayer(Transform player)
+    {
+        if (player == null)
+        {
+            Debug.LogError("[GameManager] RegisterPlayer called with a null Transform. " +
+                           "Check the PlayerRegistration component.");
+            return;
+        }
+
+        PlayerTransform = player;
+        Debug.Log($"[GameManager] Player registered: '{player.name}'.");
+
+        // Notify all subscribers (e.g. EnemyBrain.WaitForPlayer coroutines)
+        // that a valid player reference is now available.
+        OnPlayerRegistered?.Invoke(PlayerTransform);
+    }
+
+    /// <summary>
+    /// Called when the player is permanently removed (game over, not respawning).
+    /// Clears the reference so enemies fall back to idle safely.
+    /// </summary>
+    public void UnregisterPlayer()
+    {
+        if (PlayerTransform == null)
+        {
+            Debug.LogWarning("[GameManager] UnregisterPlayer called but no player was registered.");
+            return;
+        }
+
+        Debug.Log($"[GameManager] Player '{PlayerTransform.name}' unregistered.");
+        PlayerTransform = null;
+    }
 }
