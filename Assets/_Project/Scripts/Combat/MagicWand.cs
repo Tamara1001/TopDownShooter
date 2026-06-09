@@ -14,8 +14,16 @@
 //  STRATEGY PATTERN ROLE: Concrete Strategy
 //  ─────────────────────────────────────────
 //  • Implements IWeapon.ExecuteAttack() as its primary contract.
+//  • Implements IWeaponConfigurable.Configure() so PlayerCombat can push
+//    SO stats (fireRate) at equip time without MagicWand knowing about the SO.
 //  • PlayerCombat (Context) only calls ExecuteAttack() — it has zero
-//    knowledge of pools, prefabs, fireRate, or firePouints.
+//    knowledge of pools, prefabs, fireRate, or firePoints.
+//
+//  PART 2 — IWeaponConfigurable:
+//  Configure(WeaponDataSO stats) is called once by PlayerCombat immediately
+//  after this prefab is instantiated as a child of the Player. It overrides
+//  the Inspector's fireRate with the SO value, so each WeaponDataSO asset
+//  can define a distinct fire rate without requiring separate prefabs.
 //
 //  OBJECT POOL ARCHITECTURE
 //  ─────────────────────────
@@ -30,7 +38,6 @@
 //    collectionCheck → Enabled in Debug builds to catch double-release bugs.
 //
 //  FUTURE HOOKS
-//  ► SO    : Replace projectile prefab / fire rate with a WeaponDataSO ref.
 //  ► VFX   : Spawn a muzzle-flash particle at FirePoint in FireProjectile().
 //  ► Audio : Play a cast SFX in FireProjectile().
 //  ► FSM   : Expose bool IsReloading / CanFire for state-machine gates.
@@ -38,15 +45,18 @@
 
 using UnityEngine;
 using UnityEngine.Pool;
+using TopDownShooter.Inventory;
 
 namespace TopDownShooter.Combat
 {
     /// <summary>
-    /// Concrete Strategy: Lunaria's Magic Wand weapon.
+    /// Concrete Strategy: Magic Wand ranged weapon.
     /// Owns and manages an <see cref="ObjectPool{T}"/> of <see cref="Projectile"/>
     /// instances and enforces a fire-rate cooldown between shots.
+    /// Also implements <see cref="IWeaponConfigurable"/> so <see cref="PlayerCombat"/>
+    /// can push <see cref="WeaponDataSO"/> stats at equip time.
     /// </summary>
-    public sealed class MagicWand : MonoBehaviour, IWeapon
+    public sealed class MagicWand : MonoBehaviour, IWeapon, IWeaponConfigurable
     {
         // ─────────────────────────────────────────────────────────────────────
         //  INSPECTOR-EXPOSED PARAMETERS
@@ -118,6 +128,39 @@ namespace TopDownShooter.Combat
 
             _lastFireTime = Time.time;
             FireProjectile();
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        //  IWEAPONCONFIGURABLE IMPLEMENTATION
+        // ─────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Called once by <see cref="PlayerCombat.HandleWeaponChanged"/> immediately
+        /// after this prefab is instantiated as a child of the Player.
+        ///
+        /// Overrides the Inspector's <see cref="fireRate"/> with the value from the
+        /// <see cref="WeaponDataSO"/> so each asset can define a distinct fire rate
+        /// without requiring separate prefabs per rate variant.
+        ///
+        /// Extend here in Part 3 to read BaseDamage and pass it to Projectile.
+        /// </summary>
+        /// <param name="stats">The SO of the weapon that was just picked up.</param>
+        public void Configure(WeaponDataSO stats)
+        {
+            if (stats == null)
+            {
+                Debug.LogWarning("[MagicWand] Configure called with null WeaponDataSO. " +
+                                 "Keeping existing Inspector values.", this);
+                return;
+            }
+
+            // Override fire rate from the SO.
+            // Inspector value acts as the prefab default; SO value wins at equip time.
+            fireRate = stats.FireRate;
+
+            // ► Part 3: pass stats.BaseDamage to Projectile via a SetDamage() method.
+
+            Debug.Log($"[MagicWand] Configured via SO: fireRate={fireRate:0.###}s");
         }
 
         // ─────────────────────────────────────────────────────────────────────

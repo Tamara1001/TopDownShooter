@@ -9,9 +9,16 @@
 //   damage to every IDamageable hit inside the arc.
 //
 // STRATEGY PATTERN ROLE: Concrete Strategy
-//   • IWeapon    = Abstract Strategy  (contract)
-//   • MeleeWeapon = Concrete Strategy  (this file)
-//   • EnemyBrain = Context            (calls ExecuteAttack())
+//   • IWeapon             = Abstract Strategy   (attack contract)
+//   • IWeaponConfigurable = Configuration hook   (stat injection)
+//   • MeleeWeapon         = Concrete Strategy    (this file)
+//   • EnemyBrain / PlayerCombat = Context        (calls ExecuteAttack())
+//
+// PART 2 — IWeaponConfigurable:
+//   Configure(WeaponDataSO) is called once by the Context immediately
+//   after this component is activated/instantiated. It overwrites the
+//   Inspector-default _damage with the SO's BaseDamage, so a single
+//   prefab can serve multiple weapon archetypes with different power levels.
 //
 // PERFORMANCE CONTRACT:
 //   • Physics.OverlapSphereNonAlloc() writes into a pre-allocated
@@ -29,16 +36,21 @@
 
 using UnityEngine;
 using TopDownShooter.Combat;
+using TopDownShooter.Inventory;
 
 namespace TopDownShooter.Enemy
 {
     /// <summary>
     /// Concrete <see cref="IWeapon"/> strategy for melee attacks.
+    /// Also implements <see cref="IWeaponConfigurable"/> so a Context
+    /// (e.g. <see cref="TopDownShooter.Combat.PlayerCombat"/> or
+    /// <see cref="EnemyBrain"/>) can push <see cref="WeaponDataSO"/> stats
+    /// at runtime without this class importing the SO directly.
     /// Uses a Physics overlap sphere combined with a dot-product
-    /// cone check to hit only targets in front of the enemy within
+    /// cone check to hit only targets in front of the attacker within
     /// a configurable arc — with zero per-call heap allocations.
     /// </summary>
-    public sealed class MeleeWeapon : MonoBehaviour, IWeapon
+    public sealed class MeleeWeapon : MonoBehaviour, IWeapon, IWeaponConfigurable
     {
         // ----------------------------------------------------------
         // INSPECTOR FIELDS
@@ -170,6 +182,46 @@ namespace TopDownShooter.Enemy
             // destroyed colliders alive after the buffer is reused.
             for (int i = 0; i < hitCount; i++)
                 _hitBuffer[i] = null;
+        }
+
+        // ----------------------------------------------------------
+        // IWEAPONCONFIGURABLE IMPLEMENTATION
+        // ----------------------------------------------------------
+
+        /// <summary>
+        /// Called once by the Context (e.g. <see cref="TopDownShooter.Combat.PlayerCombat"/>)
+        /// immediately after this component is instantiated or activated.
+        /// Overwrites the Inspector-default <see cref="_damage"/> with
+        /// <see cref="WeaponDataSO.BaseDamage"/> so a single prefab can serve
+        /// multiple weapon archetypes with different power levels.
+        ///
+        /// <para>
+        /// Only <c>_damage</c> is injected here. Geometric fields
+        /// (<c>_attackRadius</c>, <c>_attackAngle</c>, <c>_cosHalfAngle</c>)
+        /// remain under Inspector control because they define the shape of the
+        /// hitbox — a shared prefab concern, not a per-SO data concern.
+        /// </para>
+        /// </summary>
+        /// <param name="stats">The <see cref="WeaponDataSO"/> of the equipped weapon.
+        /// Passing <c>null</c> is a no-op: existing Inspector values are kept.</param>
+        public void Configure(WeaponDataSO stats)
+        {
+            if (stats == null)
+            {
+                Debug.LogWarning($"[MeleeWeapon] '{name}': Configure called with null " +
+                                 "WeaponDataSO. Keeping existing Inspector _damage value.", this);
+                return;
+            }
+
+            _damage = stats.BaseDamage;
+
+            // ► Part 3: inject stats.AttackRange into _attackRadius here
+            //             once WeaponDataSO gains a dedicated range field.
+
+#if UNITY_EDITOR
+            Debug.Log($"[MeleeWeapon] '{name}': Configured via SO — " +
+                      $"_damage overridden to {_damage}.");
+#endif
         }
 
         // ----------------------------------------------------------

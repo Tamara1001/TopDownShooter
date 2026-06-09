@@ -363,6 +363,22 @@ namespace TopDownShooter.Player
         private void OnAttack(InputValue value) { /* Intentional no-op. See PlayerCombat.cs */ }
 
         /// <summary>
+        /// Intentional stub — pickup/swap logic is handled by <see cref="TopDownShooter.Player.PlayerInventory"/>.
+        /// PlayerInput (Send Messages) broadcasts OnInteract to ALL MonoBehaviours
+        /// on this GameObject. This stub suppresses the "Method not found" warning.
+        /// </summary>
+        // ReSharper disable once UnusedMember.Local
+        private void OnInteract(InputValue value) { /* Intentional no-op. See PlayerInventory.cs */ }
+
+        /// <summary>
+        /// Intentional stub — consumable use logic is handled by <see cref="TopDownShooter.Player.PlayerInventory"/>.
+        /// PlayerInput (Send Messages) broadcasts OnConsume to ALL MonoBehaviours
+        /// on this GameObject. This stub suppresses the "Method not found" warning.
+        /// </summary>
+        // ReSharper disable once UnusedMember.Local
+        private void OnConsume(InputValue value) { /* Intentional no-op. See PlayerInventory.cs */ }
+
+        /// <summary>
         /// ► FSM : Notify the state machine that a sprint was requested.
         /// Bind &lt;Keyboard&gt;/leftShift to the "Sprint" action in the Input Asset.
         /// </summary>

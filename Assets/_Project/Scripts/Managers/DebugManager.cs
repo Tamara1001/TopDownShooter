@@ -90,6 +90,19 @@ public class DebugManager : MonoBehaviour
                 _sb.AppendLine("<color=#FF6B6B>No se encontró HealthComponent en Player.</color>");
             }
 
+            // Estado del Inventario
+            _sb.AppendLine();
+            if (player.TryGetComponent<TopDownShooter.Player.PlayerInventory>(out var inventory))
+            {
+                _sb.AppendLine($"Arma:        {FormatValue(inventory.CurrentWeapon?.DisplayName ?? "Ninguna")}");
+                _sb.AppendLine($"Reliquia:    {FormatValue(inventory.CurrentRelic?.DisplayName ?? "Ninguna")}");
+                _sb.AppendLine($"Consumible:  {FormatValue(inventory.CurrentConsumable?.DisplayName ?? "Ninguno")}");
+            }
+            else
+            {
+                _sb.AppendLine("<color=#FF6B6B>No se encontró PlayerInventory en Player.</color>");
+            }
+
             // Escáner Físico de Colisiones (Modo Cápsula Profesional)
             _sb.AppendLine("\n<color=#FFD700><b>--- COLISIONES ACTIVAS ---</b></color>");
 

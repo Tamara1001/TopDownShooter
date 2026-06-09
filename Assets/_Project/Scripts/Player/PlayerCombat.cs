@@ -1,65 +1,65 @@
 // =============================================================================
 //  PlayerCombat.cs
 //  Author  : [Your Name]
-//  Project : TopDownShooter – Protagonist: Lunaria (Mage)
-//  Created : 2026
+//  Project : TopDownShooter
 //
 //  PURPOSE
 //  -------
-//  Decoupled combat input handler for the player character (Lunaria).
+//  Decoupled combat input handler for the player character.
 //  Acts as the "Context" in the Strategy Pattern: it holds a reference to
 //  the currently equipped IWeapon and delegates all attack logic to it.
 //
+//  PART 2 — INVENTORY INTEGRATION
+//  ────────────────────────────────
+//  The hardcoded "initialWeapon" field is gone. The player now starts
+//  empty-handed. When PlayerInventory fires OnWeaponChanged, PlayerCombat:
+//    1. Destroys the old weapon logic child GameObject (cleans up its pool).
+//    2. Instantiates WeaponDataSO.WeaponLogicPrefab as a child of this Player.
+//    3. Casts to IWeapon and stores as _equippedWeapon.
+//    4. If the instance also implements IWeaponConfigurable, calls Configure()
+//       so the weapon reads its stats (fire rate, damage, etc.) from the SO.
+//
 //  STRATEGY PATTERN ROLE: Context
 //  ────────────────────────────────
-//  • PlayerCombat ONLY knows about the IWeapon interface contract.
+//  • PlayerCombat ONLY knows about IWeapon and IWeaponConfigurable.
 //  • It has zero knowledge of MagicWand, projectiles, pools, or fire rates.
-//  • Switching weapons at runtime = a single SetWeapon() call. No rewiring.
+//  • Switching weapons at runtime = OnWeaponChanged event fires → HandleWeaponChanged().
 //
-//  DECOUPLING FROM PlayerController3D
-//  ────────────────────────────────────
-//  • PlayerController3D (locomotion) and PlayerCombat (combat input) both
-//    live on the Lunaria GameObject.
-//  • PlayerInput (Send Messages) broadcasts OnAttack to ALL MonoBehaviours
-//    on the same GameObject. PlayerController3D has an OnAttack stub that
-//    does nothing — PlayerCombat owns the real implementation.
-//  • This keeps Single Responsibility Principle intact: movement never knows
-//    about attacking, and attacking never knows about movement.
+//  CLEAN LIFECYCLE
+//  ────────────────
+//  • OnDestroy unsubscribes from OnWeaponChanged (no stale delegates).
+//  • The live weapon child is destroyed when swapped, so its pool is disposed
+//    via MagicWand.OnDestroy — no leaked pool instances.
 //
 //  INPUT SYSTEM NOTES
 //  ──────────────────
 //  • Behaviour: "Send Messages" on the PlayerInput component.
 //  • The method must be named exactly: OnAttack(InputValue value)
-//  • The matching action in the Input Asset must be named exactly: "Attack"
-//    (case-sensitive, in the "Player" action map).
+//  • The matching action in the Input Asset must be named exactly: "Attack".
 //
 //  FUTURE HOOKS
 //  ► FSM  : CanAttack property gates the attack (e.g. during cast animations).
-//  ► SO   : Inject a WeaponInventorySO to swap weapons from loadout data.
-//  ► UI   : Expose CurrentWeapon for HUD weapon icon / cooldown display.
+//  ► Audio: Trigger a "no weapon" SFX in OnAttack when _equippedWeapon == null.
 // =============================================================================
 
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TopDownShooter.Inventory;
 
 namespace TopDownShooter.Combat
 {
     /// <summary>
     /// Strategy Context: receives attack input and delegates to the active
-    /// <see cref="IWeapon"/>. Attach this alongside <c>PlayerController3D</c>
-    /// on the Lunaria GameObject.
+    /// <see cref="IWeapon"/>. Subscribes to <see cref="Player.PlayerInventory.OnWeaponChanged"/>
+    /// and dynamically instantiates the correct weapon logic child at runtime.
+    /// Attach this alongside <c>PlayerController3D</c> and <c>PlayerInventory</c>
+    /// on the Player root GameObject.
     /// </summary>
     public sealed class PlayerCombat : MonoBehaviour
     {
         // ─────────────────────────────────────────────────────────────────────
         //  INSPECTOR-EXPOSED PARAMETERS
         // ─────────────────────────────────────────────────────────────────────
-
-        [Header("Weapon Setup")]
-        [Tooltip("The MonoBehaviour component that implements IWeapon. " +
-                 "Drag the MagicWand component (or any IWeapon) here. " +
-                 "This is the weapon Lunaria starts the game with.")]
-        [SerializeField] private MonoBehaviour initialWeapon;
 
         [Header("Flags – Runtime Control")]
         [Tooltip("Set to false to prevent all attack input (e.g. in menus, cutscenes).")]
@@ -69,21 +69,29 @@ namespace TopDownShooter.Combat
         //  PRIVATE STATE
         // ─────────────────────────────────────────────────────────────────────
 
-        // The currently equipped weapon. Stored as IWeapon — no concrete type.
+        // The currently equipped weapon strategy — IWeapon only; no concrete type.
         private IWeapon _equippedWeapon;
+
+        // The live child GameObject that owns the weapon MonoBehaviour.
+        // Kept so we can Destroy it cleanly when swapping (triggers OnDestroy
+        // on the weapon, which disposes its ObjectPool).
+        private GameObject _liveWeaponObject;
+
+        // Cached reference to the PlayerInventory on the same GameObject.
+        private Player.PlayerInventory _playerInventory;
 
         // ─────────────────────────────────────────────────────────────────────
         //  PUBLIC READ-ONLY PROPERTIES  (for FSM / HUD / achievement queries)
         // ─────────────────────────────────────────────────────────────────────
 
-        /// <summary>Returns the currently equipped weapon strategy.</summary>
+        /// <summary>Returns the currently equipped weapon strategy. Null = empty-handed.</summary>
         public IWeapon CurrentWeapon => _equippedWeapon;
 
         /// <summary>True when attack input is globally permitted.</summary>
         public bool CanAttack
         {
             get => canAttack;
-            set => canAttack = value;   // FSM can set this to false during cast animations
+            set => canAttack = value;   // FSM can disable attacks during animations
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -92,7 +100,15 @@ namespace TopDownShooter.Combat
 
         private void Awake()
         {
-            InitialiseWeapon();
+            SubscribeToInventory();
+        }
+
+        private void OnDestroy()
+        {
+            // Always unsubscribe to prevent stale delegate calls after this
+            // component is destroyed (e.g. scene unload, player death).
+            if (_playerInventory != null)
+                _playerInventory.OnWeaponChanged -= HandleWeaponChanged;
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -100,52 +116,137 @@ namespace TopDownShooter.Combat
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Validates and sets the initial weapon from the Inspector reference.
-        /// Logs clear errors rather than crashing with a NullReferenceException.
+        /// Resolves the <see cref="Player.PlayerInventory"/> on this GameObject
+        /// and subscribes to <see cref="Player.PlayerInventory.OnWeaponChanged"/>.
+        /// Logs a clear error if the component is missing rather than crashing later.
         /// </summary>
-        private void InitialiseWeapon()
+        private void SubscribeToInventory()
         {
-            if (initialWeapon == null)
+            if (!TryGetComponent(out _playerInventory))
             {
-                Debug.LogError("[PlayerCombat] 'Initial Weapon' is not assigned in the Inspector. " +
-                               "Drag a MagicWand (or any IWeapon MonoBehaviour) into the field.", this);
+                Debug.LogError("[PlayerCombat] No PlayerInventory found on this GameObject. " +
+                               "Attach PlayerInventory to the same root as PlayerCombat. " +
+                               "Attack input will be silently ignored until resolved.", this);
                 return;
             }
 
-            // Attempt to cast the MonoBehaviour reference to IWeapon.
-            // Using MonoBehaviour in the Inspector field gives us a drag-and-drop
-            // UX while still enforcing the interface contract at runtime.
-            if (initialWeapon is IWeapon weapon)
-            {
-                _equippedWeapon = weapon;
-            }
-            else
-            {
-                Debug.LogError($"[PlayerCombat] The assigned 'Initial Weapon' ({initialWeapon.name}) " +
-                               $"does not implement IWeapon. Attach a MagicWand or another IWeapon component.", this);
-            }
+            _playerInventory.OnWeaponChanged += HandleWeaponChanged;
+            Debug.Log("[PlayerCombat] Subscribed to PlayerInventory.OnWeaponChanged. " +
+                      "Player starts empty-handed.");
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PUBLIC API
+        //  WEAPON SWAP HANDLER
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Hot-swaps the equipped weapon at runtime.
+        /// Subscriber to <see cref="Player.PlayerInventory.OnWeaponChanged"/>.
+        /// Destroys the old weapon logic child, then instantiates and configures
+        /// the new one from the <see cref="WeaponDataSO"/>.
         ///
-        /// USAGE EXAMPLE:
-        /// <code>
-        /// playerCombat.SetWeapon(newStaffComponent);  // Swap to a new weapon
-        /// playerCombat.SetWeapon(null);               // Unequip (holster)
-        /// </code>
-        ///
-        /// ► SO : Could also accept a WeaponDataSO and instantiate the matching
-        ///        MonoBehaviour prefab from a WeaponFactory.
+        /// <para>
+        /// ALGORITHM:
+        /// <list type="number">
+        ///   <item>Tear down: destroy old child → its OnDestroy disposes the pool.</item>
+        ///   <item>If newWeapon is null (slot cleared), stop here — player is empty-handed.</item>
+        ///   <item>Guard: verify WeaponLogicPrefab is assigned on the SO.</item>
+        ///   <item>Instantiate the logic prefab as a child of this Player transform.</item>
+        ///   <item>Cast to IWeapon. Log error and clean up if the cast fails.</item>
+        ///   <item>Optional: if also IWeaponConfigurable, call Configure(newWeapon).</item>
+        /// </list>
+        /// </para>
         /// </summary>
-        public void SetWeapon(IWeapon newWeapon)
+        /// <param name="newWeapon">
+        /// The <see cref="WeaponDataSO"/> of the newly picked-up weapon,
+        /// or <c>null</c> if the weapon slot was cleared.
+        /// </param>
+        private void HandleWeaponChanged(WeaponDataSO newWeapon)
         {
-            _equippedWeapon = newWeapon;
-            Debug.Log($"[PlayerCombat] Weapon swapped to: {newWeapon?.GetType().Name ?? "None"}");
+            // ── Step 1: Tear down the old weapon ───────────────────────────
+            TearDownCurrentWeapon();
+
+            // ── Step 2: Null check — player is now empty-handed ────────────
+            if (newWeapon == null)
+            {
+                Debug.Log("[PlayerCombat] Weapon slot cleared. Player is empty-handed.");
+                return;
+            }
+
+            // ── Step 3: Validate the SO's logic prefab reference ───────────
+            if (newWeapon.WeaponLogicPrefab == null)
+            {
+                Debug.LogError($"[PlayerCombat] WeaponDataSO '{newWeapon.DisplayName}' has no " +
+                               "WeaponLogicPrefab assigned. Cannot equip this weapon. " +
+                               "Assign an IWeapon MonoBehaviour prefab in the SO.", this);
+                return;
+            }
+
+            // ── Step 4: Instantiate as a child of this Player ──────────────
+            // Spawning as a child means the weapon inherits the player's
+            // world-space position and rotation automatically, so fire-point
+            // Transforms stay correct without any manual syncing.
+            _liveWeaponObject = Instantiate(
+                newWeapon.WeaponLogicPrefab.gameObject,
+                transform.position,
+                transform.rotation,
+                transform);   // ← parent = this Player's transform
+
+            // ── Step 5: Cast the root MonoBehaviour to IWeapon ────────────
+            // GetComponent<IWeapon>() finds the first IWeapon on the root or
+            // any child. We use the root MonoBehaviour type for the cast since
+            // WeaponLogicPrefab is guaranteed to be on the root.
+            _equippedWeapon = _liveWeaponObject.GetComponent<IWeapon>();
+
+            if (_equippedWeapon == null)
+            {
+                Debug.LogError($"[PlayerCombat] The instantiated prefab for '{newWeapon.DisplayName}' " +
+                               "does not have an IWeapon component. " +
+                               "Ensure the prefab's root script implements IWeapon.", this);
+
+                // Clean up the orphaned child to avoid a dangling GameObject.
+                Destroy(_liveWeaponObject);
+                _liveWeaponObject = null;
+                return;
+            }
+
+            // ── Step 6: Optional stat injection via IWeaponConfigurable ────
+            // This is the ONLY place where the SO data flows into the logic.
+            // The weapon reads what it needs; PlayerCombat stays data-agnostic.
+            if (_equippedWeapon is IWeaponConfigurable configurable)
+            {
+                configurable.Configure(newWeapon);
+                Debug.Log($"[PlayerCombat] Configured '{newWeapon.DisplayName}' via IWeaponConfigurable.");
+            }
+            else
+            {
+                Debug.Log($"[PlayerCombat] '{newWeapon.DisplayName}' does not implement " +
+                          "IWeaponConfigurable — using its hardcoded Inspector values.");
+            }
+
+            Debug.Log($"[PlayerCombat] Weapon equipped: '{newWeapon.DisplayName}' " +
+                      $"({_equippedWeapon.GetType().Name}).");
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        //  TEARDOWN HELPER
+        // ─────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Clears the current weapon state and destroys the live child GameObject.
+        /// Destroying the child triggers <c>MagicWand.OnDestroy</c> (or any
+        /// weapon's OnDestroy), which disposes the ObjectPool cleanly.
+        /// </summary>
+        private void TearDownCurrentWeapon()
+        {
+            if (_liveWeaponObject != null)
+            {
+                string oldName = _equippedWeapon?.GetType().Name ?? "Unknown";
+                Destroy(_liveWeaponObject);
+                _liveWeaponObject = null;
+                Debug.Log($"[PlayerCombat] Destroyed old weapon logic: '{oldName}'.");
+            }
+
+            _equippedWeapon = null;
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -159,7 +260,6 @@ namespace TopDownShooter.Combat
         /// METHOD NAMING CONTRACT:
         /// The method name "OnAttack" must exactly match the Input Action name
         /// "Attack" (PlayerInput prepends "On" and calls the method via reflection).
-        /// The action must be of type Button in the Input Asset.
         ///
         /// FLOW:
         /// [Mouse Left Button] → PlayerInput (Send Messages) → OnAttack()
@@ -172,28 +272,14 @@ namespace TopDownShooter.Combat
             // Only react to the press event, not the release.
             if (!value.isPressed) return;
 
-            // Global gate — FSM or other systems can disable attacks externally.
+            // Global gate — FSM or cutscene systems can disable attacks externally.
             if (!canAttack) return;
 
-            // Null-guard: if no weapon is equipped, silently skip.
-            if (_equippedWeapon == null)
-            {
-                Debug.LogWarning("[PlayerCombat] OnAttack called but no weapon is equipped.", this);
-                return;
-            }
+            // Graceful no-op when empty-handed.
+            if (_equippedWeapon == null) return;
 
             // Delegate entirely to the strategy — PlayerCombat doesn't know HOW.
             _equippedWeapon.ExecuteAttack();
         }
-
-        // ─────────────────────────────────────────────────────────────────────
-        //  NOTE ON OnAttack IN PlayerController3D
-        // ─────────────────────────────────────────────────────────────────────
-        // PlayerController3D also has an OnAttack stub. Since both scripts live
-        // on the same GameObject, PlayerInput (Send Messages) will call OnAttack
-        // on BOTH components. The stub in PlayerController3D does nothing (early
-        // return), so there is no conflict. You may also remove the stub from
-        // PlayerController3D entirely to keep it perfectly clean — it is safe
-        // to have OnAttack handled exclusively here in PlayerCombat.
     }
 }

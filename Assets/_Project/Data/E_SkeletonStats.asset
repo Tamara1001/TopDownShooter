@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8e35a404acc9f9241a5a01112c958318, type: 3}
-  m_Name: ZombieStats
+  m_Name: E_SkeletonStats
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStatsSO
-  maxHealth: 50
-  moveSpeed: 3.5
+  maxHealth: 100
+  moveSpeed: 2.5
   detectionRange: 10
-  attackRange: 2
+  attackRange: 8
   attackCooldown: 1.5
