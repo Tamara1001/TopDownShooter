@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Cerebro central del Top-Down Shooter. Maneja la Máquina de Estados Finita (FSM)
@@ -25,7 +26,8 @@ public class GameManager : MonoBehaviour
         MainMenu,
         Playing,
         Pause,
-        GameOver
+        GameOver,
+        Victory
     }
 
     /// <summary>Estado actual del juego. Solo puede ser modificado internamente.</summary>
@@ -58,6 +60,22 @@ public class GameManager : MonoBehaviour
     // Guarda el estado en el que estábamos antes de pausar (útil si hay estados extra luego).
     private GameState _stateBeforePause;
 
+    // Flag set by StartNewGame() before reloading the scene so OnSceneLoaded
+    // knows it must initialise a fresh session once the new scene is ready.
+    private bool _pendingRestart = false;
+
+    // -------------------------------------------------------------------------
+    // Session State
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// True while an active run exists in the loaded scene.
+    /// Set to true inside <see cref="OnSceneLoaded"/> after a scene restart,
+    /// and to false when the session ends (GameOver or Victory).
+    /// Used by <see cref="UIManager"/> to gate the "Continue" button.
+    /// </summary>
+    public bool HasActiveSession { get; private set; }
+
     // -------------------------------------------------------------------------
     // Unity Lifecycle
     // -------------------------------------------------------------------------
@@ -75,6 +93,37 @@ public class GameManager : MonoBehaviour
 
         // Estado inicial explícito para evitar lecturas de valores nulos al arrancar.
         CurrentState = GameState.MainMenu;
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    /// <summary>
+    /// Fired by Unity after every scene load completes — including the reload
+    /// triggered by <see cref="StartNewGame"/>.
+    /// When <see cref="_pendingRestart"/> is set, this is the earliest safe moment
+    /// to initialise game state, because all scene objects are fully awake.
+    /// </summary>
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (!_pendingRestart) return;
+
+        _pendingRestart  = false;
+        _sessionTimer    = 0f;
+        HasActiveSession = true;
+
+        // Ensure time is running before broadcasting the Playing state.
+        Time.timeScale = 1f;
+        ChangeState(GameState.Playing);
+
+        Debug.Log("[GameManager] Scene fully loaded — nueva sesión iniciada.");
     }
 
     private void Update()
@@ -103,14 +152,21 @@ public class GameManager : MonoBehaviour
         }
 
         // --- Manejo del TimeScale ---
-        if (newState == GameState.Pause)
+        // Freeze on Pause, GameOver, or Victory; unfreeze for everything else.
+        switch (newState)
         {
-            _stateBeforePause = CurrentState;
-            Time.timeScale = 0f; // Congela el juego
-        }
-        else if (CurrentState == GameState.Pause)
-        {
-            Time.timeScale = 1f; // Descongela el juego
+            case GameState.Pause:
+                _stateBeforePause = CurrentState;
+                Time.timeScale = 0f;
+                break;
+            case GameState.GameOver:
+            case GameState.Victory:
+                HasActiveSession = false;
+                Time.timeScale = 0f;
+                break;
+            default:
+                Time.timeScale = 1f;
+                break;
         }
 
         // --- Transición ---
@@ -129,10 +185,31 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void StartNewGame()
     {
-        _sessionTimer = 0f;
+        // Ensure time runs during the scene load so Unity's async work is not
+        // blocked (some scene activation logic requires unscaled time).
         Time.timeScale = 1f;
+
+        // Mark pending restart BEFORE LoadScene so OnSceneLoaded fires correctly
+        // even on scenes that load extremely fast (single-frame load).
+        _pendingRestart = true;
+
+        Debug.Log("[GameManager] Recargando escena para nueva partida...");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    /// <summary>
+    /// Resumes an in-progress run from the Main Menu without reloading the scene.
+    /// Only valid when <see cref="HasActiveSession"/> is true.
+    /// </summary>
+    public void ContinueGame()
+    {
+        if (!HasActiveSession)
+        {
+            Debug.LogWarning("[GameManager] ContinueGame llamado sin sesión activa. Ignorado.");
+            return;
+        }
+
         ChangeState(GameState.Playing);
-        Debug.Log("[GameManager] Nueva partida iniciada. Temporizador reseteado.");
     }
 
     /// <summary>

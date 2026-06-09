@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Puente visual directo entre la FSM (Máquina de Estados) del GameManager y la capa de la Interfaz de Usuario (UI).
@@ -17,10 +18,16 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject mainMenuPanel;
     [SerializeField] private GameObject playingHUDPanel;
     [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private GameObject victoryPanel;
 
     [Header("Paneles Superpuestos (Overlays)")]
     [SerializeField] private GameObject optionsPanel;
     [SerializeField] private GameObject pausePanel;
+
+    [Header("Botones Especiales")]
+    [Tooltip("Botón 'Continuar' del Menú Principal. Se desactiva automáticamente " +
+             "si no hay una sesión activa (GameManager.HasActiveSession == false).")]
+    [SerializeField] private Button continueButton;
 
     // -------------------------------------------------------------------------
     // Ciclo de Vida de Unity
@@ -37,8 +44,15 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        // Aseguramos que el juego arranque mostrando únicamente el menú principal
-        ShowMainMenu();
+        // En lugar de forzar el menú principal, leemos la realidad actual de la FSM
+        if (GameManager.Instance != null)
+        {
+            HandleStateChanged(GameManager.Instance.CurrentState);
+        }
+        else
+        {
+            ShowMainMenu();
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -63,6 +77,9 @@ public class UIManager : MonoBehaviour
             case GameManager.GameState.GameOver:
                 ShowGameOver();
                 break;
+            case GameManager.GameState.Victory:
+                ShowVictory();
+                break;
             default:
                 Debug.LogWarning($"[UIManager] GameState no contemplado: {newState}");
                 break;
@@ -78,6 +95,12 @@ public class UIManager : MonoBehaviour
         playingHUDPanel?.SetActive(false);
         pausePanel?.SetActive(false);
         gameOverPanel?.SetActive(false);
+        victoryPanel?.SetActive(false);
+
+        // Enable the Continue button only when there is an ongoing session to return to.
+        if (continueButton != null)
+            continueButton.interactable = GameManager.Instance != null &&
+                                          GameManager.Instance.HasActiveSession;
     }
 
     private void ShowPlayingHUD()
@@ -86,6 +109,7 @@ public class UIManager : MonoBehaviour
         playingHUDPanel?.SetActive(true);
         pausePanel?.SetActive(false);
         gameOverPanel?.SetActive(false);
+        victoryPanel?.SetActive(false);
     }
 
     private void ShowPause()
@@ -94,6 +118,7 @@ public class UIManager : MonoBehaviour
         playingHUDPanel?.SetActive(false);
         pausePanel?.SetActive(true);
         gameOverPanel?.SetActive(false);
+        victoryPanel?.SetActive(false);
     }
 
     private void ShowGameOver()
@@ -102,6 +127,16 @@ public class UIManager : MonoBehaviour
         playingHUDPanel?.SetActive(false);
         pausePanel?.SetActive(false);
         gameOverPanel?.SetActive(true);
+        victoryPanel?.SetActive(false);
+    }
+
+    private void ShowVictory()
+    {
+        mainMenuPanel?.SetActive(false);
+        playingHUDPanel?.SetActive(false);
+        pausePanel?.SetActive(false);
+        gameOverPanel?.SetActive(false);
+        victoryPanel?.SetActive(true);
     }
 
     private void CloseOptionsPanel()
@@ -116,6 +151,15 @@ public class UIManager : MonoBehaviour
     /// <summary>
     /// Vinculado al botón "Jugar" o "Nueva Partida" del Menú Principal.
     /// </summary>
+    /// <summary>
+    /// Vinculado al botón "Continuar" del Menú Principal.
+    /// Solo es interactuable cuando <see cref="GameManager.HasActiveSession"/> es true.
+    /// </summary>
+    public void OnContinueClicked()
+    {
+        GameManager.Instance.ContinueGame();
+    }
+
     public void OnPlayClicked()
     {
         GameManager.Instance.StartNewGame();

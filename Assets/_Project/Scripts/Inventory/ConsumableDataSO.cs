@@ -8,10 +8,10 @@
 //  Consumables are single-use items activated via the Q key (OnConsume input).
 //  Examples: health potions, speed boosts, temporary shields.
 //
-//  CURRENT SCOPE (Part 1 — Data Layer):
-//  Defines the menu path and consumable-specific extension fields.
-//  The effect fields below are stubs ready for the ConsumeCurrentItem()
-//  expansion in Part 2.
+//  CURRENT SCOPE (Part 3 — Win/Loss Conditions):
+//  Added IsQuestItem flag so KeyItems cannot be consumed via the Q key
+//  (PlayerInventory guards the consume path).
+//  Original effect fields from Part 1 remain unchanged.
 //
 //  FUTURE HOOKS (Part 2):
 //  ► ConsumeCurrentItem : PlayerInventory reads HealAmount and EffectDuration
@@ -36,6 +36,17 @@ namespace TopDownShooter.Inventory
     public sealed class ConsumableDataSO : ItemDataSO
     {
         // ─────────────────────────────────────────────────────────────────────
+        //  QUEST ITEM FLAG  (Part 3)
+        // ─────────────────────────────────────────────────────────────────────
+
+        [Header("Quest Item")]
+        [Tooltip("When true, this consumable is a quest item (e.g. a Key). " +
+                 "PlayerInventory will block the Q-key consume path so it " +
+                 "cannot be accidentally destroyed. Use E to interact with " +
+                 "world objects that require this item.")]
+        [SerializeField] private bool _isQuestItem = false;
+
+        // ─────────────────────────────────────────────────────────────────────
         //  CONSUMABLE EFFECT PARAMETERS  (Part 2 expansion stubs)
         // ─────────────────────────────────────────────────────────────────────
 
@@ -58,6 +69,12 @@ namespace TopDownShooter.Inventory
         // ─────────────────────────────────────────────────────────────────────
         //  PUBLIC GETTERS
         // ─────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// When true this item is a quest item (e.g. a Key) and cannot be
+        /// consumed via the Q key. Use E to interact with world objects.
+        /// </summary>
+        public bool  IsQuestItem         => _isQuestItem;
 
         /// <summary>Flat health points restored when this consumable is used.</summary>
         public int   HealAmount          => _healAmount;

@@ -1,36 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &482556437235425543
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4195530511548128087}
-  m_Layer: 3
-  m_Name: FirePoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4195530511548128087
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 482556437235425543}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.2, z: 1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7863990641245162524}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5829641627399564802
 GameObject:
   m_ObjectHideFlags: 0
@@ -158,10 +127,11 @@ GameObject:
   - component: {fileID: 3773391309267541300}
   - component: {fileID: 2451040047970493606}
   - component: {fileID: 2825202342786695904}
-  - component: {fileID: 752021096553169741}
   - component: {fileID: 5598755776445327474}
   - component: {fileID: 6922405946453416044}
   - component: {fileID: 9130103802330210708}
+  - component: {fileID: 6218552049925728545}
+  - component: {fileID: 8938261231680579134}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -183,7 +153,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7950077958732920544}
-  - {fileID: 4195530511548128087}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2501480822123522639
@@ -362,23 +331,6 @@ MonoBehaviour:
   aimPlaneHeight: 0
   canMove: 1
   canRotate: 1
---- !u!114 &752021096553169741
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6357198947062999068}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25fd282cbc1afc744901d64fdd37b96f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Combat.MagicWand
-  firePoint: {fileID: 4195530511548128087}
-  projectilePrefab: {fileID: 1058448817960020412, guid: 6025ccb50d5edbf4bb9e85ab665ab2ac, type: 3}
-  fireRate: 0.25
-  poolDefaultCapacity: 10
-  poolMaxSize: 30
 --- !u!114 &5598755776445327474
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -391,7 +343,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc3fe24ac58a93a45a63b53ef0c7af0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Combat.PlayerCombat
-  initialWeapon: {fileID: 752021096553169741}
   canAttack: 1
 --- !u!114 &6922405946453416044
 MonoBehaviour:
@@ -418,3 +369,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87dc75656a339d748a3b1c649db82a0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerRegistration
+--- !u!114 &6218552049925728545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6357198947062999068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0782725bc8032784f924e2d4d759ecdd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Player.PlayerInventory
+  _pickupRadius: 1.5
+  _pickupLayerMask:
+    serializedVersion: 2
+    m_Bits: 128
+  _interactableLayerMask:
+    serializedVersion: 2
+    m_Bits: 256
+  _dropOffset: {x: 0, y: 0, z: 0.8}
+  _overlapBufferSize: 8
+--- !u!114 &8938261231680579134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6357198947062999068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb2d3472310c80e42a7b6e59ac27df9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Player.PlayerDeathHandler

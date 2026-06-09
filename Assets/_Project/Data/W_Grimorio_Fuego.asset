@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Inventory.WeaponDataSO
   _itemID: grimorio_fuego
   _displayName: Grimorio de Fuego
-  _icon: {fileID: 0}
+  _icon: {fileID: 21300000, guid: 41001e7536e85684c9dd0f34dbdc4dac, type: 3}
   _dropPrefab: {fileID: 6697602429799922056, guid: a0478012a6e9c6d4f9c3914362f75557, type: 3}
   _baseDamage: 10
   _fireRate: 0.1

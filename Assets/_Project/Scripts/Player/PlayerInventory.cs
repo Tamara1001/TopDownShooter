@@ -48,6 +48,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TopDownShooter.Inventory;
+using TopDownShooter.Interaction;
 
 namespace TopDownShooter.Player
 {
@@ -73,6 +74,13 @@ namespace TopDownShooter.Player
                  "Assign the 'Pickup' layer for best performance — the overlap " +
                  "sphere skips all other layers entirely.")]
         [SerializeField] private LayerMask _pickupLayerMask;
+
+        [Header("World Interaction")]
+        [Tooltip("LayerMask for world objects implementing IWorldInteractable " +
+                 "(e.g. VictoryDoor). Assign the 'Interactable' layer. " +
+                 "Checked BEFORE the pickup sphere, so doors take priority over " +
+                 "floor items.")]
+        [SerializeField] private LayerMask _interactableLayerMask;
 
         [Header("Drop Offset")]
         [Tooltip("Local-space offset from the player's position where dropped " +
@@ -162,20 +170,28 @@ namespace TopDownShooter.Player
 
         /// <summary>
         /// Receives the "Interact" action (E key) from PlayerInput.
-        /// Scans for the nearest <see cref="ItemPickup"/> and performs
-        /// an atomic pickup-or-swap for the appropriate inventory slot.
+        /// Priority order:
+        ///   1. Checks for an <see cref="IWorldInteractable"/> (doors, switches) via
+        ///      <see cref="_interactableLayerMask"/> — these take precedence over items.
+        ///   2. Falls back to <see cref="TryPickupNearestItem"/> for floor pickups.
         /// </summary>
         public void OnInteract(InputValue value)
         {
             // Only respond to the press event, not the release.
             if (!value.isPressed) return;
 
+            // ── Priority 1: World Interactables (doors, switches, NPCs) ─────────
+            if (TryWorldInteract()) return;
+
+            // ── Priority 2: Item Pickup fallback ─────────────────────────────────
             TryPickupNearestItem();
         }
 
         /// <summary>
         /// Receives the "Consume" action (Q key) from PlayerInput.
         /// Uses the currently held consumable if one is equipped.
+        /// Quest items (<see cref="ConsumableDataSO.IsQuestItem"/> == true) are
+        /// intentionally blocked — they must be used via the E-key interact flow.
         /// </summary>
         public void OnConsume(InputValue value)
         {
@@ -187,7 +203,57 @@ namespace TopDownShooter.Player
                 return;
             }
 
+            // Guard: quest items (e.g. Keys) cannot be consumed via Q.
+            if (_currentConsumable.IsQuestItem)
+            {
+                Debug.Log($"[PlayerInventory] Cannot consume quest items. " +
+                          $"'{_currentConsumable.DisplayName}' must be used " +
+                          "by interacting (E) with the appropriate world object.");
+                return;
+            }
+
             ConsumeCurrentItem();
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        //  WORLD INTERACTION
+        // ─────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Performs an OverlapSphere using <see cref="_interactableLayerMask"/> and
+        /// calls <see cref="IWorldInteractable.Interact"/> on the first matching
+        /// component found.
+        /// </summary>
+        /// <returns><c>true</c> if a world interactable was found and called; <c>false</c> otherwise.</returns>
+        private bool TryWorldInteract()
+        {
+            int hitCount = Physics.OverlapSphereNonAlloc(
+                _transform.position,
+                _pickupRadius,
+                _overlapBuffer,
+                _interactableLayerMask);
+
+            if (hitCount == 0) return false;
+
+            IWorldInteractable interactable = null;
+
+            for (int i = 0; i < hitCount; i++)
+            {
+                if (_overlapBuffer[i].TryGetComponent<IWorldInteractable>(out IWorldInteractable found))
+                {
+                    interactable = found;
+                    break; // Use the first valid one found.
+                }
+            }
+
+            // Clear buffer references to prevent GC from retaining dead objects.
+            for (int i = 0; i < hitCount; i++)
+                _overlapBuffer[i] = null;
+
+            if (interactable == null) return false;
+
+            interactable.Interact(this);
+            return true;
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -418,6 +484,13 @@ namespace TopDownShooter.Player
                                  "Assign the 'Pickup' layer for better performance.", this);
             }
 
+            if (_interactableLayerMask.value == 0)
+            {
+                Debug.LogWarning("[PlayerInventory] Interactable LayerMask is empty. " +
+                                 "World interactables (doors, switches) will not be detected. " +
+                                 "Assign the 'Interactable' layer in the Inspector.", this);
+            }
+
             if (_overlapBufferSize <= 0)
             {
                 Debug.LogError("[PlayerInventory] Overlap buffer size must be > 0. Defaulting to 8.", this);
@@ -437,6 +510,12 @@ namespace TopDownShooter.Player
             Gizmos.color = new Color(0.2f, 1f, 0.4f, 0.12f);
             Gizmos.DrawSphere(transform.position, _pickupRadius);
             Gizmos.color = new Color(0.2f, 1f, 0.4f, 0.7f);
+            Gizmos.DrawWireSphere(transform.position, _pickupRadius);
+
+            // Interactable radius — cyan (same radius, different color)
+            Gizmos.color = new Color(0.2f, 0.9f, 1f, 0.12f);
+            Gizmos.DrawSphere(transform.position, _pickupRadius);
+            Gizmos.color = new Color(0.2f, 0.9f, 1f, 0.5f);
             Gizmos.DrawWireSphere(transform.position, _pickupRadius);
 
             // Drop offset position — orange dot
