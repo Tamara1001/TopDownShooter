@@ -25,7 +25,7 @@
 //
 //  FUTURE INTEGRATION HOOKS (comments marked ► FSM / ► SO / ► ICombat)
 //  -----------------------------------------------------------------------
-//  ► FSM   : Finite State Machine can read IsGrounded, IsMoving, IsSprinting.
+//  ► FSM   : Finite State Machine can read IsGrounded, IsMoving, IsSprinting, IsDashing.
 //  ► SO    : Replace [SerializeField] speed/jump/gravity fields with a
 //            reference to a PlayerStatsSO ScriptableObject asset.
 //  ► ICombat : The OnAttack callback (stubbed at bottom) calls into an
@@ -34,6 +34,7 @@
 
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 namespace TopDownShooter.Player
 {
@@ -55,6 +56,18 @@ namespace TopDownShooter.Player
 
         [Tooltip("Multiplier applied on top of moveSpeed when sprinting.")]
         [SerializeField] private float sprintMultiplier = 1.65f;
+
+        [Header("Dash")]
+        [Tooltip("Energy cost deducted from PlayerResourceComponent on each dash attempt. " +
+                 "If insufficient energy is available the dash is silently rejected.")]
+        [SerializeField] private int   _dashCost     = 20;
+
+        [Tooltip("Horizontal speed in units per second applied during the dash window.")]
+        [SerializeField] private float _dashSpeed    = 18f;
+
+        [Tooltip("Duration in seconds that the dash velocity override is active.")]
+        [Min(0.05f)]
+        [SerializeField] private float _dashDuration = 0.2f;
 
         [Header("Jump & Gravity")]
         [Tooltip("Initial vertical velocity when the player jumps.")]
@@ -93,11 +106,17 @@ namespace TopDownShooter.Player
         private Camera              _mainCamera;
         private Transform           _transform;
 
+        // Optional resource component — if absent, dash is free (fallback behaviour).
+        private PlayerResourceComponent _resourceComponent;
+
         // Raw input values written by New Input System callbacks
         private Vector2 _rawMoveInput;
         private Vector2 _rawMouseScreenPosition;
         private bool    _jumpRequested;
         private bool    _sprintHeld;
+
+        // Dash state — true for exactly _dashDuration seconds per dash
+        private bool _isDashing = false;
 
         // Physics state
         private Vector3 _verticalVelocity;   // Only Y component is used
@@ -115,6 +134,9 @@ namespace TopDownShooter.Player
 
         /// <summary>True when the sprint modifier is held.</summary>
         public bool IsSprinting => _sprintHeld && IsMoving;
+
+        /// <summary>True while an active dash is in progress.</summary>
+        public bool IsDashing   => _isDashing;
 
         // ─────────────────────────────────────────────────────────────────────
         //  UNITY LIFECYCLE
@@ -166,6 +188,14 @@ namespace TopDownShooter.Player
                 Debug.LogError("[PlayerController3D] No Camera tagged 'MainCamera' found in the scene. " +
                                "Please tag your camera (or Cinemachine brain camera) as 'MainCamera'.", this);
                 enabled = false;
+                return;
+            }
+
+            // Optional — dash is free if absent (graceful degradation).
+            if (!TryGetComponent(out _resourceComponent))
+            {
+                Debug.LogWarning("[PlayerController3D] No PlayerResourceComponent found. " +
+                                 "Dash will work without any Energy cost.", this);
             }
         }
 
@@ -197,6 +227,20 @@ namespace TopDownShooter.Player
         {
             if (!canMove) return;
 
+            // ── DASH OVERRIDE ──────────────────────────────────────────────────
+            // While dashing, ignore all normal input and push the player along
+            // transform.forward. Because RotateTowardsMouse() already ensures
+            // forward = the direction the player is aiming, the dash travels
+            // exactly toward the mouse cursor. Vertical velocity is preserved so
+            // jumping and dashing can combine naturally.
+            if (_isDashing)
+            {
+                Vector3 dashVelocity = _transform.forward * _dashSpeed;
+                _characterController.Move((dashVelocity + _verticalVelocity) * Time.deltaTime);
+                return;
+            }
+
+            // ── NORMAL MOVEMENT ───────────────────────────────────────────────
             // Map Vector2 (X,Y) from keyboard/gamepad → world (X,Z) axes
             // _rawMoveInput.x = strafe (A/D), _rawMoveInput.y = forward (W/S)
             Vector3 worldMoveDirection = new Vector3(_rawMoveInput.x, 0f, _rawMoveInput.y);
@@ -379,12 +423,53 @@ namespace TopDownShooter.Player
         private void OnConsume(InputValue value) { /* Intentional no-op. See PlayerInventory.cs */ }
 
         /// <summary>
-        /// ► FSM : Notify the state machine that a sprint was requested.
-        /// Bind &lt;Keyboard&gt;/leftShift to the "Sprint" action in the Input Asset.
+        /// Receives the Sprint hold (Button) from the Player action map.
         /// </summary>
         private void OnSprint(InputValue value)
         {
             _sprintHeld = value.isPressed;
+        }
+
+        /// <summary>
+        /// Receives the Dash action (Button) from the Player action map.
+        /// Binds to &lt;Keyboard&gt;/space in the Input Asset ("Dash" action).
+        ///
+        /// FLOW:
+        /// [Space] → PlayerInput (Send Messages) → OnDash()
+        ///   → Guard: not already dashing
+        ///   → TryConsumeEnergy(_dashCost) → if true: StartCoroutine(DashRoutine)
+        ///
+        /// The dash travels along transform.forward, which already points at the
+        /// mouse cursor thanks to RotateTowardsMouse() running every frame.
+        /// </summary>
+        public void OnDash(InputValue value)
+        {
+            if (!value.isPressed) return;
+            if (_isDashing)     return;   // No dash chaining while one is active
+            if (!canMove)       return;   // Respect the movement lock flag
+
+            // Resource gate — skip cost check entirely if component is missing.
+            if (_resourceComponent != null &&
+                !_resourceComponent.TryConsumeEnergy(_dashCost))
+            {
+                Debug.Log($"[PlayerController3D] Not enough Energy to dash. " +
+                          $"Required: {_dashCost}.");
+                return;
+            }
+
+            StartCoroutine(DashRoutine());
+        }
+
+        /// <summary>
+        /// Activates the dash velocity override for exactly <see cref="_dashDuration"/> seconds.
+        /// Uses <c>WaitForSeconds</c> (scaled time) so the dash respects
+        /// Time.timeScale — pausing the game pauses mid-dash naturally.
+        /// </summary>
+        private IEnumerator DashRoutine()
+        {
+            _isDashing = true;
+            yield return new WaitForSeconds(_dashDuration);
+            _isDashing = false;
         }
 
 #if UNITY_EDITOR

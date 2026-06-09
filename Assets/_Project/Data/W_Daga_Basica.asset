@@ -18,4 +18,6 @@ MonoBehaviour:
   _dropPrefab: {fileID: 8584310591438422609, guid: a9eeff1bff1bca346a47ff96a4d43b57, type: 3}
   _baseDamage: 15
   _fireRate: 0.25
+  _resourceType: 2
+  _resourceCost: 25
   _weaponLogicPrefab: {fileID: 8705166504018021910, guid: ab7baf325b387e44c8a8bca674b296cf, type: 3}

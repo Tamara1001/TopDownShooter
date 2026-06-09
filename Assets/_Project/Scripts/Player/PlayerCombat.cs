@@ -19,6 +19,14 @@
 //    4. If the instance also implements IWeaponConfigurable, calls Configure()
 //       so the weapon reads its stats (fire rate, damage, etc.) from the SO.
 //
+//  PART 4 — RESOURCE GATE
+//  ────────────────────────
+//  PlayerCombat now caches the current WeaponDataSO and reads its
+//  ResourceType/ResourceCost before each attack. If TryConsumeMana or
+//  TryConsumeEnergy returns false, the attack is aborted silently.
+//  The resource math lives entirely in PlayerResourceComponent — this
+//  script only calls the gate and reads the result.
+//
 //  STRATEGY PATTERN ROLE: Context
 //  ────────────────────────────────
 //  • PlayerCombat ONLY knows about IWeapon and IWeaponConfigurable.
@@ -77,8 +85,17 @@ namespace TopDownShooter.Combat
         // on the weapon, which disposes its ObjectPool).
         private GameObject _liveWeaponObject;
 
+        // The SO blueprint of the currently equipped weapon.
+        // Cached here (not re-read from inventory each frame) so the resource
+        // gate in OnAttack has O(1) access with no GetComponent overhead.
+        private WeaponDataSO _currentWeaponData;
+
         // Cached reference to the PlayerInventory on the same GameObject.
         private Player.PlayerInventory _playerInventory;
+
+        // Cached reference to the resource manager — used to gate attacks.
+        // Acquired once in Awake; null = no resource system present (free attacks).
+        private Player.PlayerResourceComponent _resourceComponent;
 
         // ─────────────────────────────────────────────────────────────────────
         //  PUBLIC READ-ONLY PROPERTIES  (for FSM / HUD / achievement queries)
@@ -101,6 +118,13 @@ namespace TopDownShooter.Combat
         private void Awake()
         {
             SubscribeToInventory();
+
+            // Optional dependency — if absent, all weapons fire for free.
+            if (!TryGetComponent(out _resourceComponent))
+            {
+                Debug.LogWarning("[PlayerCombat] No PlayerResourceComponent found on this " +
+                                 "GameObject. Weapons will fire without resource cost.", this);
+            }
         }
 
         private void OnDestroy()
@@ -162,6 +186,10 @@ namespace TopDownShooter.Combat
         /// </param>
         private void HandleWeaponChanged(WeaponDataSO newWeapon)
         {
+            // Cache the SO so OnAttack can read resource costs without any
+            // GetComponent call. Must be updated BEFORE TearDown clears the old one.
+            _currentWeaponData = newWeapon;
+
             // ── Step 1: Tear down the old weapon ───────────────────────────
             TearDownCurrentWeapon();
 
@@ -277,6 +305,35 @@ namespace TopDownShooter.Combat
 
             // Graceful no-op when empty-handed.
             if (_equippedWeapon == null) return;
+
+            // ── Resource Gate (Part 4) ────────────────────────────────────────
+            // Read the cost from the cached SO and attempt to spend it.
+            // If the component is missing we treat all weapons as free.
+            if (_resourceComponent != null && _currentWeaponData != null)
+            {
+                switch (_currentWeaponData.ResourceType)
+                {
+                    case WeaponResourceType.Mana:
+                        if (!_resourceComponent.TryConsumeMana(_currentWeaponData.ResourceCost))
+                        {
+                            Debug.Log("[PlayerCombat] Not enough Mana to attack. " +
+                                      $"Required: {_currentWeaponData.ResourceCost}.");
+                            return;   // Abort — do NOT fire
+                        }
+                        break;
+
+                    case WeaponResourceType.Energy:
+                        if (!_resourceComponent.TryConsumeEnergy(_currentWeaponData.ResourceCost))
+                        {
+                            Debug.Log("[PlayerCombat] Not enough Energy to attack. " +
+                                      $"Required: {_currentWeaponData.ResourceCost}.");
+                            return;   // Abort — do NOT fire
+                        }
+                        break;
+
+                    // WeaponResourceType.None — falls through; no cost, no gate.
+                }
+            }
 
             // Delegate entirely to the strategy — PlayerCombat doesn't know HOW.
             _equippedWeapon.ExecuteAttack();
