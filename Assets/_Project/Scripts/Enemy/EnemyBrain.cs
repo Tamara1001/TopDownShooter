@@ -286,7 +286,7 @@ public class AttackState : EnemyStateBase
 /// </summary>
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(HealthComponent))]
-[RequireComponent(typeof(Animator))]
+// [RequireComponent(typeof(Animator))]
 public class EnemyBrain : MonoBehaviour
 {
     // ----------------------------------------------------------
@@ -369,7 +369,7 @@ public class EnemyBrain : MonoBehaviour
         // ── Resolve required components ──────────────────────
         Agent    = GetComponent<NavMeshAgent>();
         _health  = GetComponent<HealthComponent>();
-        _animator = GetComponent<Animator>();
+        _animator = GetComponentInChildren<Animator>();
 
         // ── Validate the SO reference ────────────────────────
         if (_stats == null)
