@@ -144,6 +144,11 @@ public class ChaseState : EnemyStateBase
     public override void Enter()
     {
         Brain.Agent.isStopped = false;
+
+        // Avisar al Animator que el personaje empezó a moverse
+        if (Brain.Anim != null)
+            Brain.Anim.SetBool("IsMoving", true);
+
         Debug.Log($"[{Brain.name}] → Chase");
     }
 
@@ -171,6 +176,10 @@ public class ChaseState : EnemyStateBase
         // Halt the agent before transferring control to the next state.
         Brain.Agent.isStopped = true;
         Brain.Agent.ResetPath();
+
+        // Avisar al Animator que el personaje se detuvo
+        if (Brain.Anim != null)
+            Brain.Anim.SetBool("IsMoving", false);
     }
 }
 
@@ -235,6 +244,11 @@ public class AttackState : EnemyStateBase
         // because _lastAttackTime is never touched in Enter().
         if (Time.time >= _lastAttackTime + Brain.Stats.AttackCooldown)
         {
+            // Ejecutar la animación visual del ataque
+            if (Brain.Anim != null)
+                Brain.Anim.SetTrigger("Attack");
+
+            // Ejecutar la lógica de daño del arma
             Brain.PerformAttack();
 
             // Record the wall-clock time of THIS attack.
@@ -286,7 +300,6 @@ public class AttackState : EnemyStateBase
 /// </summary>
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(HealthComponent))]
-// [RequireComponent(typeof(Animator))]
 public class EnemyBrain : MonoBehaviour
 {
     // ----------------------------------------------------------
@@ -324,17 +337,20 @@ public class EnemyBrain : MonoBehaviour
     // ----------------------------------------------------------
 
     /// <summary>This enemy's NavMeshAgent component.</summary>
-    public NavMeshAgent Agent      { get; private set; }
+    public NavMeshAgent Agent { get; private set; }
 
     /// <summary>Read-only access to the stats asset.</summary>
-    public EnemyStatsSO Stats      { get; private set; }
+    public EnemyStatsSO Stats { get; private set; }
 
     /// <summary>The player's Transform, found via tag at startup.</summary>
-    public Transform    PlayerTransform { get; private set; }
+    public Transform PlayerTransform { get; private set; }
+
+    /// <summary>Exposes safe read-only access to the Animator for state controllers.</summary>
+    public Animator Anim => _animator;
 
     // Private references that only the brain itself needs.
     private HealthComponent _health;
-    private Animator        _animator;
+    private Animator _animator;
 
     // ----------------------------------------------------------
     // FSM STORAGE
@@ -367,9 +383,15 @@ public class EnemyBrain : MonoBehaviour
     private void Awake()
     {
         // ── Resolve required components ──────────────────────
-        Agent    = GetComponent<NavMeshAgent>();
-        _health  = GetComponent<HealthComponent>();
+        Agent = GetComponent<NavMeshAgent>();
+        _health = GetComponent<HealthComponent>();
         _animator = GetComponentInChildren<Animator>();
+
+        // Validación preventiva por si falta el componente Animator en los hijos
+        if (_animator == null)
+        {
+            Debug.LogWarning($"[EnemyBrain] '{name}': No se encontró ningún componente Animator en las mallas hijas.", this);
+        }
 
         // ── Validate the SO reference ────────────────────────
         if (_stats == null)
@@ -385,9 +407,6 @@ public class EnemyBrain : MonoBehaviour
         Agent.speed = Stats.MoveSpeed;
 
         // ── Resolve and validate the IWeapon strategy ────────
-        // Cast the MonoBehaviour slot to IWeapon. A warning (not an
-        // error) is used so the enemy still moves and chases even if
-        // no weapon is configured — useful during iteration.
         if (_weaponComponent != null)
         {
             _equippedWeapon = _weaponComponent as IWeapon;
@@ -406,38 +425,15 @@ public class EnemyBrain : MonoBehaviour
         }
 
         // ── Resolve the Player reference (FIX-4) ────────────
-        // Three-tier strategy — order matters:
-        //
-        //  Tier 1: GameManager.PlayerTransform
-        //    The canonical, spawn-order-independent source of truth.
-        //    PlayerRegistration.cs calls GameManager.RegisterPlayer()
-        //    in Awake/Start, which may run before OR after this Awake.
-        //
-        //  Tier 2: GameObject.FindGameObjectWithTag (synchronous fallback)
-        //    Covers scenes where GameManager is not present (e.g. isolated
-        //    test scenes) or where the player was already in the scene
-        //    before this enemy spawned.
-        //
-        //  Tier 3: WaitForPlayer coroutine (async fallback)
-        //    Handles the race condition where this enemy spawns BEFORE
-        //    the player. The coroutine polls every frame until a valid
-        //    reference appears, then finishes initialisation.
-        //    The FSM starts in Idle immediately — the enemy won't act
-        //    until PlayerTransform is non-null (IsPlayerInRange guards it).
         PlayerTransform = ResolvePlayerTransform();
 
         // ── Subscribe to the death event ─────────────────────
-        // Paired with OnDisable unsubscription to prevent stale
-        // delegate leaks when the enemy is pooled or reused.
         _health.OnDied += OnDeath;
 
         // ── Build & register FSM states ──────────────────────
         BuildStates();
 
         // ── Start the FSM ────────────────────────────────────
-        // The FSM starts immediately. If PlayerTransform is still null
-        // (Tier 3 case), all range checks return false and the enemy
-        // stays idle safely while the coroutine resolves the reference.
         ChangeState(GetState<IdleState>());
 
         // ── Tier 3: launch the coroutine if still unresolved ─
@@ -447,19 +443,14 @@ public class EnemyBrain : MonoBehaviour
 
     private void OnDisable()
     {
-        // Always unsubscribe to avoid null-delegate calls when the
-        // enemy is disabled (e.g. returned to an object pool).
         if (_health != null)
             _health.OnDied -= OnDeath;
 
-        // Cancel the WaitForPlayer coroutine if the enemy is disabled
-        // before the player has spawned (e.g. returned to pool early).
         StopAllCoroutines();
     }
 
     private void Update()
     {
-        // FSM tick — nothing runs after death.
         if (_isFSMStopped || _currentState == null) return;
         _currentState.Tick();
     }
@@ -468,36 +459,19 @@ public class EnemyBrain : MonoBehaviour
     // FSM MANAGEMENT
     // ----------------------------------------------------------
 
-    /// <summary>
-    /// Instantiates and registers all states available to THIS brain.
-    /// Override this method in subclasses (e.g., MummyBrain) to
-    /// register additional or replacement states without modifying
-    /// this base class.
-    /// </summary>
     protected virtual void BuildStates()
     {
         RegisterState(new IdleState());
         RegisterState(new ChaseState());
         RegisterState(new AttackState());
-        // Part 2: register weapon-aware states here, e.g.:
-        //   RegisterState(new RangedAttackState());
     }
 
-    /// <summary>
-    /// Adds a state to the FSM state map and injects this brain as
-    /// its owner. Called from <see cref="BuildStates"/>.
-    /// </summary>
     protected void RegisterState(EnemyStateBase state)
     {
         state.Initialise(this);
         _stateMap[state.GetType()] = state;
     }
 
-    /// <summary>
-    /// Retrieves a registered state by its concrete type.
-    /// Throws a descriptive exception if the state was never registered,
-    /// helping catch misconfigured subclasses early.
-    /// </summary>
     public T GetState<T>() where T : EnemyStateBase
     {
         if (_stateMap.TryGetValue(typeof(T), out EnemyStateBase state))
@@ -508,11 +482,6 @@ public class EnemyBrain : MonoBehaviour
             $"Call RegisterState() in BuildStates().");
     }
 
-    /// <summary>
-    /// Transitions the FSM from the current state to <paramref name="nextState"/>.
-    /// Calls <c>Exit()</c> on the outgoing state and <c>Enter()</c> on the
-    /// incoming one. Safely handles a null current state (first transition).
-    /// </summary>
     public void ChangeState(EnemyStateBase nextState)
     {
         if (nextState == null)
@@ -530,22 +499,14 @@ public class EnemyBrain : MonoBehaviour
     // PLAYER RESOLUTION HELPERS (FIX-4)
     // ----------------------------------------------------------
 
-    /// <summary>
-    /// Three-tier synchronous player resolution called from Awake.
-    /// Returns null only when the player hasn't spawned yet (Tier 3 case).
-    /// </summary>
     private Transform ResolvePlayerTransform()
     {
-        // ── Tier 1: GameManager registry ────────────────────
-        // Fastest path: O(1) property read, no scene traversal.
         if (GameManager.Instance != null && GameManager.Instance.PlayerTransform != null)
         {
             Debug.Log($"[EnemyBrain] '{name}': Player resolved via GameManager (Tier 1).");
             return GameManager.Instance.PlayerTransform;
         }
 
-        // ── Tier 2: tag search (synchronous fallback) ────────
-        // Covers isolated test scenes or scenes without GameManager.
         GameObject found = GameObject.FindGameObjectWithTag("Player");
         if (found != null)
         {
@@ -553,32 +514,20 @@ public class EnemyBrain : MonoBehaviour
             return found.transform;
         }
 
-        // ── Tier 3 signal: unresolved — coroutine will handle it ─
         Debug.LogWarning($"[EnemyBrain] '{name}': Player not found at Awake time. " +
                          "Starting WaitForPlayer coroutine (Tier 3). " +
                          "Enemy will idle safely until the player spawns.");
         return null;
     }
 
-    /// <summary>
-    /// Tier 3 coroutine: polls every frame for a valid player reference.
-    /// Resolves via GameManager first (registration may arrive at any frame),
-    /// then falls back to tag search.
-    ///
-    /// Once resolved, the enemy immediately begins reacting to the player
-    /// because <see cref="IsPlayerInRange"/> is already guarded against null.
-    /// </summary>
     private IEnumerator WaitForPlayer()
     {
         Debug.Log($"[EnemyBrain] '{name}': WaitForPlayer coroutine started.");
 
         while (PlayerTransform == null)
         {
-            // Re-try the two synchronous tiers each frame.
             PlayerTransform = ResolvePlayerTransform();
 
-            // Only yield if still unresolved to avoid an extra frame delay
-            // on the frame the player finally spawns.
             if (PlayerTransform == null)
                 yield return null;
         }
@@ -588,21 +537,13 @@ public class EnemyBrain : MonoBehaviour
 
     // ----------------------------------------------------------
     // HELPERS EXPOSED TO STATES
-    // These are the ONLY pieces of EnemyBrain's runtime data that
-    // states are allowed to read. Everything else stays private.
     // ----------------------------------------------------------
 
-    /// <summary>
-    /// Returns <c>true</c> if the player is within <paramref name="range"/> world units.
-    /// Performs a flat (XZ) distance check to avoid issues when the
-    /// player and enemy are at different heights.
-    /// Null-safe: returns false if the player reference is not yet resolved.
-    /// </summary>
     public bool IsPlayerInRange(float range)
     {
         if (PlayerTransform == null) return false;
 
-        Vector3 selfFlat   = new Vector3(transform.position.x, 0f, transform.position.z);
+        Vector3 selfFlat = new Vector3(transform.position.x, 0f, transform.position.z);
         Vector3 playerFlat = new Vector3(PlayerTransform.position.x, 0f, PlayerTransform.position.z);
 
         return Vector3.Distance(selfFlat, playerFlat) <= range;
@@ -612,59 +553,32 @@ public class EnemyBrain : MonoBehaviour
     // DEATH HANDLER
     // ----------------------------------------------------------
 
-    /// <summary>
-    /// Subscriber to <see cref="HealthComponent.OnDied"/>.
-    /// Halts the FSM, disables the NavMeshAgent so the corpse
-    /// stops mid-path, and triggers the Death animation parameter.
-    /// Actual destruction / pooling is handled by <see cref="DestroyOnDeath"/>
-    /// (which also listens to OnDied), keeping concerns separated.
-    /// </summary>
     private void OnDeath()
     {
-        // Halt the FSM immediately.
         _isFSMStopped = true;
         _currentState?.Exit();
         _currentState = null;
 
-        // Disable the NavMeshAgent so the corpse does not slide or
-        // re-path. We disable rather than destroy so the component
-        // can be re-enabled if the enemy is pooled back.
         Agent.isStopped = true;
-        Agent.enabled   = false;
+        Agent.enabled = false;
 
-        // Fire the Death trigger on the Animator.
-        // The Animator parameter MUST be named exactly "Death"
-        // (case-sensitive) on every enemy's Animator Controller.
-        _animator.SetTrigger("Death");
+        if (_animator != null)
+            _animator.SetTrigger("Death");
 
         Debug.Log($"[EnemyBrain] '{name}' has died.");
     }
 
     // ----------------------------------------------------------
-    // ATTACK  (Part 2 — live implementation)
+    // ATTACK
     // ----------------------------------------------------------
 
-    /// <summary>
-    /// Entry point for the attack action. Called by <see cref="AttackState"/>
-    /// on every completed cooldown cycle.
-    ///
-    /// Delegates unconditionally to the <see cref="_equippedWeapon"/> strategy
-    /// (Strategy Pattern). <see cref="EnemyBrain"/> has zero knowledge of
-    /// whether the weapon is melee, ranged, or anything else — it only
-    /// knows the <see cref="IWeapon.ExecuteAttack"/> contract.
-    ///
-    /// The null-conditional operator (?.) makes a missing weapon assignment
-    /// a silent no-op rather than a NullReferenceException, keeping the
-    /// FSM running even during incomplete editor setups.
-    /// </summary>
     public void PerformAttack()
     {
         _equippedWeapon?.ExecuteAttack();
     }
 
     // ----------------------------------------------------------
-    // EDITOR GIZMOS — visualise ranges in the Scene view
-    // Removed from builds automatically by the UNITY_EDITOR guard.
+    // EDITOR GIZMOS
     // ----------------------------------------------------------
 
 #if UNITY_EDITOR
@@ -672,13 +586,11 @@ public class EnemyBrain : MonoBehaviour
     {
         if (_stats == null) return;
 
-        // Detection range — yellow
         UnityEditor.Handles.color = new Color(1f, 1f, 0f, 0.15f);
         UnityEditor.Handles.DrawSolidDisc(transform.position, Vector3.up, _stats.DetectionRange);
         UnityEditor.Handles.color = Color.yellow;
         UnityEditor.Handles.DrawWireDisc(transform.position, Vector3.up, _stats.DetectionRange);
 
-        // Attack range — red
         UnityEditor.Handles.color = new Color(1f, 0f, 0f, 0.15f);
         UnityEditor.Handles.DrawSolidDisc(transform.position, Vector3.up, _stats.AttackRange);
         UnityEditor.Handles.color = Color.red;

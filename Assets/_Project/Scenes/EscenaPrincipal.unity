@@ -302,6 +302,14 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 7d6da879833c6ad448302de2f71ed6f5, type: 2}
+    - target: {fileID: 7901252697094910767, guid: 9c1576a1e50a18c4db6c266bee27c38b, type: 3}
+      propertyPath: m_Avatar
+      value: 
+      objectReference: {fileID: 9000000, guid: fcc43bf54dd6cd648b3ec2132281b3c2, type: 3}
+    - target: {fileID: 7901252697094910767, guid: 9c1576a1e50a18c4db6c266bee27c38b, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 22100000, guid: 1852c7b4f73a8cf4db17d55bcd967d3b, type: 2}
     - target: {fileID: 8970394363826350548, guid: 9c1576a1e50a18c4db6c266bee27c38b, type: 3}
       propertyPath: m_Name
       value: EnemyZombie
@@ -1127,6 +1135,28 @@ MonoBehaviour:
   _manaRegenPerSecond: 5
   _maxEnergy: 100
   _energyRegenPerSecond: 15
+--- !u!95 &1524008176
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1524008141}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 8e5e426adbc6509409204c3cd1da900d, type: 3}
+  m_Controller: {fileID: 22100000, guid: e0475402745cdd040aabbe39f016495c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &1572548490
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1175,6 +1205,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4660649151654095813, guid: c33ea4c4ea3ac3349bb05db5435efe2a, type: 3}
+      propertyPath: m_Avatar
+      value: 
+      objectReference: {fileID: 9000000, guid: 8b16412b3994e4746957e6d0724cb4c9, type: 3}
+    - target: {fileID: 4660649151654095813, guid: c33ea4c4ea3ac3349bb05db5435efe2a, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 22100000, guid: 6537926268f7c13419c9943c413a3827, type: 2}
     - target: {fileID: 5869930736125489470, guid: c33ea4c4ea3ac3349bb05db5435efe2a, type: 3}
       propertyPath: m_Name
       value: EnemySkeleton
@@ -1435,6 +1473,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6357198947062999068, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1524008175}
+    - targetCorrespondingSourceObject: {fileID: 6357198947062999068, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1524008176}
   m_SourcePrefab: {fileID: 100100000, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
 --- !u!1001 &4345726564021077205
 PrefabInstance:
