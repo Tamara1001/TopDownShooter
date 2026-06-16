@@ -97,6 +97,9 @@ namespace TopDownShooter.Combat
         // Acquired once in Awake; null = no resource system present (free attacks).
         private Player.PlayerResourceComponent _resourceComponent;
 
+        // AÑADIDO: Referencia al Animator visual del jugador
+        private Animator _animator;
+
         // ─────────────────────────────────────────────────────────────────────
         //  PUBLIC READ-ONLY PROPERTIES  (for FSM / HUD / achievement queries)
         // ─────────────────────────────────────────────────────────────────────
@@ -118,6 +121,13 @@ namespace TopDownShooter.Combat
         private void Awake()
         {
             SubscribeToInventory();
+
+            // AÑADIDO: Buscar el Animator en los objetos hijos (donde está el modelo 3D)
+            _animator = GetComponentInChildren<Animator>();
+            if (_animator == null)
+            {
+                Debug.LogWarning("[PlayerCombat] Animator no encontrado en los hijos. Las animaciones de ataque no se reproducirán.", this);
+            }
 
             // Optional dependency — if absent, all weapons fire for free.
             if (!TryGetComponent(out _resourceComponent))
@@ -331,8 +341,15 @@ namespace TopDownShooter.Combat
                         }
                         break;
 
-                    // WeaponResourceType.None — falls through; no cost, no gate.
+                        // WeaponResourceType.None — falls through; no cost, no gate.
                 }
+            }
+
+            // AÑADIDO: Activar la animación de ataque visualmente antes de ejecutar el daño.
+            // Si llega hasta esta línea, significa que pasó todas las validaciones de recursos.
+            if (_animator != null)
+            {
+                _animator.SetTrigger("Attack");
             }
 
             // Delegate entirely to the strategy — PlayerCombat doesn't know HOW.

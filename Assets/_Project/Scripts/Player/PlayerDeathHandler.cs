@@ -1,52 +1,20 @@
-// =============================================================================
-//  PlayerDeathHandler.cs
-//  Project : TopDownShooter
-//
-//  PURPOSE
-//  -------
-//  Bridges the HealthComponent's death event to the GameManager FSM.
-//  Strictly follows Single Responsibility: this script ONLY listens for
-//  the player's death and delegates the state transition — no animations,
-//  no UI, no cleanup logic here.
-//
-//  ARCHITECTURE
-//  ─────────────
-//  • RequireComponent ensures HealthComponent is always present on the same
-//    GameObject, making the dependency explicit and failure impossible.
-//  • Subscribes in OnEnable / unsubscribes in OnDisable to be safe with
-//    object pooling or re-enabling scenarios.
-//  • The GameManager handles all downstream consequences (UI, timeScale, etc.)
-//    via its own OnStateChanged event — this handler stays ignorant of them.
-//
-//  ATTACH TO
-//  ─────────
-//  The Player prefab (same root GameObject as HealthComponent).
-// =============================================================================
-
+using System.Collections;
 using UnityEngine;
 
 namespace TopDownShooter.Player
 {
-    /// <summary>
-    /// Listens to the player <see cref="HealthComponent"/>'s <c>OnDied</c> event
-    /// and triggers the <see cref="GameManager.GameState.GameOver"/> state transition.
-    /// </summary>
     [RequireComponent(typeof(HealthComponent))]
     public sealed class PlayerDeathHandler : MonoBehaviour
     {
-        // ─────────────────────────────────────────────────────────────────────
-        //  PRIVATE REFERENCES
-        // ─────────────────────────────────────────────────────────────────────
-
         private HealthComponent _health;
-
-        // ─────────────────────────────────────────────────────────────────────
-        //  UNITY LIFECYCLE
-        // ─────────────────────────────────────────────────────────────────────
+        private Animator _animator;
+        private PlayerController3D _controller; // Agregamos referencia al controlador
 
         private void Awake()
         {
             _health = GetComponent<HealthComponent>();
+            _animator = GetComponentInChildren<Animator>();
+            _controller = GetComponent<PlayerController3D>();
         }
 
         private void OnEnable()
@@ -59,18 +27,37 @@ namespace TopDownShooter.Player
             _health.OnDied -= HandlePlayerDied;
         }
 
-        // ─────────────────────────────────────────────────────────────────────
-        //  EVENT HANDLERS
-        // ─────────────────────────────────────────────────────────────────────
-
-        /// <summary>
-        /// Called exactly once by <see cref="HealthComponent"/> when the player's
-        /// HP reaches zero. Delegates the Game Over state transition to the
-        /// <see cref="GameManager"/>, which owns all downstream consequences.
-        /// </summary>
         private void HandlePlayerDied()
         {
-            Debug.Log("[PlayerDeathHandler] Player has died. Triggering Game Over.");
+            Debug.Log("[PlayerDeathHandler] Jugador muerto. Iniciando secuencia...");
+
+            // 1. Disparar la animación visual
+            if (_animator != null)
+            {
+                _animator.SetTrigger("Death");
+            }
+
+            // 2. Apagar el control físico inmediatamente para que no se mueva muerto
+            if (_controller != null)
+            {
+                _controller.enabled = false;
+            }
+
+            // 3. Iniciar la cuenta regresiva antes de llamar al GameManager
+            StartCoroutine(DeathSequenceRoutine());
+        }
+
+        private IEnumerator DeathSequenceRoutine()
+        {
+            // Opcional: Como vi que tenés el script UI_ScreenFader armado, 
+            // podés descomentar esta línea para que la pantalla se vaya 
+            // a negro suavemente mientras transcurren los 3 segundos.
+            // if (UI_ScreenFader.Instance != null) UI_ScreenFader.Instance.FadeTo(1f, 3f);
+
+            // Esperar 3 segundos reales
+            yield return new WaitForSeconds(3f);
+
+            // Ahora sí, llamar al Game Over (esto congelará el tiempo y mostrará la UI)
             GameManager.Instance.ChangeState(GameManager.GameState.GameOver);
         }
     }
