@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6924023902947227619}
   m_Layer: 0
-  m_Name: Scene 2
+  m_Name: Scene 4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -168,7 +168,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 19
+      value: -5.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
       propertyPath: m_LocalPosition.y
@@ -176,11 +176,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 7.5
+      value: -16
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.70710695
+      value: 0.000000104308114
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
       propertyPath: m_LocalRotation.x
@@ -188,7 +188,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.70710665
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
       propertyPath: m_LocalRotation.z
@@ -200,7 +200,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 450
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -216,7 +216,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7023653423090524294}
+      addedObject: {fileID: 2337081206901662078}
   m_SourcePrefab: {fileID: 100100000, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
 --- !u!4 &5925016244971743026 stripped
 Transform:
@@ -228,7 +228,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
   m_PrefabInstance: {fileID: 6175380241897799897}
   m_PrefabAsset: {fileID: 0}
---- !u!65 &7023653423090524294
+--- !u!65 &2337081206901662078
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

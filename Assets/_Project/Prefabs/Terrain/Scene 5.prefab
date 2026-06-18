@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6924023902947227619}
   m_Layer: 0
-  m_Name: Scene 2
+  m_Name: Scene 5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -168,7 +168,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 19
+      value: -30
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
       propertyPath: m_LocalPosition.y
@@ -188,7 +188,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.70710665
+      value: 0.7071066
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
       propertyPath: m_LocalRotation.z
@@ -200,7 +200,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 450
+      value: 270
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -216,7 +216,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7023653423090524294}
+      addedObject: {fileID: 1271332524759884450}
   m_SourcePrefab: {fileID: 100100000, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
 --- !u!4 &5925016244971743026 stripped
 Transform:
@@ -228,7 +228,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 29c333334edb05c4fadccdc47a3df711, type: 3}
   m_PrefabInstance: {fileID: 6175380241897799897}
   m_PrefabAsset: {fileID: 0}
---- !u!65 &7023653423090524294
+--- !u!65 &1271332524759884450
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -247,5 +247,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 4, y: 4.15, z: 1}
+  m_Size: {x: 3.9999995, y: 4.15, z: 1}
   m_Center: {x: 0, y: 2.075, z: -0.5}
