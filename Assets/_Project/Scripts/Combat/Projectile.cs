@@ -68,6 +68,10 @@ namespace TopDownShooter.Combat
         // Injected by MagicWand immediately after pool.Get() — never null in flight.
         private IObjectPool<Projectile> _pool;
 
+        // Damage injected by the spawning weapon via SetDamage().
+        // Defaults to 0 so a missing SetDamage() call causes no unintended damage.
+        private int _damage;
+
         // Tracks elapsed time since this projectile was retrieved from the pool.
         private float _activeTimer;
 
@@ -113,6 +117,17 @@ namespace TopDownShooter.Combat
         {
             _pool = pool ?? throw new ArgumentNullException(nameof(pool),
                 "[Projectile] Pool reference must not be null.");
+        }
+
+        /// <summary>
+        /// Sets the damage this projectile will deal on impact.
+        /// Called by the spawning weapon (MagicWand, RangedWeapon) immediately
+        /// after retrieving the instance from the pool, before it goes active.
+        /// </summary>
+        /// <param name="damage">Positive integer damage value.</param>
+        public void SetDamage(int damage)
+        {
+            _damage = damage;
         }
 
         /// <summary>
@@ -198,8 +213,7 @@ namespace TopDownShooter.Combat
             // Buscar la interfaz y aplicar daño
             if (other.TryGetComponent<IDamageable>(out IDamageable target))
             {
-                // Por ahora hardcodeamos 10 de daño. Luego lo leeremos de un ScriptableObject
-                target.TakeDamage(10);
+                target.TakeDamage(_damage);
             }
 
             ReturnToPool();

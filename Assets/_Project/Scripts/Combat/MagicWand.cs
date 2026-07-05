@@ -95,6 +95,10 @@ namespace TopDownShooter.Combat
         // Cached transform reference.
         private Transform _transform;
 
+        // Damage value pushed by Configure() from WeaponDataSO and injected
+        // into every new Projectile instance via SetDamage().
+        private int _currentDamage;
+
         // ─────────────────────────────────────────────────────────────────────
         //  UNITY LIFECYCLE
         // ─────────────────────────────────────────────────────────────────────
@@ -158,9 +162,10 @@ namespace TopDownShooter.Combat
             // Inspector value acts as the prefab default; SO value wins at equip time.
             fireRate = stats.FireRate;
 
-            // ► Part 3: pass stats.BaseDamage to Projectile via a SetDamage() method.
+            // Read base damage from the SO so every shot deals the correct amount.
+            _currentDamage = stats.BaseDamage;
 
-            Debug.Log($"[MagicWand] Configured via SO: fireRate={fireRate:0.###}s");
+            Debug.Log($"[MagicWand] Configured via SO: fireRate={fireRate:0.###}s, damage={_currentDamage}");
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -198,6 +203,12 @@ namespace TopDownShooter.Combat
             // Inject the pool so the projectile can release itself on collision.
             instance.SetPool(_projectilePool);
 
+            // Stamp the current damage value onto the instance.
+            // This covers the initial allocation; damage is re-stamped in
+            // OnGetProjectile() so recycled instances always reflect the
+            // latest _currentDamage (e.g. after an upgrade mid-run).
+            instance.SetDamage(_currentDamage);
+
             // Deactivate immediately; the pool will activate it via actionOnGet.
             instance.gameObject.SetActive(false);
 
@@ -218,6 +229,10 @@ namespace TopDownShooter.Combat
         {
             // Snap to fire point position and inherit the player's world rotation.
             projectile.transform.SetPositionAndRotation(firePoint.position, firePoint.rotation);
+
+            // Always re-stamp damage here so recycled instances reflect any
+            // damage changes that may have occurred since initial allocation.
+            projectile.SetDamage(_currentDamage);
 
             // Reset the projectile's internal state (timer, flags).
             projectile.OnGetFromPool();

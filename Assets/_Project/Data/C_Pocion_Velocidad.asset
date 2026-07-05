@@ -19,4 +19,4 @@ MonoBehaviour:
   _isQuestItem: 0
   _healAmount: 0
   _effectDuration: 10
-  _speedBoostMultiplier: 1.5
+  _speedBoostMultiplier: 2

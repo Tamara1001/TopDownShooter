@@ -458,13 +458,32 @@ namespace TopDownShooter.Player
         /// </summary>
         private void ConsumeCurrentItem()
         {
-            Debug.Log($"[PlayerInventory] Consuming '{_currentConsumable.DisplayName}'. " +
-                      "(Stub — effects will be implemented in Part 2.)");
+            Debug.Log($"[PlayerInventory] Consuming '{_currentConsumable.DisplayName}'.");
 
-            // ► Part 2: GetComponent<HealthComponent>()?.Heal(_currentConsumable.HealAmount);
-            // ► Part 2: PlayerStats.Instance?.ApplySpeedBoost(
-            //               _currentConsumable.SpeedBoostMultiplier,
-            //               _currentConsumable.EffectDuration);
+            // Apply healing if the player has a HealthComponent.
+            if (TryGetComponent<HealthComponent>(out var health))
+            {
+                health.Heal(_currentConsumable.HealAmount);
+                Debug.Log($"[PlayerInventory] Healed {_currentConsumable.HealAmount} HP.");
+            }
+            else
+            {
+                Debug.LogWarning("[PlayerInventory] No HealthComponent found on this GameObject. " +
+                                 "Healing effect was skipped.", this);
+            }
+
+            // Apply a temporary speed boost if this consumable defines one.
+            // Both guards must pass: duration > 0 (timed effect) AND multiplier > 0 (speed type).
+            // Plain healing potions (EffectDuration == 0) are intentionally skipped.
+            if (TryGetComponent<PlayerStatsComponent>(out var stats))
+            {
+                if (_currentConsumable.EffectDuration > 0f && _currentConsumable.SpeedBoostMultiplier > 0f)
+                {
+                    stats.ApplyTemporarySpeedBoost(
+                        _currentConsumable.SpeedBoostMultiplier,
+                        _currentConsumable.EffectDuration);
+                }
+            }
 
             // Clear the slot after use — consumables are single-use.
             _currentConsumable = null;

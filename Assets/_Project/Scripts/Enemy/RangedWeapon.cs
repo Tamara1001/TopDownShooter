@@ -42,9 +42,12 @@ namespace TopDownShooter.Enemy
     /// <summary>
     /// Concrete <see cref="IWeapon"/> strategy for ranged attacks.
     /// Fires pooled <see cref="Projectile"/> instances from a
-    /// <see cref="firePoint"/> Transform in a straight line.
+    /// <see cref="_firePoint"/> Transform in a straight line.
+    /// Also implements <see cref="IWeaponConfigurable"/> so a
+    /// <see cref="TopDownShooter.Inventory.WeaponDataSO"/> can push damage
+    /// at equip time without the weapon knowing about the SO directly.
     /// </summary>
-    public sealed class RangedWeapon : MonoBehaviour, IWeapon
+    public sealed class RangedWeapon : MonoBehaviour, IWeapon, IWeaponConfigurable
     {
         // ----------------------------------------------------------
         // INSPECTOR FIELDS
@@ -67,6 +70,11 @@ namespace TopDownShooter.Enemy
         [Tooltip("Hard cap on how many instances the pool holds in reserve. " +
                  "Instances beyond this limit are Destroyed rather than returned.")]
         [SerializeField] private int _poolMaxSize = 20;
+
+        [Header("Damage")]
+        [Tooltip("Damage dealt per projectile hit. Overridden by WeaponDataSO.BaseDamage " +
+                 "when Configure() is called. Inspector value is the safe fallback.")]
+        [SerializeField] private int _damage = 10;
 
         // ----------------------------------------------------------
         // PRIVATE STATE
@@ -124,6 +132,31 @@ namespace TopDownShooter.Enemy
         }
 
         // ----------------------------------------------------------
+        // IWEAPONCONFIGURABLE IMPLEMENTATION
+        // ----------------------------------------------------------
+
+        /// <summary>
+        /// Called once by the equip system immediately after this component
+        /// is instantiated as a child of the owner.
+        /// Overrides the Inspector's <see cref="_damage"/> with the value from
+        /// the <see cref="TopDownShooter.Inventory.WeaponDataSO"/> so each
+        /// asset can define a distinct damage value without requiring separate prefabs.
+        /// </summary>
+        /// <param name="stats">The SO of the weapon that was just picked up.</param>
+        public void Configure(TopDownShooter.Inventory.WeaponDataSO stats)
+        {
+            if (stats == null)
+            {
+                Debug.LogWarning("[RangedWeapon] Configure called with null WeaponDataSO. " +
+                                 "Keeping existing Inspector values.", this);
+                return;
+            }
+
+            _damage = stats.BaseDamage;
+            Debug.Log($"[RangedWeapon] Configured via SO: damage={_damage}");
+        }
+
+        // ----------------------------------------------------------
         // POOL FACTORY DELEGATES
         // All four delegates are private methods rather than lambdas
         // so they do not capture 'this' into a new closure object
@@ -150,6 +183,10 @@ namespace TopDownShooter.Enemy
             // This is the same pattern used in MagicWand.cs.
             instance.SetPool(_projectilePool);
 
+            // Stamp the current damage value. Re-stamped in OnGetProjectile()
+            // so recycled instances always carry the up-to-date value.
+            instance.SetDamage(_damage);
+
             // Start deactivated; OnGetProjectile will activate it.
             instance.gameObject.SetActive(false);
 
@@ -173,6 +210,10 @@ namespace TopDownShooter.Enemy
             projectile.transform.SetPositionAndRotation(
                 _firePoint.position,
                 _firePoint.rotation);
+
+            // Re-stamp damage so recycled instances always reflect the
+            // latest _damage value (e.g. after Configure() is called).
+            projectile.SetDamage(_damage);
 
             // Reset internal state: timer, _isReturned flag, SetActive(true).
             projectile.OnGetFromPool();

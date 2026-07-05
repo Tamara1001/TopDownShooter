@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d6f210458149f64f8cac7fe6d2895a0, type: 3}
+  m_Name: R_Botas_Viento
+  m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Inventory.RelicDataSO
+  _itemID: botas_viento
+  _displayName: Botas de Viento
+  _icon: {fileID: 0}
+  _dropPrefab: {fileID: 3467533474170925825, guid: a00ff01823815884cad25ebc80f944be, type: 3}
+  _moveSpeedModifier: 1.5
+  _maxHealthBonus: 0
+  _damageModifier: 0

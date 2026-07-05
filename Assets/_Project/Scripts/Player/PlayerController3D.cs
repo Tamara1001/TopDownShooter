@@ -109,6 +109,9 @@ namespace TopDownShooter.Player
         // Optional resource component — if absent, dash is free (fallback behaviour).
         private PlayerResourceComponent _resourceComponent;
 
+        // Optional stats component — if absent, speed multipliers default to 1.
+        private PlayerStatsComponent _statsComponent;
+
         // Raw input values written by New Input System callbacks
         private Vector2 _rawMoveInput;
         private Vector2 _rawMouseScreenPosition;
@@ -197,6 +200,9 @@ namespace TopDownShooter.Player
                 Debug.LogWarning("[PlayerController3D] No PlayerResourceComponent found. " +
                                  "Dash will work without any Energy cost.", this);
             }
+
+            // Optional — speed multipliers fall back to 1 if absent.
+            TryGetComponent(out _statsComponent);
         }
 
         /// <summary>
@@ -251,8 +257,10 @@ namespace TopDownShooter.Player
             if (worldMoveDirection.sqrMagnitude > 1f)
                 worldMoveDirection.Normalize();
 
-            // ► SO : Replace moveSpeed with playerStats.MoveSpeed
-            float currentSpeed = IsSprinting ? moveSpeed * sprintMultiplier : moveSpeed;
+            // Apply the relic move-speed multiplier from PlayerStatsComponent.
+            // Falls back to 1 gracefully if the component is not present.
+            float relicMultiplier = _statsComponent != null ? _statsComponent.MoveSpeedMultiplier : 1f;
+            float currentSpeed    = (IsSprinting ? moveSpeed * sprintMultiplier : moveSpeed) * relicMultiplier;
 
             // Combine horizontal and vertical velocity into a single Move() call
             // so CharacterController handles collision correctly.
