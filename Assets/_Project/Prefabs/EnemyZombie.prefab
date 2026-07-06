@@ -69,9 +69,24 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fcc43bf54dd6cd648b3ec2132281b3c2, type: 3}
+--- !u!137 &1166348099806844707 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 21893323880716038, guid: fcc43bf54dd6cd648b3ec2132281b3c2, type: 3}
+  m_PrefabInstance: {fileID: 1180634379465818149}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &1551315868927721285 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -8798603043098558624, guid: fcc43bf54dd6cd648b3ec2132281b3c2, type: 3}
+  m_PrefabInstance: {fileID: 1180634379465818149}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1722853129282774990 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: fcc43bf54dd6cd648b3ec2132281b3c2, type: 3}
+  m_PrefabInstance: {fileID: 1180634379465818149}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &3684400477853825320 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -6682240133121623795, guid: fcc43bf54dd6cd648b3ec2132281b3c2, type: 3}
   m_PrefabInstance: {fileID: 1180634379465818149}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7271209756675410648
@@ -82,6 +97,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 670585308136241655, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
+      propertyPath: m_Avatar
+      value: 
+      objectReference: {fileID: 9000000, guid: fcc43bf54dd6cd648b3ec2132281b3c2, type: 3}
+    - target: {fileID: 670585308136241655, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 22100000, guid: 1852c7b4f73a8cf4db17d55bcd967d3b, type: 2}
     - target: {fileID: 1771525001195234060, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
       propertyPath: m_Name
       value: EnemyZombie
@@ -90,6 +113,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2845744679290218663, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 7d6da879833c6ad448302de2f71ed6f5, type: 2}
     - target: {fileID: 4448471671806268483, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
       propertyPath: _stats
       value: 
@@ -100,7 +127,7 @@ PrefabInstance:
       objectReference: {fileID: 1636733073753346498}
     - target: {fileID: 6342478605904371352, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 6342478605904371352, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
       propertyPath: m_LocalPosition.y
@@ -108,7 +135,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6342478605904371352, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -10
       objectReference: {fileID: 0}
     - target: {fileID: 6342478605904371352, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
       propertyPath: m_LocalRotation.w
@@ -148,6 +175,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1771525001195234060, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1636733073753346498}
+    - targetCorrespondingSourceObject: {fileID: 1771525001195234060, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3500718349388540714}
   m_SourcePrefab: {fileID: 100100000, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
 --- !u!4 &2613532396410807706 stripped
 Transform:
@@ -178,3 +208,22 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   _hitBufferSize: 8
+  _impulseSource: {fileID: 0}
+--- !u!114 &3500718349388540714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8970394363826350548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95dc7726922c761428d7f4585c7aca30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageFlasher
+  _renderers:
+  - {fileID: 3684400477853825320}
+  - {fileID: 1166348099806844707}
+  - {fileID: 1551315868927721285}
+  _flashColor: {r: 1, g: 0, b: 0, a: 1}
+  _flashDuration: 0.15

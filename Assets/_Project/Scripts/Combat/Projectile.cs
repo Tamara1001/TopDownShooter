@@ -34,6 +34,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Pool;
+using Unity.Cinemachine;
 
 namespace TopDownShooter.Combat
 {
@@ -60,6 +61,11 @@ namespace TopDownShooter.Combat
         [Tooltip("The layer mask of objects this projectile should NOT react to. " +
                  "Assign the 'Player' layer here to avoid self-collision.")]
         [SerializeField] private LayerMask ignoreLayers;
+
+        [Header("Game Feel")]
+        [Tooltip("CinemachineImpulseSource used to trigger camera shake on impact. " +
+                 "Leave unassigned to skip (null-safe).")]
+        [SerializeField] private CinemachineImpulseSource _impulseSource;
 
         // ─────────────────────────────────────────────────────────────────────
         //  PRIVATE STATE
@@ -214,6 +220,9 @@ namespace TopDownShooter.Combat
             if (other.TryGetComponent<IDamageable>(out IDamageable target))
             {
                 target.TakeDamage(_damage);
+
+                // Camera shake on successful hit — skipped if source is unassigned.
+                _impulseSource?.GenerateImpulse();
             }
 
             ReturnToPool();

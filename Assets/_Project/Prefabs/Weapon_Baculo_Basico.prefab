@@ -132,6 +132,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1649939774582184481, guid: f3acde962fbb43646aa445e366907622, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6927570276447689967}
+    - targetCorrespondingSourceObject: {fileID: 1649939774582184481, guid: f3acde962fbb43646aa445e366907622, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4055630942178084770}
   m_SourcePrefab: {fileID: 100100000, guid: f3acde962fbb43646aa445e366907622, type: 3}
 --- !u!4 &5615842885893582858 stripped
 Transform:
@@ -160,3 +163,56 @@ MonoBehaviour:
   rotationSpeed: {x: 0, y: 100, z: 0}
   squashAmount: 0.1
   squashSpeed: 4
+--- !u!114 &4055630942178084770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6448227493324704502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineImpulseSource
+  ImpulseDefinition:
+    ImpulseChannel: 1
+    ImpulseShape: 2
+    CustomImpulseShape:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    ImpulseDuration: 0.2
+    ImpulseType: 0
+    DissipationRate: 0.25
+    RawSignal: {fileID: 0}
+    AmplitudeGain: 1
+    FrequencyGain: 1
+    RepeatMode: 0
+    Randomize: 1
+    TimeEnvelope:
+      AttackShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      DecayShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      AttackTime: 0
+      SustainTime: 0.2
+      DecayTime: 0.7
+      ScaleWithImpact: 1
+      HoldForever: 0
+    ImpactRadius: 100
+    DirectionMode: 0
+    DissipationMode: 2
+    DissipationDistance: 100
+    PropagationSpeed: 343
+  DefaultVelocity: {x: 0, y: -1, z: 0}

@@ -35,6 +35,7 @@
 // ==============================================================
 
 using UnityEngine;
+using Unity.Cinemachine;
 using TopDownShooter.Combat;
 using TopDownShooter.Inventory;
 
@@ -79,6 +80,11 @@ namespace TopDownShooter.Enemy
         [Tooltip("Maximum number of colliders the overlap sphere will record per swing. " +
                  "Increase only if multiple damageable targets can overlap simultaneously.")]
         [SerializeField] private int _hitBufferSize = 8;
+
+        [Header("Game Feel")]
+        [Tooltip("CinemachineImpulseSource triggered once per swing if at least one " +
+                 "IDamageable target was hit. Leave unassigned to skip (null-safe).")]
+        [SerializeField] private CinemachineImpulseSource _impulseSource;
 
         // ----------------------------------------------------------
         // PRIVATE STATE
@@ -142,6 +148,10 @@ namespace TopDownShooter.Enemy
                 _hitBuffer,
                 _targetMask);
 
+            // Track whether at least one target was damaged this swing
+            // so we fire the camera impulse exactly once (no multi-shake).
+            bool hitAnything = false;
+
             // ── Step 2 & 3: narrow-phase cone filter ────────────
             for (int i = 0; i < hitCount; i++)
             {
@@ -169,6 +179,7 @@ namespace TopDownShooter.Enemy
                 if (hit.TryGetComponent<IDamageable>(out IDamageable target))
                 {
                     target.TakeDamage(_damage);
+                    hitAnything = true;
 
                     // Logging scoped to the Editor; stripped from builds.
 #if UNITY_EDITOR
@@ -177,7 +188,13 @@ namespace TopDownShooter.Enemy
                 }
             }
 
-            // ── Step 5: clear buffer references ─────────────────
+            // ── Step 5: camera impulse on successful hit ─────────
+            // Fires once per swing regardless of how many targets were hit,
+            // preventing jarring multi-shake when cleaving through a crowd.
+            if (hitAnything)
+                _impulseSource?.GenerateImpulse();
+
+            // ── Step 6: clear buffer references ─────────────────
             // Nulling used slots prevents the GC from keeping
             // destroyed colliders alive after the buffer is reused.
             for (int i = 0; i < hitCount; i++)

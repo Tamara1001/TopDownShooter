@@ -258,10 +258,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3684400477853825320, guid: 9c1576a1e50a18c4db6c266bee27c38b, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 24ebedb1385684d4086891c42e440a10, type: 2}
     - target: {fileID: 4390310415566885952, guid: 9c1576a1e50a18c4db6c266bee27c38b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 8
@@ -302,18 +298,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4870250516773544575, guid: 9c1576a1e50a18c4db6c266bee27c38b, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 7d6da879833c6ad448302de2f71ed6f5, type: 2}
-    - target: {fileID: 7901252697094910767, guid: 9c1576a1e50a18c4db6c266bee27c38b, type: 3}
-      propertyPath: m_Avatar
-      value: 
-      objectReference: {fileID: 9000000, guid: fcc43bf54dd6cd648b3ec2132281b3c2, type: 3}
-    - target: {fileID: 7901252697094910767, guid: 9c1576a1e50a18c4db6c266bee27c38b, type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 22100000, guid: 1852c7b4f73a8cf4db17d55bcd967d3b, type: 2}
     - target: {fileID: 8970394363826350548, guid: 9c1576a1e50a18c4db6c266bee27c38b, type: 3}
       propertyPath: m_Name
       value: EnemyZombie
@@ -839,6 +823,7 @@ GameObject:
   - component: {fileID: 976682501}
   - component: {fileID: 976682500}
   - component: {fileID: 976682502}
+  - component: {fileID: 976682503}
   m_Layer: 0
   m_Name: CinemachineCamera
   m_TagString: Untagged
@@ -923,6 +908,30 @@ MonoBehaviour:
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
   FollowOffset: {x: 0, y: 10, z: -8}
+--- !u!114 &976682503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 976682499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00b2d199b96b516448144ab30fb26aed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineImpulseListener
+  ApplyAfter: 2
+  ChannelMask: 1
+  Gain: 1
+  Use2DDistance: 0
+  UseCameraSpace: 1
+  SignalCombinationMode: 0
+  ReactionSettings:
+    m_SecondaryNoise: {fileID: 0}
+    AmplitudeGain: 1
+    FrequencyGain: 1
+    Duration: 1
+    m_NoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!1001 &1090243789
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1359,6 +1368,71 @@ MonoBehaviour:
   - {fileID: 1524008186}
   _flashColor: {r: 1, g: 0, b: 0, a: 1}
   _flashDuration: 0.15
+--- !u!114 &1524008189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 775147961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4dd5eeb705448074b99ea839758bbc33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDamageFeedback
+--- !u!114 &1524008190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 775147961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineImpulseSource
+  ImpulseDefinition:
+    ImpulseChannel: 1
+    ImpulseShape: 2
+    CustomImpulseShape:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    ImpulseDuration: 0.2
+    ImpulseType: 0
+    DissipationRate: 0.25
+    RawSignal: {fileID: 0}
+    AmplitudeGain: 1
+    FrequencyGain: 1
+    RepeatMode: 0
+    Randomize: 1
+    TimeEnvelope:
+      AttackShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      DecayShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      AttackTime: 0
+      SustainTime: 0.2
+      DecayTime: 0.7
+      ScaleWithImpact: 1
+      HoldForever: 0
+    ImpactRadius: 100
+    DirectionMode: 0
+    DissipationMode: 2
+    DissipationDistance: 100
+    PropagationSpeed: 343
+  DefaultVelocity: {x: 0.3, y: 0, z: 0.3}
 --- !u!1001 &1572548490
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1407,26 +1481,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3479468085981808154, guid: c33ea4c4ea3ac3349bb05db5435efe2a, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 24ebedb1385684d4086891c42e440a10, type: 2}
-    - target: {fileID: 4660649151654095813, guid: c33ea4c4ea3ac3349bb05db5435efe2a, type: 3}
-      propertyPath: m_Avatar
-      value: 
-      objectReference: {fileID: 9000000, guid: 8b16412b3994e4746957e6d0724cb4c9, type: 3}
-    - target: {fileID: 4660649151654095813, guid: c33ea4c4ea3ac3349bb05db5435efe2a, type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 22100000, guid: 6537926268f7c13419c9943c413a3827, type: 2}
     - target: {fileID: 5869930736125489470, guid: c33ea4c4ea3ac3349bb05db5435efe2a, type: 3}
       propertyPath: m_Name
       value: EnemySkeleton
       objectReference: {fileID: 0}
-    - target: {fileID: 7970680608279116437, guid: c33ea4c4ea3ac3349bb05db5435efe2a, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 7d6da879833c6ad448302de2f71ed6f5, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1740,6 +1798,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6357198947062999068, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1524008188}
+    - targetCorrespondingSourceObject: {fileID: 6357198947062999068, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1524008190}
+    - targetCorrespondingSourceObject: {fileID: 6357198947062999068, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1524008189}
   m_SourcePrefab: {fileID: 100100000, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
 --- !u!1001 &4345726564021077205
 PrefabInstance:
