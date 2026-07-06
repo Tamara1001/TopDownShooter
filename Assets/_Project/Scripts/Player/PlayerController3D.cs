@@ -32,6 +32,7 @@
 //              ICombatHandler interface injected at runtime.
 // =============================================================================
 
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
@@ -97,6 +98,15 @@ namespace TopDownShooter.Player
         [Tooltip("Disable to lock aim-rotation (e.g. during root-motion attacks).")]
         [SerializeField] private bool canRotate = true;
 
+        [Header("VFX")]
+        [Tooltip("Particle System played at the start of each successful dash. " +
+                 "Leave unassigned to skip (null-safe).")]
+        [SerializeField] private ParticleSystem _dashDustParticles;
+
+        [Tooltip("TrailRenderer toggled on/off during the dash window for a ghosting effect. " +
+                 "Leave unassigned to skip (null-safe).")]
+        [SerializeField] private TrailRenderer _dashTrail;
+
         // ─────────────────────────────────────────────────────────────────────
         //  PRIVATE STATE  (never serialised, never public)
         // ─────────────────────────────────────────────────────────────────────
@@ -124,6 +134,16 @@ namespace TopDownShooter.Player
         // Physics state
         private Vector3 _verticalVelocity;   // Only Y component is used
         private Plane   _aimPlane;           // Mathematical ground plane for raycasting
+
+        // ─────────────────────────────────────────────────────────────────────
+        //  STATIC EVENTS  (subscribed by HUD / other UI without a direct reference)
+        // ─────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Fired when a dash attempt is rejected due to insufficient Energy.
+        /// Static so the HUD can subscribe without holding a reference to this component.
+        /// </summary>
+        public static event Action OnEnergyDepleted;
 
         // ─────────────────────────────────────────────────────────────────────
         //  PUBLIC READ-ONLY PROPERTIES  (for FSM / animation layer queries)
@@ -462,8 +482,12 @@ namespace TopDownShooter.Player
             {
                 Debug.Log($"[PlayerController3D] Not enough Energy to dash. " +
                           $"Required: {_dashCost}.");
+                OnEnergyDepleted?.Invoke();
                 return;
             }
+
+            // Play dash-start VFX (null-safe — safe if not assigned in Inspector).
+            _dashDustParticles?.Play();
 
             StartCoroutine(DashRoutine());
         }
@@ -476,7 +500,15 @@ namespace TopDownShooter.Player
         private IEnumerator DashRoutine()
         {
             _isDashing = true;
+
+            // Enable the trail for the duration of the dash.
+            if (_dashTrail != null) _dashTrail.emitting = true;
+
             yield return new WaitForSeconds(_dashDuration);
+
+            // Disable the trail as soon as normal movement resumes.
+            if (_dashTrail != null) _dashTrail.emitting = false;
+
             _isDashing = false;
         }
 

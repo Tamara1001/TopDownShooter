@@ -931,6 +931,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1456747936804210263, guid: 2dbc96132dfd2b34aa88a2392a2ca153, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 1456747936804210263, guid: 2dbc96132dfd2b34aa88a2392a2ca153, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 1456747936804210263, guid: 2dbc96132dfd2b34aa88a2392a2ca153, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1838386099460235164, guid: 2dbc96132dfd2b34aa88a2392a2ca153, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1043,6 +1055,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6181311782718126338, guid: 2dbc96132dfd2b34aa88a2392a2ca153, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 6181311782718126338, guid: 2dbc96132dfd2b34aa88a2392a2ca153, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 6181311782718126338, guid: 2dbc96132dfd2b34aa88a2392a2ca153, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6292777714181983353, guid: 2dbc96132dfd2b34aa88a2392a2ca153, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1054,6 +1078,18 @@ PrefabInstance:
     - target: {fileID: 6292777714181983353, guid: 2dbc96132dfd2b34aa88a2392a2ca153, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7346929274956664833, guid: 2dbc96132dfd2b34aa88a2392a2ca153, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 7346929274956664833, guid: 2dbc96132dfd2b34aa88a2392a2ca153, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 7346929274956664833, guid: 2dbc96132dfd2b34aa88a2392a2ca153, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7775746074770006127, guid: 2dbc96132dfd2b34aa88a2392a2ca153, type: 3}
       propertyPath: m_Name
@@ -1269,6 +1305,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9eeff1bff1bca346a47ff96a4d43b57, type: 3}
+--- !u!137 &1352099648 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6818930996099174620, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
+  m_PrefabInstance: {fileID: 3210477450207096191}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1524008148 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7863990641245162524, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
@@ -1296,7 +1337,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 734b08ac1868b3049b8b890e795d8350, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Player.PlayerResourceComponent
---- !u!114 &1524008176
+--- !u!23 &1524008186 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2182780649140665942, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
+  m_PrefabInstance: {fileID: 3210477450207096191}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1524008188
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1305,9 +1351,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 775147961}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f1ff4a82c7b1e543807f2efea2255ea, type: 3}
+  m_Script: {fileID: 11500000, guid: 95dc7726922c761428d7f4585c7aca30, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Player.PlayerStatsComponent
+  m_EditorClassIdentifier: Assembly-CSharp::DamageFlasher
+  _renderers:
+  - {fileID: 1352099648}
+  - {fileID: 1524008186}
+  _flashColor: {r: 1, g: 0, b: 0, a: 1}
+  _flashDuration: 0.15
 --- !u!1001 &1572548490
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1638,6 +1689,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 7770614905174413710, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 47720bc7356dad344845eb5cce4a1d9b, type: 2}
     - target: {fileID: 7863990641245162524, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1684,7 +1739,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6357198947062999068, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1524008176}
+      addedObject: {fileID: 1524008188}
   m_SourcePrefab: {fileID: 100100000, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
 --- !u!1001 &4345726564021077205
 PrefabInstance:

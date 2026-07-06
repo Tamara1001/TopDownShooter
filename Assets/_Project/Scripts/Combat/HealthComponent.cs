@@ -84,13 +84,16 @@ public class HealthComponent : MonoBehaviour, IDamageable
     /// Initialises health to its maximum value and resets the
     /// dead flag on component start.
     /// </summary>
-    private void Start()
+    private void Awake()
     {
+        // Preparamos los datos ANTES de que el HUD se suscriba
         currentHealth = maxHealth;
         isDead = false;
+    }
 
-        // Broadcast initial state so any listeners that subscribe
-        // before Start() runs are immediately synchronised.
+    private void Start()
+    {
+        // Anunciamos el estado inicial una vez que todo está listo
         OnHealthChanged?.Invoke(GetNormalizedHealth());
     }
 

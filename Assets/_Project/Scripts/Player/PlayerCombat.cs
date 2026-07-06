@@ -50,6 +50,7 @@
 //  ► Audio: Trigger a "no weapon" SFX in OnAttack when _equippedWeapon == null.
 // =============================================================================
 
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TopDownShooter.Inventory;
@@ -113,6 +114,22 @@ namespace TopDownShooter.Combat
             get => canAttack;
             set => canAttack = value;   // FSM can disable attacks during animations
         }
+
+        // ─────────────────────────────────────────────────────────────────────
+        //  STATIC EVENTS  (subscribed by HUD / other UI without needing a reference)
+        // ─────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Fired when an attack is rejected specifically because Mana is insufficient.
+        /// Static so the HUD can subscribe without holding a reference to this component.
+        /// </summary>
+        public static event Action OnManaDepleted;
+
+        /// <summary>
+        /// Fired when an attack is rejected specifically because Energy is insufficient.
+        /// Static so the HUD can subscribe without holding a reference to this component.
+        /// </summary>
+        public static event Action OnEnergyDepleted;
 
         // ─────────────────────────────────────────────────────────────────────
         //  UNITY LIFECYCLE
@@ -328,6 +345,7 @@ namespace TopDownShooter.Combat
                         {
                             Debug.Log("[PlayerCombat] Not enough Mana to attack. " +
                                       $"Required: {_currentWeaponData.ResourceCost}.");
+                            OnManaDepleted?.Invoke();
                             return;   // Abort — do NOT fire
                         }
                         break;
@@ -337,6 +355,7 @@ namespace TopDownShooter.Combat
                         {
                             Debug.Log("[PlayerCombat] Not enough Energy to attack. " +
                                       $"Required: {_currentWeaponData.ResourceCost}.");
+                            OnEnergyDepleted?.Invoke();
                             return;   // Abort — do NOT fire
                         }
                         break;

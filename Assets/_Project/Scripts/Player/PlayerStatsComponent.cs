@@ -75,6 +75,15 @@ namespace TopDownShooter.Player
         private Coroutine _activeBuffCoroutine;
 
         // ─────────────────────────────────────────────────────────────────────
+        //  INSPECTOR-EXPOSED VFX
+        // ─────────────────────────────────────────────────────────────────────
+
+        [Header("VFX")]
+        [Tooltip("Particle System played while a speed buff is active. " +
+                 "Leave unassigned to skip (null-safe).")]
+        [SerializeField] private ParticleSystem _speedAuraParticles;
+
+        // ─────────────────────────────────────────────────────────────────────
         //  UNITY LIFECYCLE
         // ─────────────────────────────────────────────────────────────────────
 
@@ -155,10 +164,17 @@ namespace TopDownShooter.Player
         private IEnumerator SpeedBuffRoutine(float boostMultiplier, float duration)
         {
             _consumableSpeedModifier = boostMultiplier;
+
+            // Start the speed aura VFX (null-safe — no error if not assigned).
+            _speedAuraParticles?.Play();
+
             Debug.Log($"[PlayerStatsComponent] Speed buff active: +{boostMultiplier:P0} for {duration:0.#}s. " +
                       $"MoveSpeedMultiplier = {MoveSpeedMultiplier:0.##}x");
 
             yield return new WaitForSeconds(duration);
+
+            // Stop the aura before clearing the modifier so the VFX ends cleanly.
+            _speedAuraParticles?.Stop();
 
             _consumableSpeedModifier = 0f;
             _activeBuffCoroutine     = null;
