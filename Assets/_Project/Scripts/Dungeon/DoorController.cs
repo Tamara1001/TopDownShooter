@@ -10,66 +10,98 @@
 //
 //  ARCHITECTURE
 //  ─────────────
-//  • Requires Collider and Renderer.
-//  • Uses a Coroutine for smooth alpha fading.
+//  • Aggressively discovers Colliders and Renderers in all children.
+//  • Uses a Coroutine for smooth alpha fading across all cached materials.
 //  • Caches the original material color and relies on "_BaseColor"
 //    to ensure URP compatibility.
 // =============================================================================
 
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TopDownShooter.Dungeon
 {
     /// <summary>
     /// Controls the visual fading and collision toggle of a door.
-    /// Assumes a URP-compatible material with a "_BaseColor" property.
+    /// Discovers all child renderers and colliders. Assumes URP-compatible
+    /// materials with a "_BaseColor" property.
     /// </summary>
-    [RequireComponent(typeof(Collider))]
-    [RequireComponent(typeof(Renderer))]
     public sealed class DoorController : MonoBehaviour
     {
+        // ─────────────────────────────────────────────────────────────────────
+        //  NESTED TYPES
+        // ─────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Caches the initial material state per renderer so multi-part doors
+        /// with different base colours fade proportionally.
+        /// </summary>
+        private class RendererCache
+        {
+            public Material Material;
+            public Color OriginalColor;
+            public bool UsesBaseColorID;
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        //  INSPECTOR FIELDS
+        // ─────────────────────────────────────────────────────────────────────
+
         [Header("Settings")]
         [Tooltip("Duration of the door's fade-in/fade-out animation.")]
         [SerializeField] private float _fadeDuration = 0.3f;
 
-        private Collider _collider;
-        private Renderer _renderer;
-        private Material _material;
-        private Color _originalColor;
+        // ─────────────────────────────────────────────────────────────────────
+        //  PRIVATE STATE
+        // ─────────────────────────────────────────────────────────────────────
+
+        private Collider[] _colliders;
+        private List<RendererCache> _rendererCaches = new List<RendererCache>();
         private Coroutine _fadeCoroutine;
 
         private static readonly int BaseColorID = Shader.PropertyToID("_BaseColor");
 
+        // ─────────────────────────────────────────────────────────────────────
+        //  UNITY LIFECYCLE
+        // ─────────────────────────────────────────────────────────────────────
+
         private void Awake()
         {
-            _collider = GetComponent<Collider>();
-            _renderer = GetComponent<Renderer>();
+            // Discover all physical barriers in the door hierarchy.
+            _colliders = GetComponentsInChildren<Collider>();
             
-            // Assume the material uses a transparent/fade URP shader.
-            _material = _renderer.material;
-            
-            if (_material.HasProperty(BaseColorID))
+            // Discover all visuals and cache their original material parameters.
+            Renderer[] renderers = GetComponentsInChildren<Renderer>();
+            foreach (Renderer r in renderers)
             {
-                _originalColor = _material.GetColor(BaseColorID);
-            }
-            else
-            {
-                // Fallback for non-URP shaders.
-                _originalColor = _material.color;
+                Material mat = r.material; // Will instantiate a material instance per renderer
+                bool usesBase = mat.HasProperty(BaseColorID);
+                
+                _rendererCaches.Add(new RendererCache
+                {
+                    Material = mat,
+                    OriginalColor = usesBase ? mat.GetColor(BaseColorID) : mat.color,
+                    UsesBaseColorID = usesBase
+                });
             }
             
-            // Door starts open (invisible and non-blocking).
-            _collider.enabled = false;
+            // Force initialization to Open (invisible, non-blocking)
+            SetCollidersState(false);
             SetAlpha(0f);
         }
+
+        // ─────────────────────────────────────────────────────────────────────
+        //  PUBLIC API
+        // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
         /// Enables collision and fades the door in.
         /// </summary>
         public void CloseDoor()
         {
-            _collider.enabled = true;
+            SetCollidersState(true);
+            
             if (_fadeCoroutine != null) StopCoroutine(_fadeCoroutine);
             _fadeCoroutine = StartCoroutine(FadeAlphaRoutine(1f));
         }
@@ -79,16 +111,28 @@ namespace TopDownShooter.Dungeon
         /// </summary>
         public void OpenDoor()
         {
-            _collider.enabled = false;
+            SetCollidersState(false);
+            
             if (_fadeCoroutine != null) StopCoroutine(_fadeCoroutine);
             _fadeCoroutine = StartCoroutine(FadeAlphaRoutine(0f));
         }
 
+        // ─────────────────────────────────────────────────────────────────────
+        //  FADING LOGIC
+        // ─────────────────────────────────────────────────────────────────────
+
         private IEnumerator FadeAlphaRoutine(float targetAlpha)
         {
-            float startAlpha = _material.HasProperty(BaseColorID) 
-                ? _material.GetColor(BaseColorID).a 
-                : _material.color.a;
+            // We use the first renderer's alpha as the starting point.
+            // If there are no renderers, we just wait out the duration.
+            float startAlpha = 0f;
+            if (_rendererCaches.Count > 0)
+            {
+                RendererCache firstCache = _rendererCaches[0];
+                startAlpha = firstCache.UsesBaseColorID 
+                    ? firstCache.Material.GetColor(BaseColorID).a 
+                    : firstCache.Material.color.a;
+            }
 
             float time = 0f;
             while (time < _fadeDuration)
@@ -96,6 +140,7 @@ namespace TopDownShooter.Dungeon
                 time += Time.deltaTime;
                 float t = time / _fadeDuration;
                 float currentAlpha = Mathf.Lerp(startAlpha, targetAlpha, t);
+                
                 SetAlpha(currentAlpha);
                 yield return null;
             }
@@ -106,16 +151,35 @@ namespace TopDownShooter.Dungeon
 
         private void SetAlpha(float alpha)
         {
-            Color color = _originalColor;
-            color.a = alpha;
-            
-            if (_material.HasProperty(BaseColorID))
+            for (int i = 0; i < _rendererCaches.Count; i++)
             {
-                _material.SetColor(BaseColorID, color);
+                RendererCache cache = _rendererCaches[i];
+                Color color = cache.OriginalColor;
+                color.a = alpha;
+                
+                if (cache.UsesBaseColorID)
+                {
+                    cache.Material.SetColor(BaseColorID, color);
+                }
+                else
+                {
+                    cache.Material.color = color;
+                }
             }
-            else
+        }
+        
+        // ─────────────────────────────────────────────────────────────────────
+        //  COLLISION UTILITY
+        // ─────────────────────────────────────────────────────────────────────
+
+        private void SetCollidersState(bool state)
+        {
+            for (int i = 0; i < _colliders.Length; i++)
             {
-                _material.color = color;
+                if (_colliders[i] != null)
+                {
+                    _colliders[i].enabled = state;
+                }
             }
         }
     }

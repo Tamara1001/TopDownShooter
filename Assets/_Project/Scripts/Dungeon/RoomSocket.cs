@@ -66,6 +66,9 @@ namespace TopDownShooter.Dungeon
         /// <summary>True if this socket has been connected to another room.</summary>
         public bool IsConnected => _isConnected;
 
+        /// <summary>The shared door assigned to this connection, if any.</summary>
+        public DoorController AssignedDoor { get; private set; }
+
         // ─────────────────────────────────────────────────────────────────────
         //  PUBLIC API
         // ─────────────────────────────────────────────────────────────────────
@@ -75,26 +78,26 @@ namespace TopDownShooter.Dungeon
         /// <list type="number">
         ///   <item>Marks the socket as connected.</item>
         ///   <item>Disables the solid wall blocking the doorway.</item>
-        ///   <item>Instantiates <paramref name="doorPrefab"/> as a child
-        ///         of this socket's transform (inherits position/rotation).</item>
+        ///   <item>Assigns the shared <paramref name="door"/> reference.</item>
         /// </list>
         /// Idempotent — calling twice is a safe no-op with a warning log.
         /// </summary>
-        /// <param name="doorPrefab">
-        /// The door/archway prefab to spawn. Pass <c>null</c> to simply open
-        /// the wall without placing a visual door (e.g. for corridor connections).
+        /// <param name="door">
+        /// The shared door controller. Pass <c>null</c> to simply open
+        /// the wall without a door (e.g. for corridor connections).
         /// </param>
-        public void Connect(GameObject doorPrefab)
+        public void AssignDoor(DoorController door)
         {
             // Guard: prevent double-connection.
             if (_isConnected)
             {
                 Debug.LogWarning($"[RoomSocket] '{name}' ({_direction}): Already connected. " +
-                                 "Ignoring duplicate Connect() call.", this);
+                                 "Ignoring duplicate AssignDoor() call.", this);
                 return;
             }
 
             _isConnected = true;
+            AssignedDoor = door;
 
             // Disable the solid wall so the doorway opening is revealed.
             if (_solidWall != null)
@@ -105,12 +108,6 @@ namespace TopDownShooter.Dungeon
             {
                 Debug.LogWarning($"[RoomSocket] '{name}' ({_direction}): _solidWall is not " +
                                  "assigned. The doorway will appear open by default.", this);
-            }
-
-            // Spawn the door visual as a child of this socket.
-            if (doorPrefab != null)
-            {
-                Instantiate(doorPrefab, transform.position, transform.rotation, transform);
             }
         }
 

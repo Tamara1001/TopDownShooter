@@ -123,6 +123,7 @@ GameObject:
   m_Component:
   - component: {fileID: 31519590606867718}
   - component: {fileID: 4161433631716479996}
+  - component: {fileID: -3203151256785488934}
   m_Layer: 0
   m_Name: RoomStart
   m_TagString: Untagged
@@ -166,6 +167,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a4f9fb085e17574d93b2be9bdc35170, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Dungeon.RoomController
+  _enemyPrefabs: []
+  _environmentPrefabs:
+  - {fileID: 1322964290230026685, guid: c169bdef0c9695c4b9a79d68c0933b64, type: 3}
+  - {fileID: 8311074430137017848, guid: 9871db3e0043b3140a567912ccdc814e, type: 3}
+  _lootPrefabs:
+  - {fileID: 8584310591438422609, guid: a9eeff1bff1bca346a47ff96a4d43b57, type: 3}
+  - {fileID: 6697602429799922056, guid: a0478012a6e9c6d4f9c3914362f75557, type: 3}
+  - {fileID: 6448227493324704502, guid: ef618727e07a1c047945a650acc28d34, type: 3}
+--- !u!65 &-3203151256785488934
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6951606062908258739}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 503
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 19, y: 2, z: 19}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1001 &149734168913069561
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -242,7 +272,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6155150378452983683, guid: fbe8f16a4e9b6a4468ab344095319de3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6155150378452983683, guid: fbe8f16a4e9b6a4468ab344095319de3, type: 3}
       propertyPath: m_LocalPosition.z
@@ -308,7 +338,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 371653872463398451, guid: 5bdb5bffcd8ef27419e80f3cf3606e4b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 371653872463398451, guid: 5bdb5bffcd8ef27419e80f3cf3606e4b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -366,7 +396,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6155150378452983683, guid: fbe8f16a4e9b6a4468ab344095319de3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6155150378452983683, guid: fbe8f16a4e9b6a4468ab344095319de3, type: 3}
       propertyPath: m_LocalPosition.z
@@ -428,11 +458,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 371653872463398451, guid: 5bdb5bffcd8ef27419e80f3cf3606e4b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 371653872463398451, guid: 5bdb5bffcd8ef27419e80f3cf3606e4b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 371653872463398451, guid: 5bdb5bffcd8ef27419e80f3cf3606e4b, type: 3}
       propertyPath: m_LocalPosition.z
