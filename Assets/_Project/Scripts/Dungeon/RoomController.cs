@@ -28,6 +28,7 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using TopDownShooter.Combat;
 
 namespace TopDownShooter.Dungeon
 {
@@ -37,17 +38,28 @@ namespace TopDownShooter.Dungeon
     /// components in children during <c>Awake()</c>.
     /// Attach to the root GameObject of every room prefab.
     /// </summary>
+    [RequireComponent(typeof(Collider))]
     public sealed class RoomController : MonoBehaviour
     {
         // ─────────────────────────────────────────────────────────────────────
         //  PRIVATE STATE
         // ─────────────────────────────────────────────────────────────────────
 
+        private enum RoomState { Waiting, Active, Cleared }
+
+        [Header("Spawning")]
+        [SerializeField] private GameObject[] _enemyPrefabs;
+        [SerializeField] private GameObject[] _environmentPrefabs;
+        [SerializeField] private GameObject[] _lootPrefabs;
+
         // Auto-populated in Awake() via GetComponentsInChildren.
         // Using List<T> internally so we can populate from the array,
         // while exposing IReadOnlyList<T> externally for safety.
         private List<RoomSocket>        _sockets  = new List<RoomSocket>();
         private List<EntitySpawnerNode> _spawners = new List<EntitySpawnerNode>();
+
+        private RoomState _state = RoomState.Waiting;
+        private int _activeEnemyCount = 0;
 
         // ─────────────────────────────────────────────────────────────────────
         //  READ-ONLY PROPERTIES
@@ -158,6 +170,107 @@ namespace TopDownShooter.Dungeon
             }
 
             return result;
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        //  GAMEPLAY LOGIC
+        // ─────────────────────────────────────────────────────────────────────
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (_state == RoomState.Waiting && other.CompareTag("Player"))
+            {
+                _state = RoomState.Active;
+
+                // Close all doors to lock the player in
+                DoorController[] doors = GetComponentsInChildren<DoorController>();
+                for (int i = 0; i < doors.Length; i++)
+                {
+                    if (doors[i] != null) doors[i].CloseDoor();
+                }
+
+                SpawnEntities();
+            }
+        }
+
+        private void SpawnEntities()
+        {
+            for (int i = 0; i < _spawners.Count; i++)
+            {
+                EntitySpawnerNode node = _spawners[i];
+
+                if (node.Type == EntitySpawnerNode.SpawnerType.Environment)
+                {
+                    if (_environmentPrefabs != null && _environmentPrefabs.Length > 0)
+                    {
+                        GameObject prefab = _environmentPrefabs[Random.Range(0, _environmentPrefabs.Length)];
+                        if (prefab != null) Instantiate(prefab, node.transform.position, node.transform.rotation, transform);
+                    }
+                }
+                else if (node.Type == EntitySpawnerNode.SpawnerType.Enemy)
+                {
+                    if (_enemyPrefabs != null && _enemyPrefabs.Length > 0)
+                    {
+                        GameObject prefab = _enemyPrefabs[Random.Range(0, _enemyPrefabs.Length)];
+                        if (prefab != null)
+                        {
+                            GameObject enemyInstance = Instantiate(prefab, node.transform.position, node.transform.rotation, transform);
+                            
+                            if (enemyInstance.TryGetComponent<HealthComponent>(out HealthComponent health))
+                            {
+                                _activeEnemyCount++;
+                                health.OnDied += HandleEnemyDeath;
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"[RoomController] Enemy prefab '{prefab.name}' is missing a HealthComponent.");
+                            }
+                        }
+                    }
+                }
+            }
+
+            // If no enemies spawned, clear the room immediately
+            if (_activeEnemyCount <= 0 && _state == RoomState.Active)
+            {
+                ClearRoom();
+            }
+        }
+
+        private void HandleEnemyDeath()
+        {
+            _activeEnemyCount--;
+
+            if (_activeEnemyCount <= 0 && _state == RoomState.Active)
+            {
+                ClearRoom();
+            }
+        }
+
+        private void ClearRoom()
+        {
+            _state = RoomState.Cleared;
+
+            // Open doors
+            DoorController[] doors = GetComponentsInChildren<DoorController>();
+            for (int i = 0; i < doors.Length; i++)
+            {
+                if (doors[i] != null) doors[i].OpenDoor();
+            }
+
+            // Spawn loot at all loot nodes
+            for (int i = 0; i < _spawners.Count; i++)
+            {
+                EntitySpawnerNode node = _spawners[i];
+                if (node.Type == EntitySpawnerNode.SpawnerType.Loot)
+                {
+                    if (_lootPrefabs != null && _lootPrefabs.Length > 0)
+                    {
+                        GameObject prefab = _lootPrefabs[Random.Range(0, _lootPrefabs.Length)];
+                        if (prefab != null) Instantiate(prefab, node.transform.position, node.transform.rotation, transform);
+                    }
+                }
+            }
         }
     }
 }

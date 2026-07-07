@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5464018417290010161, guid: 1bcb4c0375c20c342abde9df92bb94cc, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -5
       objectReference: {fileID: 0}
     - target: {fileID: 5464018417290010161, guid: 1bcb4c0375c20c342abde9df92bb94cc, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5464018417290010161, guid: 1bcb4c0375c20c342abde9df92bb94cc, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5464018417290010161, guid: 1bcb4c0375c20c342abde9df92bb94cc, type: 3}
       propertyPath: m_LocalRotation.w
@@ -48,6 +48,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5576361807435778767, guid: 1bcb4c0375c20c342abde9df92bb94cc, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b723fd47b24b347428aeb3434e8556ae, type: 2}
     - target: {fileID: 5865150788261630754, guid: 1bcb4c0375c20c342abde9df92bb94cc, type: 3}
       propertyPath: m_Name
       value: Consumable_Pocion_Velocidad

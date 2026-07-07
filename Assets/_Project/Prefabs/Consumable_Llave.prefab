@@ -114,6 +114,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5576361807435778767, guid: 1bcb4c0375c20c342abde9df92bb94cc, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 16d33deb33c0db44cb41fed946360739, type: 2}
     - target: {fileID: 5865150788261630754, guid: 1bcb4c0375c20c342abde9df92bb94cc, type: 3}
       propertyPath: m_Name
       value: Consumable_Llave
