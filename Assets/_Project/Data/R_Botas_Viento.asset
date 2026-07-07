@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d6f210458149f64f8cac7fe6d2895a0, type: 3}
   m_Name: R_Botas_Viento
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Inventory.RelicDataSO
-  _itemID: botas_viento
-  _displayName: Botas de Viento
+  _itemID: collar_de_velocidad
+  _displayName: Collar De Velocidad
   _icon: {fileID: 0}
   _dropPrefab: {fileID: 3467533474170925825, guid: a00ff01823815884cad25ebc80f944be, type: 3}
   _moveSpeedModifier: 1.5
