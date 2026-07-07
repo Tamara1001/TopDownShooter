@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d6f210458149f64f8cac7fe6d2895a0, type: 3}
   m_Name: "R_Anillo_Da\xF1o"
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Inventory.RelicDataSO
-  _itemID: "anillo_da\xF1o"
-  _displayName: "Anillo de Da\xF1o"
+  _itemID: "collar_de_da\xF1o"
+  _displayName: "Collar de Da\xF1o"
   _icon: {fileID: 0}
   _dropPrefab: {fileID: 8139866486074890665, guid: f09b75219094a3b4ea266d60a8ac16ab, type: 3}
   _moveSpeedModifier: 0
