@@ -49,6 +49,7 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.AI.Navigation;
 
 namespace TopDownShooter.Dungeon
 {
@@ -98,6 +99,9 @@ namespace TopDownShooter.Dungeon
         [Tooltip("World-space size of one grid cell (room footprint). " +
                  "All room prefabs must be exactly this size in XZ.")]
         [SerializeField] private float _cellSize = 20f;
+
+        [Header("Navigation")]
+        [SerializeField] private NavMeshSurface _navMeshSurface;
 
         // ─────────────────────────────────────────────────────────────────────
         //  PRIVATE STATE
@@ -226,6 +230,13 @@ namespace TopDownShooter.Dungeon
             Debug.Log($"[DungeonGenerator] Generation complete. " +
                       $"{_occupiedCells.Count} rooms placed, " +
                       $"{_availableSockets.Count} open socket(s) remaining.");
+
+            // ── Step 6: Bake NavMesh ─────────────────────────────────────────
+            if (_navMeshSurface != null)
+            {
+                Debug.Log("[DungeonGenerator] Baking NavMesh...");
+                _navMeshSurface.BuildNavMesh();
+            }
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -278,13 +289,20 @@ namespace TopDownShooter.Dungeon
                 ? newRoom.GetAvailableSocket(oppositeDir)
                 : null;
 
+            DoorController door = null;
+            if (_doorPrefab != null)
+            {
+                GameObject doorObj = Instantiate(_doorPrefab, originSocket.transform.position, originSocket.transform.rotation, _dungeonRoot);
+                door = doorObj.GetComponent<DoorController>();
+            }
+
             // Connect the origin side.
-            originSocket.Connect(_doorPrefab);
+            originSocket.AssignDoor(door);
 
             // Connect the new room side.
             if (newRoomSocket != null)
             {
-                newRoomSocket.Connect(_doorPrefab);
+                newRoomSocket.AssignDoor(door);
             }
             else
             {

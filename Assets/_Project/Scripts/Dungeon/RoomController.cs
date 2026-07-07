@@ -182,14 +182,17 @@ namespace TopDownShooter.Dungeon
             {
                 _state = RoomState.Active;
 
-                // Close all doors to lock the player in
-                DoorController[] doors = GetComponentsInChildren<DoorController>();
-                for (int i = 0; i < doors.Length; i++)
-                {
-                    if (doors[i] != null) doors[i].CloseDoor();
-                }
-
                 SpawnEntities();
+
+                if (_activeEnemyCount > 0)
+                {
+                    // Close all doors to lock the player in
+                    SetAllDoors(true);
+                }
+                else
+                {
+                    ClearRoom();
+                }
             }
         }
 
@@ -229,12 +232,6 @@ namespace TopDownShooter.Dungeon
                     }
                 }
             }
-
-            // If no enemies spawned, clear the room immediately
-            if (_activeEnemyCount <= 0 && _state == RoomState.Active)
-            {
-                ClearRoom();
-            }
         }
 
         private void HandleEnemyDeath()
@@ -252,11 +249,7 @@ namespace TopDownShooter.Dungeon
             _state = RoomState.Cleared;
 
             // Open doors
-            DoorController[] doors = GetComponentsInChildren<DoorController>();
-            for (int i = 0; i < doors.Length; i++)
-            {
-                if (doors[i] != null) doors[i].OpenDoor();
-            }
+            SetAllDoors(false);
 
             // Spawn loot at all loot nodes
             for (int i = 0; i < _spawners.Count; i++)
@@ -269,6 +262,18 @@ namespace TopDownShooter.Dungeon
                         GameObject prefab = _lootPrefabs[Random.Range(0, _lootPrefabs.Length)];
                         if (prefab != null) Instantiate(prefab, node.transform.position, node.transform.rotation, transform);
                     }
+                }
+            }
+        }
+
+        private void SetAllDoors(bool close)
+        {
+            for (int i = 0; i < _sockets.Count; i++)
+            {
+                if (_sockets[i].AssignedDoor != null)
+                {
+                    if (close) _sockets[i].AssignedDoor.CloseDoor();
+                    else _sockets[i].AssignedDoor.OpenDoor();
                 }
             }
         }
