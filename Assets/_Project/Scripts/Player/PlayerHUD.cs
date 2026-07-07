@@ -37,6 +37,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using TopDownShooter.Player;
 using TopDownShooter.Combat;
 
@@ -94,6 +95,20 @@ public class PlayerHUD : MonoBehaviour
     //  PRIVATE STATE
     // ───────────────────────────────────────────────────────────────────────────
 
+    [Header("Wallet UI")]
+    [Tooltip("Text element to display the coin count.")]
+    [SerializeField] private TextMeshProUGUI _coinText;
+
+    [Tooltip("Scale multiplier when coins are collected.")]
+    [SerializeField] private float _pulseScale = 1.4f;
+
+    [Tooltip("Duration of the coin text pulse animation.")]
+    [SerializeField] private float _pulseDuration = 0.2f;
+
+    private PlayerWallet _wallet;
+    private Coroutine _pulseCoroutine;
+    private Vector3 _originalScale;
+
     // The normalized health value from the last UpdateHealthBar call.
     // Sentinel -1 means "not yet set" so the first call never false-triggers a punch.
     private float _previousHealth = -1f;
@@ -114,6 +129,14 @@ public class PlayerHUD : MonoBehaviour
 
     private void Awake()
     {
+        _wallet = FindObjectOfType<PlayerWallet>();
+        
+        if (_coinText != null)
+        {
+            _originalScale = _coinText.transform.localScale;
+            _coinText.text = "0";
+        }
+
         // Cache the designers' original colors so flash coroutines can restore them.
         _originalHealthColor = healthBarFill != null ? healthBarFill.color : Color.white;
         _originalManaColor   = manaBarFill   != null ? manaBarFill.color   : Color.white;
@@ -157,6 +180,13 @@ public class PlayerHUD : MonoBehaviour
         PlayerCombat.OnManaDepleted          += HandleManaDepleted;
         PlayerCombat.OnEnergyDepleted        += HandleEnergyDepleted;
         PlayerController3D.OnEnergyDepleted  += HandleEnergyDepleted;
+
+        // ── Wallet ──────────────────────────────────────────────────────────────────
+        if (_wallet != null)
+        {
+            _wallet.OnCoinsChanged += HandleCoinsChanged;
+            if (_coinText != null) _coinText.text = _wallet.Coins.ToString();
+        }
     }
 
     private void OnDisable()
@@ -176,6 +206,12 @@ public class PlayerHUD : MonoBehaviour
         PlayerCombat.OnManaDepleted          -= HandleManaDepleted;
         PlayerCombat.OnEnergyDepleted        -= HandleEnergyDepleted;
         PlayerController3D.OnEnergyDepleted  -= HandleEnergyDepleted;
+
+        // ── Wallet ──────────────────────────────────────────────────────────────────
+        if (_wallet != null)
+        {
+            _wallet.OnCoinsChanged -= HandleCoinsChanged;
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -260,9 +296,44 @@ public class PlayerHUD : MonoBehaviour
         _energyFlash = StartCoroutine(FlashBarRoutine(energyBarFill, _originalEnergyColor));
     }
 
+    /// <summary>
+    /// Updates the coin text and triggers a juice pulse.
+    /// </summary>
+    private void HandleCoinsChanged(int amount)
+    {
+        if (_coinText == null) return;
+        
+        _coinText.text = amount.ToString();
+        
+        if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
+        _pulseCoroutine = StartCoroutine(PulseText());
+    }
+
     // ───────────────────────────────────────────────────────────────────────────
     //  JUICE — COROUTINES
     // ───────────────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Instantly scales the text up, then smoothly lerps back to original scale.
+    /// </summary>
+    private IEnumerator PulseText()
+    {
+        if (_coinText == null) yield break;
+
+        _coinText.transform.localScale = _originalScale * _pulseScale;
+
+        float elapsed = 0f;
+        while (elapsed < _pulseDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / _pulseDuration;
+            _coinText.transform.localScale = Vector3.Lerp(_originalScale * _pulseScale, _originalScale, t);
+            yield return null;
+        }
+
+        _coinText.transform.localScale = _originalScale;
+        _pulseCoroutine = null;
+    }
 
     /// <summary>
     /// Parameterised single-bar flash: sets the bar's color to

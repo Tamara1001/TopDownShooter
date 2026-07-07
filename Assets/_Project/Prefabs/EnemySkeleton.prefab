@@ -86,6 +86,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1771525001195234060, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
       insertIndex: -1
       addedObject: {fileID: -8916218721743707651}
+    - targetCorrespondingSourceObject: {fileID: 1771525001195234060, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1618592104478303396}
   m_SourcePrefab: {fileID: 100100000, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
 --- !u!4 &670527394627173744 stripped
 Transform:
@@ -114,6 +117,25 @@ MonoBehaviour:
   - {fileID: 3479468085981808154}
   _flashColor: {r: 1, g: 0, b: 0, a: 1}
   _flashDuration: 0.15
+--- !u!114 &1618592104478303396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5869930736125489470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd6887d2d70fad44a88163cc524fc054, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Loot.LootDropper
+  _minDrops: 0
+  _maxDrops: 2
+  _lootTable:
+  - Prefab: {fileID: 6089502704899512293, guid: 6a6e46f464b40a245910f1f756a1444a, type: 3}
+    DropChance: 20
+  - Prefab: {fileID: 4758015457026431527, guid: c6efc762569ac6043b423aa5706d9f24, type: 3}
+    DropChance: 5
 --- !u!1001 &6836529610796544865
 PrefabInstance:
   m_ObjectHideFlags: 0

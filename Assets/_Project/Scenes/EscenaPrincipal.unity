@@ -416,6 +416,11 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1 &775147961 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6357198947062999068, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
+  m_PrefabInstance: {fileID: 3210477450207096191}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -860,7 +865,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6922405946453416044, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
   m_PrefabInstance: {fileID: 3210477450207096191}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 775147961}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5eeeb7c8273d60940abd4a197b38ca9e, type: 3}
@@ -871,12 +876,24 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6229824984311460338, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
   m_PrefabInstance: {fileID: 3210477450207096191}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 775147961}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 734b08ac1868b3049b8b890e795d8350, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Player.PlayerResourceComponent
+--- !u!114 &1524008202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 775147961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d8ecd4a83ba49740b6610d2b9934173, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Player.PlayerWallet
 --- !u!1001 &3210477450207096191
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -932,7 +949,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6357198947062999068, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1524008202}
   m_SourcePrefab: {fileID: 100100000, guid: c05d8efd47553304d9cec5e9aa642b4b, type: 3}
 --- !u!1001 &3297964890657928763
 PrefabInstance:
