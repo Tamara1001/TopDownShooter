@@ -64,7 +64,7 @@ namespace TopDownShooter.Inventory
 
         [Tooltip("Minimum seconds between consecutive shots / swings.")]
         [Min(0.05f)]
-        [SerializeField] private float _fireRate = 0.25f;
+        [SerializeField] private float _attackCooldown = 0.25f;
 
         // ─────────────────────────────────────────────────────────────────────
         //  RESOURCE COST  (Part 4)
@@ -99,7 +99,7 @@ namespace TopDownShooter.Inventory
         public int                BaseDamage        => _baseDamage;
 
         /// <summary>Minimum interval in seconds between consecutive attacks.</summary>
-        public float              FireRate           => _fireRate;
+        public float              AttackCooldown     => _attackCooldown;
 
         /// <summary>
         /// Which resource (Mana, Energy, or None) this weapon spends per shot.

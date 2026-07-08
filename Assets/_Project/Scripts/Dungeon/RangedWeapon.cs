@@ -76,6 +76,16 @@ namespace TopDownShooter.Enemy
                  "when Configure() is called. Inspector value is the safe fallback.")]
         [SerializeField] private int _damage = 10;
 
+        [Header("Cooldown Settings")]
+        [Tooltip("Fallback attack cooldown if no WeaponDataSO configures this weapon.")]
+        [SerializeField] private float _defaultCooldown = 1f;
+
+        // ----------------------------------------------------------
+        // IWEAPON PROPERTY
+        // ----------------------------------------------------------
+
+        public float Cooldown { get; private set; }
+
         // ----------------------------------------------------------
         // PRIVATE STATE
         // ----------------------------------------------------------
@@ -92,6 +102,7 @@ namespace TopDownShooter.Enemy
 
         private void Awake()
         {
+            Cooldown = _defaultCooldown;
             ValidateReferences();
             InitialisePool();
         }
@@ -153,7 +164,8 @@ namespace TopDownShooter.Enemy
             }
 
             _damage = stats.BaseDamage;
-            Debug.Log($"[RangedWeapon] Configured via SO: damage={_damage}");
+            Cooldown = stats.AttackCooldown;
+            Debug.Log($"[RangedWeapon] Configured via SO: damage={_damage}, cooldown={Cooldown}");
         }
 
         // ----------------------------------------------------------

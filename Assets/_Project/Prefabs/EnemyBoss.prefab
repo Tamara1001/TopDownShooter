@@ -54,7 +54,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4448471671806268483, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
-    - {fileID: 4226362327493716968, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -93,6 +92,7 @@ MonoBehaviour:
   _bossWeapons:
   - {fileID: 1226290567209089984}
   - {fileID: 4106829751033654493}
+  - {fileID: 8568340251880471709}
   _phase2HealthThreshold: 0.5
   _phase2AnchorPoint: {x: 0, y: 0, z: 0}
 --- !u!114 &4106829751033654493
@@ -109,7 +109,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Enemy.SpreadRangedWeapon
   _firePoint: {fileID: 6135111936845537852}
   _projectilePrefab: {fileID: 1058448817960020412, guid: 58f6d19adaf13ab46a442acb5cf9d57f, type: 3}
-  _projectileCount: 16
+  _projectileCount: 8
   _spreadAngle: 360
   _poolDefaultCapacity: 50
   _poolMaxSize: 50
@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Enemy.MeleeWeapon
   _damage: 30
-  _attackRadius: 5
+  _attackRadius: 3
   _attackAngle: 180
   _targetMask:
     serializedVersion: 2
@@ -156,3 +156,14 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1831726894206219593, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
   m_PrefabInstance: {fileID: 5498844751671007093}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8568340251880471709 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4226362327493716968, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
+  m_PrefabInstance: {fileID: 5498844751671007093}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6114316751018144889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dbdfc0aa20c95a428e6c114fa1ac202, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Enemy.RangedWeapon

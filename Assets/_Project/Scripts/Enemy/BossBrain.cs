@@ -73,6 +73,11 @@ public class BossBrain : EnemyBrain
         // Run all base-class wiring first (agent, health, FSM, etc.)
         base.Awake();
 
+        // Procedural Dungeon Fix: If the inspector anchor is zero, assume the 
+        // room center is the exact spawn point of the Boss.
+        if (_phase2AnchorPoint == Vector3.zero) 
+            _phase2AnchorPoint = transform.position;
+
         // ── Parse the inspector array into IWeapon[] ─────────────────────
         _equippedBossWeapons = new IWeapon[_bossWeapons != null ? _bossWeapons.Length : 0];
         for (int i = 0; i < _equippedBossWeapons.Length; i++)
@@ -139,8 +144,17 @@ public class BossBrain : EnemyBrain
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    //  WEAPON API — called by Phase 2 state
+    //  WEAPON API & ATTACK OVERRIDE
     // ─────────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Wires the standard Phase 1 AttackState directly into the boss arsenal 
+    /// instead of the base _equippedWeapon.
+    /// </summary>
+    public override void PerformAttack()
+    {
+        ExecuteBossWeapon(0);
+    }
 
     /// <summary>
     /// Fires the weapon at the given index in the boss arsenal.
@@ -162,5 +176,15 @@ public class BossBrain : EnemyBrain
         }
 
         weapon.ExecuteAttack();
+    }
+
+    /// <summary>
+    /// Fetches the cooldown of the weapon at the given index.
+    /// Returns 1f as a safe fallback if the weapon is missing.
+    /// </summary>
+    public float GetBossWeaponCooldown(int index)
+    {
+        return (_equippedBossWeapons != null && index >= 0 && index < _equippedBossWeapons.Length && _equippedBossWeapons[index] != null) 
+            ? _equippedBossWeapons[index].Cooldown : 1f;
     }
 }

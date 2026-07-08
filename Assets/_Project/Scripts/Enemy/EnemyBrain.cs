@@ -242,7 +242,7 @@ public class AttackState : EnemyStateBase
         // Compare the monotonic clock against the last recorded
         // attack time. This check is immune to state re-entries
         // because _lastAttackTime is never touched in Enter().
-        if (Time.time >= _lastAttackTime + Brain.Stats.AttackCooldown)
+        if (Time.time >= _lastAttackTime + Brain.GetCurrentWeaponCooldown())
         {
             // Ejecutar la animación visual del ataque
             if (Brain.Anim != null)
@@ -405,6 +405,7 @@ public class EnemyBrain : MonoBehaviour
 
         // ── Apply SO data to the agent ───────────────────────
         Agent.speed = Stats.MoveSpeed;
+        Agent.stoppingDistance = Mathf.Max(0f, Stats.AttackRange - 0.5f);
 
         // ── Resolve and validate the IWeapon strategy ────────
         if (_weaponComponent != null)
@@ -572,7 +573,12 @@ public class EnemyBrain : MonoBehaviour
     // ATTACK
     // ----------------------------------------------------------
 
-    public void PerformAttack()
+    public virtual float GetCurrentWeaponCooldown()
+    {
+        return _equippedWeapon != null ? _equippedWeapon.Cooldown : Stats.AttackCooldown;
+    }
+
+    public virtual void PerformAttack()
     {
         _equippedWeapon?.ExecuteAttack();
     }

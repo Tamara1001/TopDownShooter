@@ -35,6 +35,12 @@ namespace TopDownShooter.Combat
     public interface IWeapon
     {
         /// <summary>
+        /// Minimum seconds between consecutive attacks.
+        /// Contexts (Player, EnemyBrain) check this to gate their fire rate.
+        /// </summary>
+        float Cooldown { get; }
+
+        /// <summary>
         /// Executes the weapon's primary attack logic.
         /// Called by <see cref="PlayerCombat"/> every time the Attack input fires.
         /// Implementations are responsible for their own fire-rate gating,

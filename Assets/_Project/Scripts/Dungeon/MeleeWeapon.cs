@@ -58,8 +58,19 @@ namespace TopDownShooter.Enemy
         // ----------------------------------------------------------
 
         [Header("Damage")]
-        [Tooltip("Flat damage applied to every IDamageable inside the hit cone.")]
-        [SerializeField] private int _damage = 20;
+        [Tooltip("Damage dealt per weapon hit. Overridden by WeaponDataSO.BaseDamage " +
+                 "when Configure() is called. Inspector value is the safe fallback.")]
+        [SerializeField] private int _damage = 10;
+
+        [Header("Cooldown Settings")]
+        [Tooltip("Fallback attack cooldown if no WeaponDataSO configures this weapon.")]
+        [SerializeField] private float _defaultCooldown = 1f;
+
+        // ----------------------------------------------------------
+        // IWEAPON PROPERTY
+        // ----------------------------------------------------------
+
+        public float Cooldown { get; private set; }
 
         [Header("Hit Detection")]
         [Tooltip("Radius of the OverlapSphere centered on this transform. " +
@@ -111,6 +122,7 @@ namespace TopDownShooter.Enemy
 
         private void Awake()
         {
+            Cooldown       = _defaultCooldown;
             _transform     = transform;
             _hitBuffer     = new Collider[_hitBufferSize];
             _cosHalfAngle  = Mathf.Cos(_attackAngle * 0.5f * Mathf.Deg2Rad);
@@ -231,6 +243,7 @@ namespace TopDownShooter.Enemy
             }
 
             _damage = stats.BaseDamage;
+            Cooldown = stats.AttackCooldown;
 
             // ► Part 3: inject stats.AttackRange into _attackRadius here
             //             once WeaponDataSO gains a dedicated range field.

@@ -37,9 +37,6 @@ public class BossPhase2State : EnemyStateBase
     //  CONFIGURATION
     // ─────────────────────────────────────────────────────────────────────
 
-    /// <summary>Seconds between each Phase 2 weapon burst.</summary>
-    private const float AttackCooldown = 0.6f;
-
     /// <summary>
     /// How close (in world units) the boss must be to its anchor before
     /// it stops repositioning and starts attacking.
@@ -134,7 +131,7 @@ public class BossPhase2State : EnemyStateBase
         // Always face the player while attacking.
         FacePlayer();
 
-        if (Time.time >= _lastAttackTime + AttackCooldown)
+        if (Time.time >= _lastAttackTime + _bossBrain.GetBossWeaponCooldown(1))
         {
             if (Brain.Anim != null)
                 Brain.Anim.SetTrigger("Attack");

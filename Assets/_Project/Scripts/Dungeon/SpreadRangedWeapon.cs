@@ -54,6 +54,15 @@ namespace TopDownShooter.Enemy
         [Header("Damage")]
         [SerializeField] private int _damage = 10;
 
+        [Header("Cooldown Settings")]
+        [SerializeField] private float _defaultCooldown = 1f;
+
+        // ----------------------------------------------------------
+        // IWEAPON PROPERTY
+        // ----------------------------------------------------------
+
+        public float Cooldown { get; private set; }
+
         // ----------------------------------------------------------
         // PRIVATE STATE
         // ----------------------------------------------------------
@@ -73,6 +82,8 @@ namespace TopDownShooter.Enemy
 
         private void Awake()
         {
+            Cooldown = _defaultCooldown;
+            _currentSpawnRotation = Quaternion.identity;
             ValidateReferences();
             InitialisePool();
         }
@@ -135,6 +146,7 @@ namespace TopDownShooter.Enemy
         {
             if (stats == null) return;
             _damage = stats.BaseDamage;
+            Cooldown = stats.AttackCooldown;
         }
 
         // ----------------------------------------------------------
@@ -143,8 +155,9 @@ namespace TopDownShooter.Enemy
 
         private Projectile CreateProjectile()
         {
-            // Even when instantiating new stock, we use the cached rotation.
-            Projectile instance = Instantiate(_projectilePrefab, _firePoint.position, _currentSpawnRotation);
+            // Instantiate at the base firePoint position and rotation.
+            // OnGetProjectile will snap it to the exact calculated _currentSpawnRotation.
+            Projectile instance = Instantiate(_projectilePrefab, _firePoint.position, _firePoint.rotation);
             
             instance.SetPool(_projectilePool);
             instance.SetDamage(_damage);
