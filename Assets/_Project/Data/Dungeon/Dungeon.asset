@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4db3f49505d005b4ba201a7da7908d5c, type: 3}
   m_Name: Dungeon
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Dungeon.DungeonConfigSO
-  _mainPathLength: 6
-  _maxBranches: 3
+  _mainPathLength: 3
+  _maxBranches: 1
   _availableRooms:
   - {fileID: 11400000, guid: 848e6881aecee7f4c82200a8dd3c380f, type: 2}
   - {fileID: 11400000, guid: 1557195e9cfe7cd4c8d88e1969acc140, type: 2}
+  - {fileID: 11400000, guid: 4a84447e5fbcfeb4ca8d7ed8e036dcef, type: 2}

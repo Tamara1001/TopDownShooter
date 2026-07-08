@@ -76,6 +76,13 @@ public class HealthComponent : MonoBehaviour, IDamageable
     /// </summary>
     public event Action OnDied;
 
+    /// <summary>
+    /// When true, all incoming damage is silently ignored.
+    /// Set by BossTransitionState during a phase-change cinematic
+    /// so the boss cannot be killed during its animation.
+    /// </summary>
+    public bool IsInvulnerable { get; set; } = false;
+
     // ----------------------------------------------------------
     // UNITY LIFECYCLE
     // ----------------------------------------------------------
@@ -111,6 +118,9 @@ public class HealthComponent : MonoBehaviour, IDamageable
     /// </param>
     public void TakeDamage(int amount)
     {
+        // Guard: silently ignore all damage while invulnerable.
+        if (IsInvulnerable) return;
+
         // Guard: silently ignore all damage once the entity is dead.
         // This prevents double-death triggers (e.g., two projectiles
         // hitting in the same frame) and keeps event logic clean.

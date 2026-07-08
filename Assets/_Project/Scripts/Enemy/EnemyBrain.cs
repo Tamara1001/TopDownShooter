@@ -380,7 +380,7 @@ public class EnemyBrain : MonoBehaviour
     // UNITY LIFECYCLE
     // ----------------------------------------------------------
 
-    private void Awake()
+    protected virtual void Awake()
     {
         // ── Resolve required components ──────────────────────
         Agent = GetComponent<NavMeshAgent>();
@@ -441,7 +441,7 @@ public class EnemyBrain : MonoBehaviour
             StartCoroutine(WaitForPlayer());
     }
 
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
         if (_health != null)
             _health.OnDied -= OnDeath;
