@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a46bc3cc5687ac4e88c8bb53bce6636, type: 3}
   m_Name: RoomData_Tresure
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Dungeon.RoomDataSO
-  _type: 1
-  _prefab: {fileID: 6951606062908258739, guid: 912328d0174620f4e90e1786f779a543, type: 3}
-  _weight: 10
+  _type: 2
+  _prefab: {fileID: 2751493676524330205, guid: bf33243d76a1de748af21b5c5ccee8ed, type: 3}
+  _weight: 5

@@ -37,7 +37,10 @@ namespace TopDownShooter.Dungeon
         Boss,
 
         /// <summary>Narrow connector between major rooms — optional encounters.</summary>
-        Corridor
+        Corridor,
+
+        /// <summary>Contains the key required to unlock the Boss door.</summary>
+        Key
     }
 
     /// <summary>

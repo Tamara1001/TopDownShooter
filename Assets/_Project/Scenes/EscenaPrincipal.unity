@@ -720,10 +720,6 @@ PrefabInstance:
       value: UI_Canvas
       objectReference: {fileID: 0}
     - target: {fileID: 8053214539570223339, guid: 2dbc96132dfd2b34aa88a2392a2ca153, type: 3}
-      propertyPath: _coinText
-      value: 
-      objectReference: {fileID: 2086292367}
-    - target: {fileID: 8053214539570223339, guid: 2dbc96132dfd2b34aa88a2392a2ca153, type: 3}
       propertyPath: playerHealth
       value: 
       objectReference: {fileID: 1524008157}
@@ -854,17 +850,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d8ecd4a83ba49740b6610d2b9934173, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Player.PlayerWallet
---- !u!114 &2086292367 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7764628446457119309, guid: 2dbc96132dfd2b34aa88a2392a2ca153, type: 3}
-  m_PrefabInstance: {fileID: 1090243789}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &3210477450207096191
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -90,10 +90,16 @@ namespace TopDownShooter.Dungeon
                  "main path length, and branch limits.")]
         [SerializeField] private DungeonConfigSO _config;
 
+        [Tooltip("Maximum number of branching rooms to spawn off the main path.")]
+        [SerializeField] private int _maxBranches = 3;
+
         [Header("Prefabs")]
         [Tooltip("Door/archway prefab spawned at every connected socket pair. " +
                  "Pass null to leave doorways visually open.")]
         [SerializeField] private GameObject _doorPrefab;
+        [SerializeField] private GameObject _doorPrefabBoss;
+        [SerializeField] private GameObject _doorPrefabTreasure;
+        [SerializeField] private GameObject _doorPrefabKey;
 
         [Header("Grid Settings")]
         [Tooltip("World-space size of one grid cell (room footprint). " +
@@ -218,7 +224,7 @@ namespace TopDownShooter.Dungeon
                 RoomController newRoom = SpawnRoom(roomData, targetCell);
 
                 // ── Step 4: Connect sockets ──────────────────────────────────
-                ConnectSockets(chosenSocket.Socket, newRoom, targetCell);
+                ConnectSockets(chosenSocket.Socket, newRoom, targetCell, desiredType);
 
                 // ── Step 5: Register the new room's open sockets ─────────────
                 RegisterOpenSockets(newRoom, targetCell);
@@ -227,15 +233,50 @@ namespace TopDownShooter.Dungeon
                           $"placed at cell {targetCell}. ({i + 2}/{_config.MainPathLength})");
             }
 
-            Debug.Log($"[DungeonGenerator] Generation complete. " +
+            Debug.Log($"[DungeonGenerator] Main path complete. " +
                       $"{_occupiedCells.Count} rooms placed, " +
                       $"{_availableSockets.Count} open socket(s) remaining.");
 
-            // ── Step 6: Bake NavMesh ─────────────────────────────────────────
+            // ── Step 6: Generate Branches ────────────────────────────────────
+            GenerateBranches();
+
+            // ── Step 7: Bake NavMesh ─────────────────────────────────────────
             if (_navMeshSurface != null)
             {
                 Debug.Log("[DungeonGenerator] Baking NavMesh...");
                 _navMeshSurface.BuildNavMesh();
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        //  BRANCH SPAWNING
+        // ─────────────────────────────────────────────────────────────────────
+
+        private void GenerateBranches()
+        {
+            bool hasSpawnedKeyRoom = false;
+
+            for (int i = 0; i < _maxBranches; i++)
+            {
+                SocketData chosenSocket = FindValidSocket();
+                if (chosenSocket == null) break;
+
+                RoomType targetType = !hasSpawnedKeyRoom ? RoomType.Key : RoomType.Treasure;
+                RoomDataSO roomData = PickWeightedRoom(targetType);
+
+                if (roomData == null) continue;
+
+                Vector2Int targetCell = chosenSocket.TargetGridPos;
+                RoomController newRoom = SpawnRoom(roomData, targetCell);
+
+                ConnectSockets(chosenSocket.Socket, newRoom, targetCell, targetType);
+                RegisterOpenSockets(newRoom, targetCell);
+
+                if (targetType == RoomType.Key)
+                    hasSpawnedKeyRoom = true;
+
+                Debug.Log($"[DungeonGenerator] Branch '{roomData.name}' ({roomData.Type}) " +
+                          $"placed at cell {targetCell}.");
             }
         }
 
@@ -279,7 +320,7 @@ namespace TopDownShooter.Dungeon
         /// socket on the newly-spawned room. Both sockets receive a door prefab.
         /// </summary>
         private void ConnectSockets(RoomSocket originSocket, RoomController newRoom,
-                                    Vector2Int newRoomCell)
+                                    Vector2Int newRoomCell, RoomType targetRoomType)
         {
             // The new room's matching socket faces the opposite direction.
             SocketDirection oppositeDir =
@@ -289,10 +330,18 @@ namespace TopDownShooter.Dungeon
                 ? newRoom.GetAvailableSocket(oppositeDir)
                 : null;
 
+            GameObject selectedDoorPrefab = _doorPrefab;
+            if (targetRoomType == RoomType.Boss && _doorPrefabBoss != null)
+                selectedDoorPrefab = _doorPrefabBoss;
+            else if (targetRoomType == RoomType.Treasure && _doorPrefabTreasure != null)
+                selectedDoorPrefab = _doorPrefabTreasure;
+            else if (targetRoomType == RoomType.Key && _doorPrefabKey != null)
+                selectedDoorPrefab = _doorPrefabKey;
+
             DoorController door = null;
-            if (_doorPrefab != null)
+            if (selectedDoorPrefab != null)
             {
-                GameObject doorObj = Instantiate(_doorPrefab, originSocket.transform.position, originSocket.transform.rotation, _dungeonRoot);
+                GameObject doorObj = Instantiate(selectedDoorPrefab, originSocket.transform.position, originSocket.transform.rotation, _dungeonRoot);
                 door = doorObj.GetComponent<DoorController>();
             }
 
