@@ -72,6 +72,10 @@ PrefabInstance:
       propertyPath: _environmentPrefabs.Array.size
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
+      propertyPath: '_environmentPrefabs.Array.data[0]'
+      value: 
+      objectReference: {fileID: 7453833658395276498, guid: 7705d650f87baf14b8017c23035ffdb0, type: 3}
     - target: {fileID: 6951606062908258739, guid: 912328d0174620f4e90e1786f779a543, type: 3}
       propertyPath: m_Name
       value: RoomBoss

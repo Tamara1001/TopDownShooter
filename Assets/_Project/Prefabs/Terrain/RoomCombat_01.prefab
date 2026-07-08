@@ -176,10 +176,6 @@ MonoBehaviour:
   _lootPrefabs:
   - {fileID: 7895305420626617815, guid: 3a6d80a381836b943a02338bdcb2a2c7, type: 3}
   - {fileID: 8798472225139276962, guid: e4cfb90508df27343818f7681caf56a5, type: 3}
-  - {fileID: 4360859798671961301, guid: 3e1ec870f65bb9942ab55915cb31c010, type: 3}
-  - {fileID: 6448227493324704502, guid: ef618727e07a1c047945a650acc28d34, type: 3}
-  - {fileID: 8584310591438422609, guid: a9eeff1bff1bca346a47ff96a4d43b57, type: 3}
-  - {fileID: 6697602429799922056, guid: a0478012a6e9c6d4f9c3914362f75557, type: 3}
 --- !u!65 &4628475581950018652
 BoxCollider:
   m_ObjectHideFlags: 0

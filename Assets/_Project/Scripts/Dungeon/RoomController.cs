@@ -29,6 +29,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TopDownShooter.Combat;
+using TopDownShooter.Enemy;
+using TopDownShooter.Managers.UI;
 
 namespace TopDownShooter.Dungeon
 {
@@ -223,6 +225,11 @@ namespace TopDownShooter.Dungeon
                             {
                                 _activeEnemyCount++;
                                 health.OnDied += HandleEnemyDeath;
+                                
+                                if (enemyInstance.TryGetComponent<BossBrain>(out BossBrain boss))
+                                {
+                                    BossHUD.Instance?.ShowBossUI("Crypt King", health);
+                                }
                             }
                             else
                             {
