@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnemyBoss
       objectReference: {fileID: 0}
+    - target: {fileID: 2845744679290218663, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6342478605904371352, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -55,7 +59,10 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 4448471671806268483, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6342478605904371352, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7474165740669715967}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1771525001195234060, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
       insertIndex: -1
@@ -70,6 +77,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: -856304482983708142}
   m_SourcePrefab: {fileID: 100100000, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
+--- !u!4 &1462210392337861101 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6342478605904371352, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
+  m_PrefabInstance: {fileID: 5498844751671007093}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &6114316751018144889 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1771525001195234060, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
@@ -114,6 +126,7 @@ MonoBehaviour:
   _poolDefaultCapacity: 50
   _poolMaxSize: 50
   _damage: 10
+  _defaultCooldown: 1
 --- !u!114 &1226290567209089984
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,6 +140,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Enemy.MeleeWeapon
   _damage: 30
+  _defaultCooldown: 1
   _attackRadius: 3
   _attackAngle: 180
   _targetMask:
@@ -167,3 +181,77 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3dbdfc0aa20c95a428e6c114fa1ac202, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Enemy.RangedWeapon
+--- !u!1001 &6931931914110378516
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1462210392337861101}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: fc53076d67e9f5b4a8dd309193d22785, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: fc53076d67e9f5b4a8dd309193d22785, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: fc53076d67e9f5b4a8dd309193d22785, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: fc53076d67e9f5b4a8dd309193d22785, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: fc53076d67e9f5b4a8dd309193d22785, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.05
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: fc53076d67e9f5b4a8dd309193d22785, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.105
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: fc53076d67e9f5b4a8dd309193d22785, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: fc53076d67e9f5b4a8dd309193d22785, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: fc53076d67e9f5b4a8dd309193d22785, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: fc53076d67e9f5b4a8dd309193d22785, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: fc53076d67e9f5b4a8dd309193d22785, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: fc53076d67e9f5b4a8dd309193d22785, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: fc53076d67e9f5b4a8dd309193d22785, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: fc53076d67e9f5b4a8dd309193d22785, type: 3}
+      propertyPath: m_Name
+      value: Ghost_Skull
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: fc53076d67e9f5b4a8dd309193d22785, type: 3}
+--- !u!4 &7474165740669715967 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: fc53076d67e9f5b4a8dd309193d22785, type: 3}
+  m_PrefabInstance: {fileID: 6931931914110378516}
+  m_PrefabAsset: {fileID: 0}
