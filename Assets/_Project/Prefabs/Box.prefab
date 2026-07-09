@@ -155,7 +155,7 @@ MonoBehaviour:
   _minDrops: 1
   _maxDrops: 3
   _lootTable:
-  - Prefab: {fileID: 6089502704899512293, guid: 6a6e46f464b40a245910f1f756a1444a, type: 3}
-    DropChance: 100
   - Prefab: {fileID: 4758015457026431527, guid: c6efc762569ac6043b423aa5706d9f24, type: 3}
+    DropChance: 100
+  - Prefab: {fileID: 6089502704899512293, guid: 6a6e46f464b40a245910f1f756a1444a, type: 3}
     DropChance: 100

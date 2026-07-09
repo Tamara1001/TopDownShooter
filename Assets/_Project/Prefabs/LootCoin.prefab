@@ -68,7 +68,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: LootCoin
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8093574645257617648, guid: 448f00ffab1a41e478b2ba3164ecb27e, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 2996492696521445339, guid: 448f00ffab1a41e478b2ba3164ecb27e, type: 3}
