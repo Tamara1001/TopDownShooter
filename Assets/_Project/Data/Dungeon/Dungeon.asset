@@ -17,5 +17,6 @@ MonoBehaviour:
   _availableRooms:
   - {fileID: 11400000, guid: 848e6881aecee7f4c82200a8dd3c380f, type: 2}
   - {fileID: 11400000, guid: 1557195e9cfe7cd4c8d88e1969acc140, type: 2}
-  - {fileID: 11400000, guid: 4a84447e5fbcfeb4ca8d7ed8e036dcef, type: 2}
   - {fileID: 11400000, guid: 7e0075858b1cc3c4e8f32e434f3ff603, type: 2}
+  - {fileID: 11400000, guid: 0c9f7d87fd56178408ff76754e008285, type: 2}
+  - {fileID: 11400000, guid: 4a84447e5fbcfeb4ca8d7ed8e036dcef, type: 2}
