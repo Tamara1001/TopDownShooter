@@ -100,6 +100,7 @@ namespace TopDownShooter.Dungeon
         [SerializeField] private GameObject _doorPrefabBoss;
         [SerializeField] private GameObject _doorPrefabTreasure;
         [SerializeField] private GameObject _doorPrefabKey;
+        [SerializeField] private GameObject _victoryDoorPrefab;
 
         [Header("Grid Settings")]
         [Tooltip("World-space size of one grid cell (room footprint). " +
@@ -183,6 +184,7 @@ namespace TopDownShooter.Dungeon
             // MainPathLength includes the Start room, so we need
             // (MainPathLength - 1) more rooms. The last one is the Boss.
             int roomsToPlace = _config.MainPathLength - 1;
+            RoomController bossRoomInstance = null;
 
             for (int i = 0; i < roomsToPlace; i++)
             {
@@ -223,6 +225,11 @@ namespace TopDownShooter.Dungeon
                 Vector2Int targetCell = chosenSocket.TargetGridPos;
                 RoomController newRoom = SpawnRoom(roomData, targetCell);
 
+                if (isFinalRoom)
+                {
+                    bossRoomInstance = newRoom;
+                }
+
                 // ── Step 4: Connect sockets ──────────────────────────────────
                 ConnectSockets(chosenSocket.Socket, newRoom, targetCell, desiredType);
 
@@ -240,7 +247,10 @@ namespace TopDownShooter.Dungeon
             // ── Step 6: Generate Branches ────────────────────────────────────
             GenerateBranches();
 
-            // ── Step 7: Bake NavMesh ─────────────────────────────────────────
+            // ── Step 7: Spawn Victory Door ───────────────────────────────────
+            SpawnVictoryDoor(bossRoomInstance);
+
+            // ── Step 8: Bake NavMesh ─────────────────────────────────────────
             if (_navMeshSurface != null)
             {
                 Debug.Log("[DungeonGenerator] Baking NavMesh...");
@@ -277,6 +287,23 @@ namespace TopDownShooter.Dungeon
 
                 Debug.Log($"[DungeonGenerator] Branch '{roomData.name}' ({roomData.Type}) " +
                           $"placed at cell {targetCell}.");
+            }
+        }
+
+        private void SpawnVictoryDoor(RoomController bossRoom)
+        {
+            if (bossRoom == null || _victoryDoorPrefab == null) return;
+
+            IReadOnlyList<RoomSocket> sockets = bossRoom.Sockets;
+            for (int i = 0; i < sockets.Count; i++)
+            {
+                RoomSocket socket = sockets[i];
+                if (!socket.IsConnected)
+                {
+                    Instantiate(_victoryDoorPrefab, socket.transform.position, socket.transform.rotation, _dungeonRoot);
+                    socket.AssignDoor(null);
+                    break;
+                }
             }
         }
 

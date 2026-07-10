@@ -121,7 +121,7 @@ PrefabInstance:
     - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
       propertyPath: '_lootPrefabs.Array.data[0]'
       value: 
-      objectReference: {fileID: 919132149155446097, guid: a99adfdbb6ef95b47aacfaa7f93d456d, type: 3}
+      objectReference: {fileID: 4360859798671961301, guid: 3e1ec870f65bb9942ab55915cb31c010, type: 3}
     - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
       propertyPath: '_lootPrefabs.Array.data[1]'
       value: 

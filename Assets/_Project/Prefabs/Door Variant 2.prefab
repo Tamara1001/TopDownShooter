@@ -187,10 +187,43 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1648463775989750968, guid: 4aa2b69cb058d17458210003b393cea7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4850587071609040204}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3060944993803575908, guid: 4aa2b69cb058d17458210003b393cea7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4878316265749675996}
   m_SourcePrefab: {fileID: 100100000, guid: 4aa2b69cb058d17458210003b393cea7, type: 3}
 --- !u!4 &4631903835863077711 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1648463775989750968, guid: 4aa2b69cb058d17458210003b393cea7, type: 3}
   m_PrefabInstance: {fileID: 6244054986202058743}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7080718582214315625 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -5412039342263582306, guid: 4aa2b69cb058d17458210003b393cea7, type: 3}
+  m_PrefabInstance: {fileID: 6244054986202058743}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8997628746537676179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36d8129f0c7ca8a47b51685deaefc9cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Dungeon.DoorController
+--- !u!1 &8997628746537676179 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3060944993803575908, guid: 4aa2b69cb058d17458210003b393cea7, type: 3}
+  m_PrefabInstance: {fileID: 6244054986202058743}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4878316265749675996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8997628746537676179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4365677e1913f3498222cc3261d86b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.World.LockedBossDoor
+  _requiredKey: {fileID: 11400000, guid: a07f284bd653f6642807624f0dae3e4d, type: 2}
+  _doorController: {fileID: 7080718582214315625}
