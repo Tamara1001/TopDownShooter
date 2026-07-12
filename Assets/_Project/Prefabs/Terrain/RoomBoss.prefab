@@ -76,6 +76,10 @@ PrefabInstance:
       propertyPath: '_environmentPrefabs.Array.data[0]'
       value: 
       objectReference: {fileID: 7453833658395276498, guid: 7705d650f87baf14b8017c23035ffdb0, type: 3}
+    - target: {fileID: 4676310611944467010, guid: 912328d0174620f4e90e1786f779a543, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e7f9ebc111826fe41af8daede2d5210d, type: 2}
     - target: {fileID: 6951606062908258739, guid: 912328d0174620f4e90e1786f779a543, type: 3}
       propertyPath: m_Name
       value: RoomBoss
