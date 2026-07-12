@@ -28,7 +28,7 @@ namespace TopDownShooter.Loot
         [Tooltip("Maximum number of items to drop.")]
         [SerializeField] private int _maxDrops = 3;
         
-        [Tooltip("List of items that can drop. Evaluated in order per drop iteration.")]
+        [Tooltip("List of items that can drop. Selection uses cumulative weighted random — every entry's chance is proportional to its DropChance weight.")]
         [SerializeField] private LootEntry[] _lootTable;
 
         private HealthComponent _health;
@@ -44,23 +44,49 @@ namespace TopDownShooter.Loot
             // Unsubscribe to prevent multiple executions if OnDied fires again.
             _health.OnDied -= HandleDeath;
 
-            // Determine how many items we are going to attempt to drop
+            // --- Cumulative Weighted Random Setup ---
+            // Sum the DropChance of every valid entry to form the total weight pool.
+            float totalWeight = 0f;
+            foreach (LootEntry entry in _lootTable)
+            {
+                if (entry.Prefab != null)
+                    totalWeight += entry.DropChance;
+            }
+
+            // Nothing to drop if the table is empty or all weights are zero.
+            if (totalWeight <= 0f) return;
+
+            // Determine how many items we are going to drop.
             int dropCount = UnityEngine.Random.Range(_minDrops, _maxDrops + 1);
-            
+
             for (int i = 0; i < dropCount; i++)
             {
-                // Iterate through the loot table
+                // Roll once against the full weight pool so every item's probability
+                // is proportional to its DropChance, regardless of array position.
+                float roll = UnityEngine.Random.Range(0f, totalWeight);
+
                 for (int j = 0; j < _lootTable.Length; j++)
                 {
                     LootEntry entry = _lootTable[j];
-                    float roll = UnityEngine.Random.Range(0f, 100f);
-                    
-                    if (roll <= entry.DropChance && entry.Prefab != null)
+
+                    if (entry.Prefab == null) continue;
+
+                    // Consume this entry's weight from the roll.
+                    roll -= entry.DropChance;
+
+                    // When roll is exhausted, this entry wins the selection.
+                    if (roll <= 0f)
                     {
-                        // Spawn the loot slightly above the object to prevent clipping
-                        Instantiate(entry.Prefab, transform.position + (Vector3.up * 0.5f), Quaternion.identity);
-                        
-                        // We found an item for this drop iteration, move on to the next drop
+                        // Spawn with a small random horizontal jitter so simultaneous
+                        // drops don't perfectly overlap each other.
+                        Vector3 jitter = new Vector3(
+                            UnityEngine.Random.Range(-0.3f, 0.3f),
+                            0.5f,
+                            UnityEngine.Random.Range(-0.3f, 0.3f));
+
+                        Instantiate(entry.Prefab, transform.position + jitter, Quaternion.identity);
+
+                        // Item selected for this iteration — move to the next drop.
                         break;
                     }
                 }
