@@ -18,5 +18,5 @@ MonoBehaviour:
   _dropPrefab: {fileID: 8798472225139276962, guid: e4cfb90508df27343818f7681caf56a5, type: 3}
   _isQuestItem: 0
   _healAmount: 0
-  _effectDuration: 10
-  _speedBoostMultiplier: 2
+  _effectDuration: 5
+  _speedBoostMultiplier: 1.2

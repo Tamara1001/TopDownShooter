@@ -49,6 +49,11 @@ namespace TopDownShooter.Dungeon
 
         private enum RoomState { Waiting, Active, Cleared }
 
+        [Header("Room Identity")]
+        [Tooltip("The gameplay role of this room. Must match the RoomDataSO Type used " +
+                 "to spawn this prefab so the generator selects the correct door prefab.")]
+        [SerializeField] private RoomType _roomType;
+
         [Header("Spawning")]
         [SerializeField] private GameObject[] _enemyPrefabs;
         [SerializeField] private GameObject[] _environmentPrefabs;
@@ -66,6 +71,13 @@ namespace TopDownShooter.Dungeon
         // ─────────────────────────────────────────────────────────────────────
         //  READ-ONLY PROPERTIES
         // ─────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// The gameplay role of this room as set in the prefab Inspector.
+        /// Used by <see cref="DungeonGenerator"/> to pick the correct door prefab
+        /// when connecting two rooms — this is the single authoritative source.
+        /// </summary>
+        public RoomType Type => _roomType;
 
         /// <summary>
         /// All doorway sockets discovered in this room's hierarchy.

@@ -9698,6 +9698,7 @@ GameObject:
   - component: {fileID: 497815550695425005}
   - component: {fileID: 8778862385833087802}
   - component: {fileID: 1581015336521211626}
+  - component: {fileID: 34799882936160026}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -10096,6 +10097,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dd5eeb705448074b99ea839758bbc33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDamageFeedback
+--- !u!114 &34799882936160026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6357198947062999068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d8ecd4a83ba49740b6610d2b9934173, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Player.PlayerWallet
 --- !u!1001 &8816203440539135672
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -16,7 +16,7 @@ MonoBehaviour:
   _displayName: Grimorio de Fuego
   _icon: {fileID: 21300000, guid: 41001e7536e85684c9dd0f34dbdc4dac, type: 3}
   _dropPrefab: {fileID: 6697602429799922056, guid: a0478012a6e9c6d4f9c3914362f75557, type: 3}
-  _baseDamage: 15
+  _baseDamage: 20
   _attackCooldown: 0.25
   _resourceType: 1
   _resourceCost: 5

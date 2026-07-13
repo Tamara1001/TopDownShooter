@@ -111,8 +111,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
-      propertyPath: _lootPrefabs.Array.size
+      propertyPath: _roomType
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
+      propertyPath: _lootPrefabs.Array.size
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
       propertyPath: _enemyPrefabs.Array.size
@@ -121,11 +125,23 @@ PrefabInstance:
     - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
       propertyPath: '_lootPrefabs.Array.data[0]'
       value: 
-      objectReference: {fileID: 6448227493324704502, guid: ef618727e07a1c047945a650acc28d34, type: 3}
+      objectReference: {fileID: 6697602429799922056, guid: a0478012a6e9c6d4f9c3914362f75557, type: 3}
     - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
       propertyPath: '_lootPrefabs.Array.data[1]'
       value: 
-      objectReference: {fileID: 6697602429799922056, guid: a0478012a6e9c6d4f9c3914362f75557, type: 3}
+      objectReference: {fileID: 6448227493324704502, guid: ef618727e07a1c047945a650acc28d34, type: 3}
+    - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
+      propertyPath: '_lootPrefabs.Array.data[2]'
+      value: 
+      objectReference: {fileID: 8139866486074890665, guid: f09b75219094a3b4ea266d60a8ac16ab, type: 3}
+    - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
+      propertyPath: '_lootPrefabs.Array.data[3]'
+      value: 
+      objectReference: {fileID: 3467533474170925825, guid: a00ff01823815884cad25ebc80f944be, type: 3}
+    - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
+      propertyPath: '_lootPrefabs.Array.data[4]'
+      value: 
+      objectReference: {fileID: 6448227493324704502, guid: ef618727e07a1c047945a650acc28d34, type: 3}
     - target: {fileID: 6951606062908258739, guid: 912328d0174620f4e90e1786f779a543, type: 3}
       propertyPath: m_Name
       value: RoomTreasure

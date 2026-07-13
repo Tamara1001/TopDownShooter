@@ -111,6 +111,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
+      propertyPath: _roomType
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
       propertyPath: _lootPrefabs.Array.size
       value: 1
       objectReference: {fileID: 0}

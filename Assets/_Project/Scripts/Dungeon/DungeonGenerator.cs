@@ -231,7 +231,7 @@ namespace TopDownShooter.Dungeon
                 }
 
                 // ── Step 4: Connect sockets ──────────────────────────────────
-                ConnectSockets(chosenSocket.Socket, newRoom, targetCell, desiredType);
+                ConnectSockets(chosenSocket.Socket, newRoom, targetCell);
 
                 // ── Step 5: Register the new room's open sockets ─────────────
                 RegisterOpenSockets(newRoom, targetCell);
@@ -279,7 +279,7 @@ namespace TopDownShooter.Dungeon
                 Vector2Int targetCell = chosenSocket.TargetGridPos;
                 RoomController newRoom = SpawnRoom(roomData, targetCell);
 
-                ConnectSockets(chosenSocket.Socket, newRoom, targetCell, targetType);
+                ConnectSockets(chosenSocket.Socket, newRoom, targetCell);
                 RegisterOpenSockets(newRoom, targetCell);
 
                 if (targetType == RoomType.Key)
@@ -344,10 +344,13 @@ namespace TopDownShooter.Dungeon
 
         /// <summary>
         /// Connects the origin socket (on an existing room) to the matching
-        /// socket on the newly-spawned room. Both sockets receive a door prefab.
+        /// socket on the newly-spawned room. Selects the door prefab based
+        /// strictly on <paramref name="newRoom"/>.Type — the prefab's own
+        /// declared <see cref="RoomType"/> — so the prefab is the single
+        /// source of truth and caller intent cannot cause mismatches.
         /// </summary>
         private void ConnectSockets(RoomSocket originSocket, RoomController newRoom,
-                                    Vector2Int newRoomCell, RoomType targetRoomType)
+                                    Vector2Int newRoomCell)
         {
             // The new room's matching socket faces the opposite direction.
             SocketDirection oppositeDir =
@@ -357,12 +360,18 @@ namespace TopDownShooter.Dungeon
                 ? newRoom.GetAvailableSocket(oppositeDir)
                 : null;
 
+            // Door prefab is chosen from the DESTINATION room's RoomType.
+            // This guarantees e.g. _doorPrefabBoss only appears at Boss room
+            // entrances, regardless of where in the algorithm ConnectSockets
+            // is invoked.
+            RoomType targetType = (newRoom != null) ? newRoom.Type : RoomType.Combat;
+
             GameObject selectedDoorPrefab = _doorPrefab;
-            if (targetRoomType == RoomType.Boss && _doorPrefabBoss != null)
+            if      (targetType == RoomType.Boss     && _doorPrefabBoss     != null)
                 selectedDoorPrefab = _doorPrefabBoss;
-            else if (targetRoomType == RoomType.Treasure && _doorPrefabTreasure != null)
+            else if (targetType == RoomType.Treasure && _doorPrefabTreasure != null)
                 selectedDoorPrefab = _doorPrefabTreasure;
-            else if (targetRoomType == RoomType.Key && _doorPrefabKey != null)
+            else if (targetType == RoomType.Key      && _doorPrefabKey      != null)
                 selectedDoorPrefab = _doorPrefabKey;
 
             DoorController door = null;

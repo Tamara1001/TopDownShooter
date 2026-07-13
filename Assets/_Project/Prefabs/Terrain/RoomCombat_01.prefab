@@ -167,6 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a4f9fb085e17574d93b2be9bdc35170, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Dungeon.RoomController
+  _roomType: 1
   _enemyPrefabs:
   - {fileID: 8970394363826350548, guid: 9c1576a1e50a18c4db6c266bee27c38b, type: 3}
   - {fileID: 5869930736125489470, guid: c33ea4c4ea3ac3349bb05db5435efe2a, type: 3}
