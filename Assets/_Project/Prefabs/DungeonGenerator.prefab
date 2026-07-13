@@ -48,9 +48,10 @@ MonoBehaviour:
   _config: {fileID: 11400000, guid: 9cc366c1c8c784249a8b45c2462cd158, type: 2}
   _maxBranches: 3
   _doorPrefab: {fileID: 3060944993803575908, guid: 4aa2b69cb058d17458210003b393cea7, type: 3}
-  _doorPrefabBoss: {fileID: 7453833658395276498, guid: 7705d650f87baf14b8017c23035ffdb0, type: 3}
-  _doorPrefabTreasure: {fileID: 7453833658395276498, guid: 7705d650f87baf14b8017c23035ffdb0, type: 3}
-  _doorPrefabKey: {fileID: 7453833658395276498, guid: 7705d650f87baf14b8017c23035ffdb0, type: 3}
+  _doorPrefabBoss: {fileID: 8997628746537676179, guid: 8360f115d122f2c44a41867c4192d922, type: 3}
+  _doorPrefabTreasure: {fileID: 6911519372424336523, guid: ec1c8bb0b55d094459d80d04995913a3, type: 3}
+  _doorPrefabKey: {fileID: 6911519372424336523, guid: ec1c8bb0b55d094459d80d04995913a3, type: 3}
+  _victoryDoorPrefab: {fileID: 5124582640063692109, guid: fd75068820a7caf44a53d086eca9df6f, type: 3}
   _cellSize: 20
   _navMeshSurface: {fileID: 4839245270500841923}
 --- !u!114 &4839245270500841923
