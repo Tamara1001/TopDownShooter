@@ -40,6 +40,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4833488605506697129, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
+      propertyPath: maxHealth
+      value: 500
+      objectReference: {fileID: 0}
     - target: {fileID: 6342478605904371352, guid: 862aa6a6f8744164bbba5d63aaa950c7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -126,6 +130,7 @@ MonoBehaviour:
   - {fileID: 1226290567209089984}
   - {fileID: 4106829751033654493}
   - {fileID: 8568340251880471709}
+  _bossDisplayName: Jefe Final
   _phase2HealthThreshold: 0.5
   _phase2AnchorPoint: {x: 0, y: 0, z: 0}
 --- !u!114 &4106829751033654493
@@ -147,7 +152,7 @@ MonoBehaviour:
   _poolDefaultCapacity: 50
   _poolMaxSize: 50
   _damage: 10
-  _defaultCooldown: 1
+  _defaultCooldown: 3
 --- !u!114 &1226290567209089984
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160,10 +165,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a9e6abec95bd1f42a52e204469c7889, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Enemy.MeleeWeapon
-  _damage: 30
-  _defaultCooldown: 1
+  _damage: 10
+  _defaultCooldown: 2
   _attackRadius: 3
-  _attackAngle: 180
+  _attackAngle: 90
   _targetMask:
     serializedVersion: 2
     m_Bits: 8

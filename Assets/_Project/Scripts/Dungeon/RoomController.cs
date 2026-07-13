@@ -240,7 +240,7 @@ namespace TopDownShooter.Dungeon
                                 
                                 if (enemyInstance.TryGetComponent<BossBrain>(out BossBrain boss))
                                 {
-                                    BossHUD.Instance?.ShowBossUI("Crypt King", health);
+                                    BossHUD.Instance?.ShowBossUI(boss.BossDisplayName, health);
                                 }
                             }
                             else

@@ -327,6 +327,14 @@ namespace TopDownShooter.Combat
             // Only react to the press event, not the release.
             if (!value.isPressed) return;
 
+            // ── Game-state gate ───────────────────────────────────────────────
+            // Block all shooting outside of Playing state (death, victory, pause,
+            // menus). This prevents the death/victory animation from being
+            // interrupted by a stray click registering a weapon fire.
+            if (GameManager.Instance == null ||
+                GameManager.Instance.CurrentState != GameManager.GameState.Playing)
+                return;
+
             // Global gate — FSM or cutscene systems can disable attacks externally.
             if (!canAttack) return;
 

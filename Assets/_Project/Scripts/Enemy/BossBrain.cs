@@ -38,6 +38,11 @@ public class BossBrain : EnemyBrain
              "Index 0 = Phase 1 primary, Index 1 = Phase 2 ranged, etc.")]
     [SerializeField] private MonoBehaviour[] _bossWeapons;
 
+    [Header("Identity")]
+    [Tooltip("Display name shown in the Boss HUD. Change per-prefab so the " +
+             "string is never hardcoded in RoomController.")]
+    [SerializeField] private string _bossDisplayName = "Crypt King";
+
     [Header("Phases")]
     [Tooltip("Normalised health (0–1) at which Phase 2 triggers. " +
              "Default 0.5 = triggers at 50 % HP.")]
@@ -57,6 +62,9 @@ public class BossBrain : EnemyBrain
     // ─────────────────────────────────────────────────────────────────────
     //  PUBLIC STATE
     // ─────────────────────────────────────────────────────────────────────
+
+    /// <summary>Display name used by the Boss HUD. Set in the Inspector.</summary>
+    public string BossDisplayName => _bossDisplayName;
 
     /// <summary>True once Phase 2 has been triggered (never resets).</summary>
     public bool IsInPhase2 { get; private set; }

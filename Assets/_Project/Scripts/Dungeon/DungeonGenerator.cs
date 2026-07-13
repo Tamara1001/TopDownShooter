@@ -16,7 +16,10 @@
 //        – If occupied, discard that socket and try another.
 //        – If free, spawn a room there.
 //     c. Connect both sockets (origin ↔ new room).
-//     d. Register the new room's unconnected sockets into the frontier.
+//     d. Register the new room’s unconnected sockets into the frontier
+//        UNLESS it is the final Boss room — Boss sockets are withheld
+//        entirely so GenerateBranches() cannot attach anything to them,
+//        making the Boss room a guaranteed terminal dead-end.
 //  3. Repeat until MainPathLength rooms are placed (or the frontier is
 //     exhausted — a graceful early exit).
 //
@@ -234,10 +237,19 @@ namespace TopDownShooter.Dungeon
                 ConnectSockets(chosenSocket.Socket, newRoom, targetCell);
 
                 // ── Step 5: Register the new room's open sockets ─────────────
-                RegisterOpenSockets(newRoom, targetCell);
+                // CRITICAL: Boss room sockets are intentionally WITHHELD from
+                // the frontier. If we registered them, GenerateBranches() could
+                // attach a Key or Treasure room directly to the Boss room,
+                // creating a path that bypasses the locked-door boundary from
+                // an adjacent wall. The Boss room must be a terminal dead-end.
+                if (!isFinalRoom)
+                {
+                    RegisterOpenSockets(newRoom, targetCell);
+                }
 
                 Debug.Log($"[DungeonGenerator] Room '{roomData.name}' ({roomData.Type}) " +
-                          $"placed at cell {targetCell}. ({i + 2}/{_config.MainPathLength})");
+                          $"placed at cell {targetCell}. ({i + 2}/{_config.MainPathLength})"
+                          + (isFinalRoom ? " [TERMINAL — sockets withheld from frontier]" : ""));
             }
 
             Debug.Log($"[DungeonGenerator] Main path complete. " +

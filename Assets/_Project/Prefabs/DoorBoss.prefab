@@ -55,7 +55,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 3edef89f72c9fba409f60b927febe7db, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 49e61b747178f1e44b9e3b116c8c6151, type: 2}
+      objectReference: {fileID: 2100000, guid: 633fe0808b63ec8438428db8871ecdc8, type: 2}
     - target: {fileID: 919132149155446097, guid: 3edef89f72c9fba409f60b927febe7db, type: 3}
       propertyPath: m_Name
       value: Card backing (1)
@@ -129,7 +129,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 3edef89f72c9fba409f60b927febe7db, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 49e61b747178f1e44b9e3b116c8c6151, type: 2}
+      objectReference: {fileID: 2100000, guid: 633fe0808b63ec8438428db8871ecdc8, type: 2}
     - target: {fileID: 919132149155446097, guid: 3edef89f72c9fba409f60b927febe7db, type: 3}
       propertyPath: m_Name
       value: Card backing
@@ -285,6 +285,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.World.LockedBossDoor
   _requiredKey: {fileID: 11400000, guid: a07f284bd653f6642807624f0dae3e4d, type: 2}
   _doorController: {fileID: 7080718582214315625}
+  _approachGlowColor: {r: 1.2, g: 0.8, b: 0, a: 1}
+  _denyFlashColor: {r: 2.5, g: 0.1, b: 0, a: 1}
+  _flashDuration: 0.35
 --- !u!65 &5388127226003547124
 BoxCollider:
   m_ObjectHideFlags: 0

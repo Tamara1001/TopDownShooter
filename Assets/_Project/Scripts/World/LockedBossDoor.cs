@@ -12,6 +12,7 @@
 //   RoomController.ClearRoom() from bypassing the key requirement.
 // =============================================================================
 
+using System.Collections;
 using UnityEngine;
 using TopDownShooter.Inventory;
 using TopDownShooter.Player;
@@ -34,6 +35,16 @@ namespace TopDownShooter.World
         [Tooltip("The visual and physical door controller to act upon when unlocked.")]
         [SerializeField] private DoorController _doorController;
 
+        [Header("Visual Feedback")]
+        [Tooltip("HDR color pulsed onto the door emission when the player is in range.")]
+        [SerializeField] private Color _approachGlowColor = new Color(1.2f, 0.8f, 0f, 1f);  // amber HDR
+
+        [Tooltip("HDR color briefly flashed when the player tries to open without the key.")]
+        [SerializeField] private Color _denyFlashColor = new Color(2.5f, 0.1f, 0f, 1f);     // red HDR
+
+        [Tooltip("Duration (seconds) of the deny flash cycle.")]
+        [SerializeField] [Range(0.1f, 1f)] private float _flashDuration = 0.35f;
+
         // ── IDoorLock implementation ──────────────────────────────────────────
         // DoorController queries this via the interface to veto OpenDoor().
         // IsLocked is true until the player uses the correct key.
@@ -41,6 +52,65 @@ namespace TopDownShooter.World
 
         // Exposed so external systems (e.g. debug tools) can read the state.
         public bool IsUnlocked { get; private set; } = false;
+
+        // ── Renderer cache for emission effects ──────────────────────────────
+        // Cached once in Awake — zero GetComponent calls during gameplay.
+        // MaterialPropertyBlock lets us tint per-renderer without creating
+        // new Material instances, keeping the asset database clean.
+        private Renderer[] _renderers;
+        private MaterialPropertyBlock _propBlock;
+        private Coroutine _flashCoroutine;
+
+        private static readonly int EmissionColorID = Shader.PropertyToID("_EmissionColor");
+
+        private void Awake()
+        {
+            // Cache all renderers in this hierarchy once.
+            // Used by both OnPlayerApproach (glow) and the deny flash.
+            _renderers = GetComponentsInChildren<Renderer>();
+            _propBlock = new MaterialPropertyBlock();
+
+            // Ensure emission keyword is enabled on every material so the
+            // property block colour actually shows at runtime.
+            foreach (Renderer r in _renderers)
+            {
+                foreach (Material m in r.sharedMaterials)
+                {
+                    if (m != null)
+                        m.EnableKeyword("_EMISSION");
+                }
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        //  PROXIMITY FEEDBACK
+        // ─────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Call this when the player enters the interaction radius of this door.
+        /// Lights up a subtle amber emission to signal "this object is interactive".
+        /// Wire up from InteractionDebugger, a ProximityTrigger, or
+        /// PlayerInventory.TryWorldInteract (before the Interact() call).
+        /// </summary>
+        public void OnPlayerApproach()
+        {
+            if (IsUnlocked) return;
+            SetEmission(_approachGlowColor);
+        }
+
+        /// <summary>
+        /// Call this when the player leaves the interaction radius.
+        /// Extinguishes the approach glow (unless a deny flash is running).
+        /// </summary>
+        public void OnPlayerLeave()
+        {
+            if (_flashCoroutine != null) return;   // Let the flash finish first.
+            SetEmission(Color.black);
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        //  IWorldInteractable
+        // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
         /// Called by PlayerInventory when the player presses the Interact input.
@@ -61,6 +131,11 @@ namespace TopDownShooter.World
             {
                 Debug.Log("[LockedBossDoor] Key accepted! Unlocking boss door.");
                 IsUnlocked = true;  // IDoorLock.IsLocked becomes false — DoorController.OpenDoor() unblocked.
+
+                // Kill any active flash before opening — the door is going away.
+                StopDenyFlash();
+                SetEmission(Color.black);
+
                 _doorController.OpenDoor();
                 
                 // Disable this script (and optionally its collider if it's strictly for interaction)
@@ -78,7 +153,81 @@ namespace TopDownShooter.World
                 string held = inventory?.CurrentConsumable?.DisplayName ?? "None";
                 Debug.Log($"[LockedBossDoor] Locked. Requires '{_requiredKey.DisplayName}', " +
                           $"but player holds '{held}'.");
-                // Future Hook: Play "Locked" SFX here or show a temporary UI floating text.
+
+                // ── Deny flash ───────────────────────────────────────────────
+                // Briefly pulse the door red to give clear visual feedback that
+                // the interaction was rejected. The flash restores the emission
+                // to its idle state (black) when done.
+                StopDenyFlash();
+                _flashCoroutine = StartCoroutine(FlashDenyColor());
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        //  VISUAL FEEDBACK HELPERS
+        // ─────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Fades emission to <see cref="_denyFlashColor"/>, holds briefly,
+        /// then fades it back to black. One pulse only — clean and readable.
+        /// </summary>
+        private IEnumerator FlashDenyColor()
+        {
+            float half = _flashDuration * 0.5f;
+
+            // Ramp UP to deny color
+            float t = 0f;
+            while (t < half)
+            {
+                t += Time.deltaTime;
+                SetEmission(Color.Lerp(Color.black, _denyFlashColor, t / half));
+                yield return null;
+            }
+
+            SetEmission(_denyFlashColor);
+
+            // Ramp DOWN back to black
+            t = 0f;
+            while (t < half)
+            {
+                t += Time.deltaTime;
+                SetEmission(Color.Lerp(_denyFlashColor, Color.black, t / half));
+                yield return null;
+            }
+
+            SetEmission(Color.black);
+            _flashCoroutine = null;
+        }
+
+        /// <summary>
+        /// Stops any running deny flash coroutine immediately.
+        /// Called before starting a new flash (prevents two running at once)
+        /// and when the door unlocks (cleans up without waiting for it to end).
+        /// </summary>
+        private void StopDenyFlash()
+        {
+            if (_flashCoroutine != null)
+            {
+                StopCoroutine(_flashCoroutine);
+                _flashCoroutine = null;
+            }
+        }
+
+        /// <summary>
+        /// Applies <paramref name="color"/> to the <c>_EmissionColor</c> property
+        /// of every cached Renderer via a MaterialPropertyBlock.
+        /// Using a property block avoids instantiating new Material objects,
+        /// keeping the asset database and memory clean.
+        /// </summary>
+        private void SetEmission(Color color)
+        {
+            if (_renderers == null) return;
+            for (int i = 0; i < _renderers.Length; i++)
+            {
+                if (_renderers[i] == null) continue;
+                _renderers[i].GetPropertyBlock(_propBlock);
+                _propBlock.SetColor(EmissionColorID, color);
+                _renderers[i].SetPropertyBlock(_propBlock);
             }
         }
 
