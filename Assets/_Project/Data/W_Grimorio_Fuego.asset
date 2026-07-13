@@ -19,5 +19,5 @@ MonoBehaviour:
   _baseDamage: 20
   _attackCooldown: 0.25
   _resourceType: 1
-  _resourceCost: 5
+  _resourceCost: 3
   _weaponLogicPrefab: {fileID: 4259044740850919402, guid: de9441cd6bf2249408f7aad92448ccdf, type: 3}
