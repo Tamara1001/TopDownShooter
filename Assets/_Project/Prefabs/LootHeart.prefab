@@ -139,10 +139,10 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 9083666416130811567, guid: 448f00ffab1a41e478b2ba3164ecb27e, type: 3}
       insertIndex: -1
-      addedObject: {fileID: -7098366750547958559}
+      addedObject: {fileID: 1015845274048738608}
     - targetCorrespondingSourceObject: {fileID: 9083666416130811567, guid: 448f00ffab1a41e478b2ba3164ecb27e, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1015845274048738608}
+      addedObject: {fileID: 2438004467414170762}
   m_SourcePrefab: {fileID: 100100000, guid: 448f00ffab1a41e478b2ba3164ecb27e, type: 3}
 --- !u!4 &1557640293070222163 stripped
 Transform:
@@ -154,18 +154,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 9083666416130811567, guid: 448f00ffab1a41e478b2ba3164ecb27e, type: 3}
   m_PrefabInstance: {fileID: 4325838985000631432}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &-7098366750547958559
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4758015457026431527}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d68e16f26e7a1c4ba2f48269aa8579d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Loot.HealthPickup
 --- !u!65 &1015845274048738608
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -187,3 +175,16 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2438004467414170762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4758015457026431527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b97c10a256b49614f8bca9c5b12f5f0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Loot.HealthCollectible
+  _healAmount: 10
