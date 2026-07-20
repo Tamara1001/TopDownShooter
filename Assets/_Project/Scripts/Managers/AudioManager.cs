@@ -6,12 +6,12 @@ using UnityEngine.Audio;
 
 /// <summary>
 /// Controlador central de audio del proyecto.
-/// 
+///
 /// Reglas de Arquitectura:
-/// - Singleton con DontDestroyOnLoad. Los duplicados se autodestruyen en el Awake.
+/// - Singleton con DontDestroyOnLoad. Los duplicados se autodestruyen en Awake.
 /// - Se suscribe a GameManager.OnStateChanged para reaccionar a los estados globales.
-/// - Utiliza diccionarios de optimización para buscar los fragmentos de audio en tiempo O(1).
-/// - Las transiciones de música de fondo (BGM) utilizan corrutinas para crossfade (desvanecimiento suave).
+/// - Usa diccionarios para buscar clips en tiempo O(1) y evitar iteraciones por frame.
+/// - Las transiciones de BGM usan corrutinas de crossfade para evitar cortes abruptos.
 /// </summary>
 public class AudioManager : MonoBehaviour
 {
@@ -21,7 +21,7 @@ public class AudioManager : MonoBehaviour
     public static AudioManager Instance { get; private set; }
 
     // -------------------------------------------------------------------------
-    // Constantes — Parámetros del AudioMixer y Claves de PlayerPrefs
+    // Constants — AudioMixer parameters and PlayerPrefs keys
     // -------------------------------------------------------------------------
     private const string MIXER_PARAM_MUSIC = "MusicVolume";
     private const string MIXER_PARAM_SFX = "SFXVolume";
@@ -32,54 +32,54 @@ public class AudioManager : MonoBehaviour
     private const float DEFAULT_VOLUME = 1f;
 
     // -------------------------------------------------------------------------
-    // Estructuras de Mapeo Serializables
+    // Serializable Mapping Structs
     // -------------------------------------------------------------------------
     [Serializable]
     public struct SFXEntry
     {
-        [Tooltip("ID único en cadena de texto para reproducir este efecto (Ej: 'sfx_laser', 'sfx_coin').")]
+        [Tooltip("Unique string ID used to play this effect (e.g. 'sfx_laser', 'sfx_coin').")]
         public string id;
-        [Tooltip("El archivo de audio (AudioClip) correspondiente.")]
+        [Tooltip("The AudioClip to play for this entry.")]
         public AudioClip clip;
     }
 
     [Serializable]
     public struct BGMEntry
     {
-        [Tooltip("ID único en cadena de texto para esta música de fondo (Ej: 'bgm_pantano', 'bgm_boss').")]
+        [Tooltip("Unique string ID for this background music track (e.g. 'bgm_dungeon', 'bgm_boss').")]
         public string id;
-        [Tooltip("El archivo de música correspondiente.")]
+        [Tooltip("The AudioClip for this BGM entry.")]
         public AudioClip clip;
     }
 
     // -------------------------------------------------------------------------
-    // Inspector — Canales del Audio Mixer
+    // Inspector — Audio Mixer Channels
     // -------------------------------------------------------------------------
     [Header("Audio Mixer Groups")]
     [SerializeField] private AudioMixerGroup _musicMixerGroup;
     [SerializeField] private AudioMixerGroup _sfxMixerGroup;
 
     // -------------------------------------------------------------------------
-    // Inspector — Librerías de Clips
+    // Inspector — Sound Libraries
     // -------------------------------------------------------------------------
-    [Header("Librerías de Sonido")]
+    [Header("Sound Libraries")]
     [SerializeField] private List<SFXEntry> _sfxLibrary = new List<SFXEntry>();
     [SerializeField] private List<BGMEntry> _bgmLibrary = new List<BGMEntry>();
 
-    [Tooltip("Música que suena automáticamente en el Menú Principal.")]
+    [Tooltip("Music that plays automatically on the Main Menu.")]
     [SerializeField] private AudioClip _mainMenuMusic;
 
-    [Header("Configuración de Transiciones")]
+    [Header("Transition Settings")]
     [SerializeField][Range(0f, 1f)] private float _musicTargetVolume = 1f;
 
     // -------------------------------------------------------------------------
-    // Runtime — Audio Sources e Internos
+    // Runtime — Audio Sources and Internal State
     // -------------------------------------------------------------------------
     private AudioSource _musicSource;
     private AudioSource _sfxSource;
     private Coroutine _fadeCoroutine;
 
-    // Diccionarios de búsqueda rápida O(1)
+    // O(1) lookup dictionaries — populated in Awake from the serialized libraries.
     private Dictionary<string, AudioClip> _sfxDict;
     private Dictionary<string, AudioClip> _bgmDict;
 
@@ -88,7 +88,7 @@ public class AudioManager : MonoBehaviour
     // -------------------------------------------------------------------------
     private void Awake()
     {
-        // Resguardo del Singleton
+        // Singleton guard — destroy any duplicate that loads after the first instance.
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -98,19 +98,18 @@ public class AudioManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // Creación dinámica de los AudioSources para mantener limpia la jerarquía
+        // AudioSources are created dynamically to keep the prefab hierarchy clean.
         _musicSource = CreateAudioSource("MusicSource", _musicMixerGroup, loop: true);
         _sfxSource = CreateAudioSource("SFXSource", _sfxMixerGroup, loop: false);
 
         _musicSource.volume = 0f;
 
-        // Construcción de diccionarios indexados
         BuildLookupDictionaries();
     }
 
     private void Start()
     {
-        // Cargamos los volúmenes un frame tarde para asegurar que el Mixer esté inicializado
+        // Volumes are loaded in Start (one frame after Awake) to ensure the Mixer is fully initialised.
         LoadSavedVolumePreferences();
 
         if (_mainMenuMusic != null)
@@ -130,7 +129,7 @@ public class AudioManager : MonoBehaviour
     }
 
     // -------------------------------------------------------------------------
-    // Manejador de Eventos del FSM
+    // FSM Event Handler
     // -------------------------------------------------------------------------
     private void HandleStateChanged(GameManager.GameState newState)
     {
@@ -141,32 +140,32 @@ public class AudioManager : MonoBehaviour
                 break;
 
             case GameManager.GameState.Playing:
-                // Aquí podés dejar que el WaveManager o el cargador de niveles decida qué BGM poner,
-                // o podés arrancar una música por defecto si lo deseas.
+                // Punto de extension: el WaveManager o el cargador de escena debe llamar a PlayBGM().
                 break;
 
             case GameManager.GameState.Pause:
-                // Opcional: Podés bajar el volumen de la música con un filtro o dejar que siga normal
+                // Punto de extension: bajar volumen con un filtro low-pass o mantener el BGM actual.
                 break;
 
             case GameManager.GameState.GameOver:
-                // Opcional: Detener música o pasar a un track de derrota
+                // Punto de extension: detener musica o transicionar a un track de derrota.
                 break;
         }
     }
 
     // -------------------------------------------------------------------------
-    // API Pública de Reproducción
+    // Public Playback API
     // -------------------------------------------------------------------------
 
     /// <summary>
-    /// Reproduce una música de fondo usando su ID registrado con un crossfade suave.
+    /// Reproduce una musica de fondo buscandola por su ID en el diccionario de BGM.
+    /// Usa crossfade suave para evitar cortes entre pistas.
     /// </summary>
     public void PlayBGM(string bgmId, float fadeDuration = 1f)
     {
         if (!_bgmDict.TryGetValue(bgmId, out AudioClip clip))
         {
-            Debug.LogWarning($"[AudioManager] PlayBGM: No hay música registrada con el ID '{bgmId}'.");
+            Debug.LogWarning($"[AudioManager] PlayBGM: No BGM registered with ID '{bgmId}'.");
             return;
         }
 
@@ -174,7 +173,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Desvanece la música actual hasta detenerla por completo.
+    /// Desvanece y detiene la musica actual con una transicion suave.
     /// </summary>
     public void StopBGM(float fadeDuration = 1f)
     {
@@ -185,7 +184,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Reproduce un efecto de sonido instantáneo (OneShot) por su ID. Permite solapamiento.
+    /// Reproduce un efecto de sonido (OneShot) buscandolo por ID. Permite solapamiento de instancias.
     /// </summary>
     public void PlaySFX(string sfxId)
     {
@@ -195,12 +194,12 @@ public class AudioManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"[AudioManager] PlaySFX: No hay efecto registrado con el ID '{sfxId}'.");
+            Debug.LogWarning($"[AudioManager] PlaySFX: No SFX registered with ID '{sfxId}'.");
         }
     }
 
     // -------------------------------------------------------------------------
-    // API Pública de Opciones (Mapeo de Sliders de UI)
+    // Public Options API (UI Slider mapping)
     // -------------------------------------------------------------------------
     public void SetMusicVolume(float linearValue)
     {
@@ -213,7 +212,7 @@ public class AudioManager : MonoBehaviour
     }
 
     // -------------------------------------------------------------------------
-    // Lógica Privada de Transiciones e Interpolación
+    // Private Transition and Interpolation Logic
     // -------------------------------------------------------------------------
     private void PlayMusicWithCrossfade(AudioClip clip, float fadeDuration = 1f)
     {
@@ -278,7 +277,7 @@ public class AudioManager : MonoBehaviour
         float elapsed = 0f;
         while (elapsed < duration)
         {
-            // Usamos unscaledDeltaTime para que los desvanecimientos funcionen correctamente en las pantallas de pausa
+            // unscaledDeltaTime ensures fades work correctly even when Time.timeScale is 0 (Pause screen).
             elapsed += Time.unscaledDeltaTime;
             _musicSource.volume = Mathf.Lerp(fromVolume, toVolume, elapsed / duration);
             yield return null;
@@ -287,7 +286,7 @@ public class AudioManager : MonoBehaviour
     }
 
     // -------------------------------------------------------------------------
-    // Helpers y Configuración Inicial
+    // Helpers and Initialisation
     // -------------------------------------------------------------------------
     private AudioSource CreateAudioSource(string sourceName, AudioMixerGroup mixerGroup, bool loop)
     {

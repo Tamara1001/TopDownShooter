@@ -213,10 +213,8 @@ namespace TopDownShooter.Combat
         /// </summary>
         private void OnTriggerEnter(Collider other)
         {
-            // Ignorar capas filtradas (ej. para no golpear a Lunaria)
             if (((1 << other.gameObject.layer) & ignoreLayers.value) != 0) return;
 
-            // Buscar la interfaz y aplicar daño
             if (other.TryGetComponent<IDamageable>(out IDamageable target))
             {
                 target.TakeDamage(_damage);

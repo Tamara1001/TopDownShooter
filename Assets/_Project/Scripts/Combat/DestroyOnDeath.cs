@@ -9,13 +9,11 @@ public class DestroyOnDeath : MonoBehaviour
 {
     private void Awake()
     {
-        // Nos suscribimos al evento de muerte
         GetComponent<HealthComponent>().OnDied += HandleDeath;
     }
 
     private void HandleDeath()
     {
-        // Acá luego instanciaremos monedas o powerups
         Destroy(gameObject);
     }
 }

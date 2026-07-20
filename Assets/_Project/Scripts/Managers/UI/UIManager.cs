@@ -2,35 +2,35 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Puente visual directo entre la FSM (Máquina de Estados) del GameManager y la capa de la Interfaz de Usuario (UI).
-/// Escucha los cambios de estado globales para activar o desactivar los paneles correspondientes.
-/// 
+/// Direct visual bridge between the GameManager FSM and the UI layer.
+/// Listens to global state changes and activates or deactivates the corresponding panels.
+///
 /// Reglas de Arquitectura:
-/// - No contiene lógica dura de juego ni manipula el tiempo directamente.
-/// - Se comunica con el GameManager de forma unidireccional a través de eventos.
+/// - No contiene logica de juego ni manipula el tiempo directamente.
+/// - Se comunica con el GameManager de forma unidireccional a traves de eventos.
 /// </summary>
 public class UIManager : MonoBehaviour
 {
     // -------------------------------------------------------------------------
-    // Campos del Inspector — Paneles Base
+    // Inspector Fields — Panels
     // -------------------------------------------------------------------------
-    [Header("Paneles Principales de la UI")]
+    [Header("Main UI Panels")]
     [SerializeField] private GameObject mainMenuPanel;
     [SerializeField] private GameObject playingHUDPanel;
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private GameObject victoryPanel;
 
-    [Header("Paneles Superpuestos (Overlays)")]
+    [Header("Overlay Panels")]
     [SerializeField] private GameObject optionsPanel;
     [SerializeField] private GameObject pausePanel;
 
-    [Header("Botones Especiales")]
-    [Tooltip("Botón 'Continuar' del Menú Principal. Se desactiva automáticamente " +
-             "si no hay una sesión activa (GameManager.HasActiveSession == false).")]
+    [Header("Special Buttons")]
+    [Tooltip("'Continue' button on the Main Menu. Automatically disabled " +
+             "when no active session exists (GameManager.HasActiveSession == false).")]
     [SerializeField] private Button continueButton;
 
     // -------------------------------------------------------------------------
-    // Ciclo de Vida de Unity
+    // Unity Lifecycle
     // -------------------------------------------------------------------------
     private void OnEnable()
     {
@@ -44,7 +44,7 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        // En lugar de forzar el menú principal, leemos la realidad actual de la FSM
+        // Sync to the current FSM state instead of forcing a hard transition to Main Menu.
         if (GameManager.Instance != null)
         {
             HandleStateChanged(GameManager.Instance.CurrentState);
@@ -56,11 +56,11 @@ public class UIManager : MonoBehaviour
     }
 
     // -------------------------------------------------------------------------
-    // Manejador de Eventos de la FSM
+    // FSM Event Handler
     // -------------------------------------------------------------------------
     private void HandleStateChanged(GameManager.GameState newState)
     {
-        // Limpieza: Cerramos pantallas superpuestas (como opciones) ante cualquier cambio de estado
+        // Cleanup: close any overlay panels (e.g. options) on every state transition.
         CloseOptionsPanel();
 
         switch (newState)
@@ -81,13 +81,13 @@ public class UIManager : MonoBehaviour
                 ShowVictory();
                 break;
             default:
-                Debug.LogWarning($"[UIManager] GameState no contemplado: {newState}");
+                Debug.LogWarning($"[UIManager] Unhandled GameState: {newState}");
                 break;
         }
     }
 
     // -------------------------------------------------------------------------
-    // Métodos de Control de Paneles (Privados)
+    // Panel Control Methods (Private)
     // -------------------------------------------------------------------------
     private void ShowMainMenu()
     {
@@ -145,15 +145,15 @@ public class UIManager : MonoBehaviour
     }
 
     // -------------------------------------------------------------------------
-    // Callbacks Públicos para Botones (UI Event Triggers)
+    // Public Button Callbacks (UI Event Triggers)
     // -------------------------------------------------------------------------
 
     /// <summary>
-    /// Vinculado al botón "Jugar" o "Nueva Partida" del Menú Principal.
+    /// Bound to the 'Play' or 'New Game' button on the Main Menu.
     /// </summary>
     /// <summary>
-    /// Vinculado al botón "Continuar" del Menú Principal.
-    /// Solo es interactuable cuando <see cref="GameManager.HasActiveSession"/> es true.
+    /// Bound to the 'Continue' button on the Main Menu.
+    /// Only interactable when <see cref="GameManager.HasActiveSession"/> is true.
     /// </summary>
     public void OnContinueClicked()
     {
@@ -165,33 +165,25 @@ public class UIManager : MonoBehaviour
         GameManager.Instance.StartNewGame();
     }
 
-    /// <summary>
-    /// Vinculado al botón "Reanudar" dentro del menú de Pausa.
-    /// </summary>
+    /// <summary>Bound to the 'Resume' button inside the Pause menu.</summary>
     public void OnResumeButtonClicked()
     {
         GameManager.Instance.ResumeFromPause();
     }
 
-    /// <summary>
-    /// Vinculado al botón "Reintentar" de la pantalla de Game Over.
-    /// </summary>
+    /// <summary>Bound to the 'Retry' button on the Game Over screen.</summary>
     public void OnRestartButtonClicked()
     {
         GameManager.Instance.StartNewGame();
     }
 
-    /// <summary>
-    /// Vinculado al botón "Volver al Menú" desde Pausa o Game Over.
-    /// </summary>
+    /// <summary>Bound to the 'Return to Menu' button from Pause or Game Over screens.</summary>
     public void OnReturnToMenuClicked()
     {
         GameManager.Instance.ReturnToMainMenu();
     }
 
-    /// <summary>
-    /// Vinculado opcionalmente a un botón de pausa en pantalla dentro del HUD.
-    /// </summary>
+    /// <summary>Optionally bound to an on-screen pause button inside the HUD.</summary>
     public void OnPauseButtonClicked()
     {
         GameManager.Instance.ChangeState(GameManager.GameState.Pause);
@@ -207,13 +199,11 @@ public class UIManager : MonoBehaviour
         CloseOptionsPanel();
     }
 
-    /// <summary>
-    /// Vinculado al botón "Salir" en el Menú Principal.
-    /// </summary>
+    /// <summary>Bound to the 'Quit' button on the Main Menu.</summary>
     public void OnQuitClicked()
     {
 #if UNITY_EDITOR
-        Debug.Log("[UIManager] OnQuitClicked — Application.Quit() suprimido en el Editor.");
+        Debug.Log("[UIManager] OnQuitClicked — Application.Quit() suppressed in Editor.");
         UnityEditor.EditorApplication.isPlaying = false;
 #else
         Application.Quit();

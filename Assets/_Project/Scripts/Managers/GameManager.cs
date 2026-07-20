@@ -123,7 +123,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         ChangeState(GameState.Playing);
 
-        Debug.Log("[GameManager] Scene fully loaded — nueva sesión iniciada.");
+        Debug.Log("[GameManager] Scene fully loaded — new session started.");
     }
 
     private void Update()
@@ -147,7 +147,7 @@ public class GameManager : MonoBehaviour
     {
         if (CurrentState == newState)
         {
-            Debug.LogWarning($"[GameManager] Intento de cambiar al estado actual ({newState}). Ignorado.");
+            Debug.LogWarning($"[GameManager] Attempted to change to the current state ({newState}). Ignored.");
             return;
         }
 
@@ -173,7 +173,7 @@ public class GameManager : MonoBehaviour
         GameState previous = CurrentState;
         CurrentState = newState;
 
-        Debug.Log($"[GameManager] Cambio de Estado: {previous} → {CurrentState}");
+        Debug.Log($"[GameManager] State Change: {previous} → {CurrentState}");
 
         // Dispara el evento para que los demás scripts reaccionen
         OnStateChanged?.Invoke(CurrentState);
@@ -193,7 +193,7 @@ public class GameManager : MonoBehaviour
         // even on scenes that load extremely fast (single-frame load).
         _pendingRestart = true;
 
-        Debug.Log("[GameManager] Recargando escena para nueva partida...");
+        Debug.Log("[GameManager] Reloading scene for a new game...");
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
@@ -205,7 +205,7 @@ public class GameManager : MonoBehaviour
     {
         if (!HasActiveSession)
         {
-            Debug.LogWarning("[GameManager] ContinueGame llamado sin sesión activa. Ignorado.");
+            Debug.LogWarning("[GameManager] ContinueGame called with no active session. Ignored.");
             return;
         }
 
@@ -219,7 +219,7 @@ public class GameManager : MonoBehaviour
     {
         if (CurrentState != GameState.Pause)
         {
-            Debug.LogWarning("[GameManager] ResumeFromPause llamado, pero el juego no está pausado.");
+            Debug.LogWarning("[GameManager] ResumeFromPause called, but the game is not paused.");
             return;
         }
 

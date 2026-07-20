@@ -145,7 +145,6 @@ public class ChaseState : EnemyStateBase
     {
         Brain.Agent.isStopped = false;
 
-        // Avisar al Animator que el personaje empezó a moverse
         if (Brain.Anim != null)
             Brain.Anim.SetBool("IsMoving", true);
 
@@ -177,7 +176,6 @@ public class ChaseState : EnemyStateBase
         Brain.Agent.isStopped = true;
         Brain.Agent.ResetPath();
 
-        // Avisar al Animator que el personaje se detuvo
         if (Brain.Anim != null)
             Brain.Anim.SetBool("IsMoving", false);
     }
@@ -244,11 +242,9 @@ public class AttackState : EnemyStateBase
         // because _lastAttackTime is never touched in Enter().
         if (Time.time >= _lastAttackTime + Brain.GetCurrentWeaponCooldown())
         {
-            // Ejecutar la animación visual del ataque
             if (Brain.Anim != null)
                 Brain.Anim.SetTrigger("Attack");
 
-            // Ejecutar la lógica de daño del arma
             Brain.PerformAttack();
 
             // Record the wall-clock time of THIS attack.
@@ -387,10 +383,9 @@ public class EnemyBrain : MonoBehaviour
         _health = GetComponent<HealthComponent>();
         _animator = GetComponentInChildren<Animator>();
 
-        // Validación preventiva por si falta el componente Animator en los hijos
         if (_animator == null)
         {
-            Debug.LogWarning($"[EnemyBrain] '{name}': No se encontró ningún componente Animator en las mallas hijas.", this);
+            Debug.LogWarning($"[EnemyBrain] '{name}': No Animator component found in child meshes.", this);
         }
 
         // ── Validate the SO reference ────────────────────────

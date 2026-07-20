@@ -792,7 +792,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5842300012700896957, guid: 2dbc96132dfd2b34aa88a2392a2ca153, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 29.99997
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 5953470546422941189, guid: 2dbc96132dfd2b34aa88a2392a2ca153, type: 3}
       propertyPath: m_Pivot.x
@@ -1096,7 +1096,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 775147961}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 707e3c98f94d69049b8b565ebe0763cd, type: 3}
   m_Name: 
