@@ -437,6 +437,18 @@ public class EnemyBrain : MonoBehaviour
             StartCoroutine(WaitForPlayer());
     }
 
+    /// <summary>
+    /// Inyecta multiplicadores de combate directamente al arma equipada
+    /// (invocado por modificadores del Dungeon Master).
+    /// </summary>
+    public void SetWeaponDungeonMultipliers(float damageMultiplier, float cooldownMultiplier)
+    {
+        if (_equippedWeapon != null)
+        {
+            _equippedWeapon.SetDungeonMultipliers(damageMultiplier, cooldownMultiplier);
+        }
+    }
+
     protected virtual void OnDisable()
     {
         if (_health != null)

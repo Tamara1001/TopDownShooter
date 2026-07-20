@@ -61,7 +61,11 @@ namespace TopDownShooter.Enemy
         // IWEAPON PROPERTY
         // ----------------------------------------------------------
 
-        public float Cooldown { get; private set; }
+        public float Cooldown => _baseCooldown * _cooldownMultiplier;
+
+        private float _baseCooldown;
+        private float _damageMultiplier = 1f;
+        private float _cooldownMultiplier = 1f;
 
         // ----------------------------------------------------------
         // PRIVATE STATE
@@ -82,7 +86,7 @@ namespace TopDownShooter.Enemy
 
         private void Awake()
         {
-            Cooldown = _defaultCooldown;
+            _baseCooldown = _defaultCooldown;
             _currentSpawnRotation = Quaternion.identity;
             ValidateReferences();
             InitialisePool();
@@ -142,11 +146,18 @@ namespace TopDownShooter.Enemy
         // IWEAPONCONFIGURABLE IMPLEMENTATION
         // ----------------------------------------------------------
 
+        public void SetDungeonMultipliers(float damageMultiplier, float cooldownMultiplier)
+        {
+            _damageMultiplier = damageMultiplier;
+            _cooldownMultiplier = cooldownMultiplier;
+            Debug.Log($"[SpreadRangedWeapon] '{name}' multipliers set: Damagex{_damageMultiplier}, CDx{_cooldownMultiplier}");
+        }
+
         public void Configure(TopDownShooter.Inventory.WeaponDataSO stats)
         {
             if (stats == null) return;
             _damage = stats.BaseDamage;
-            Cooldown = stats.AttackCooldown;
+            _baseCooldown = stats.AttackCooldown;
         }
 
         // ----------------------------------------------------------
@@ -160,7 +171,8 @@ namespace TopDownShooter.Enemy
             Projectile instance = Instantiate(_projectilePrefab, _firePoint.position, _firePoint.rotation);
             
             instance.SetPool(_projectilePool);
-            instance.SetDamage(_damage);
+            int finalDamage = Mathf.Max(1, Mathf.RoundToInt(_damage * _damageMultiplier));
+            instance.SetDamage(finalDamage);
             instance.gameObject.SetActive(false);
             
             return instance;
@@ -170,7 +182,8 @@ namespace TopDownShooter.Enemy
         {
             // Apply position and the explicitly calculated rotation for this specific bullet
             projectile.transform.SetPositionAndRotation(_firePoint.position, _currentSpawnRotation);
-            projectile.SetDamage(_damage);
+            int finalDamage = Mathf.Max(1, Mathf.RoundToInt(_damage * _damageMultiplier));
+            projectile.SetDamage(finalDamage);
             projectile.OnGetFromPool();
         }
 

@@ -170,6 +170,29 @@ public class HealthComponent : MonoBehaviour, IDamageable
         OnHealthChanged?.Invoke(GetNormalizedHealth());
     }
 
+    /// <summary>
+    /// Escala la vida máxima de la entidad por un multiplicador y ajusta la vida 
+    /// actual proporcionalmente. Utilizado por el sistema Dungeon Master para
+    /// aplicar buff/debuffs temporales a los enemigos de la sala de forma segura.
+    /// </summary>
+    /// <param name="multiplier">Multiplicador (ej. 0.5 para la mitad, 2.0 para el doble).</param>
+    public void ScaleMaxHealth(float multiplier)
+    {
+        if (isDead || multiplier <= 0f) return;
+
+        // Obtener el porcentaje actual de vida antes del escalado.
+        float currentPercentage = GetNormalizedHealth();
+
+        // Aplicar multiplicador al máximo (asegurando un mínimo de 1).
+        maxHealth = Mathf.Max(1, Mathf.RoundToInt(maxHealth * multiplier));
+
+        // Ajustar la vida actual para mantener la misma proporción.
+        currentHealth = Mathf.RoundToInt(maxHealth * currentPercentage);
+
+        // Notificar a los listeners del nuevo estado (porcentual).
+        OnHealthChanged?.Invoke(GetNormalizedHealth());
+    }
+
     // ----------------------------------------------------------
     // PUBLIC READ-ONLY ACCESSORS
     // Expose read-only state without breaking encapsulation.

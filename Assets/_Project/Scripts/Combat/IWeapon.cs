@@ -48,6 +48,12 @@ namespace TopDownShooter.Combat
         /// </summary>
         void ExecuteAttack();
 
+        /// <summary>
+        /// Inyecta multiplicadores de daño y cooldown temporalmente
+        /// (utilizado por el sistema D20 Dungeon Master).
+        /// </summary>
+        void SetDungeonMultipliers(float damageMultiplier, float cooldownMultiplier);
+
         // ─── Future contract methods (uncomment as systems are built) ──────────
         // void ExecuteAlternateAttack();   // Right-click / secondary fire
         // void Reload();                   // For ammo-based weapons

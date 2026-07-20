@@ -110,7 +110,7 @@ GameObject:
   - component: {fileID: -3997348098483900886}
   m_Layer: 6
   m_Name: EnemyBase
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -220,6 +220,7 @@ MonoBehaviour:
   _poolDefaultCapacity: 5
   _poolMaxSize: 20
   _damage: 10
+  _defaultCooldown: 1
 --- !u!114 &-1849281442131016520
 MonoBehaviour:
   m_ObjectHideFlags: 0

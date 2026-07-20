@@ -74,6 +74,11 @@ namespace TopDownShooter.Player
         private float _currentMana;
         private float _currentEnergy;
 
+        // Multiplicador del coste de mana inyectado por el sistema D20 Dungeon Master.
+        // 1f = coste normal. 2f = coste doble (Fallo Crítico).
+        // El llamador es responsable de resetearlo a 1f al despejar la sala.
+        private float _manaCostMultiplier = 1f;
+
         // ─────────────────────────────────────────────────────────────────────
         //  EVENTS  (Observer Pattern — pass normalized 0-1 values to the UI)
         // ─────────────────────────────────────────────────────────────────────
@@ -105,6 +110,24 @@ namespace TopDownShooter.Player
 
         /// <summary>Maximum energy configured in the Inspector.</summary>
         public int MaxEnergy     => _maxEnergy;
+
+        /// <summary>
+        /// Multiplicador que se aplica a cada coste de mana antes de consumirlo.
+        /// Establecido por el sistema Dungeon Master (Fallo Crítico: 2x).
+        /// 1.0 es el valor normal; cualquier valor mayor aumenta el coste efectivo.
+        /// </summary>
+        public float ManaCostMultiplier => _manaCostMultiplier;
+
+        /// <summary>
+        /// Permite al sistema Dungeon Master escalar el coste de mana por ataque.
+        /// Llamar con 1f para revertir al comportamiento normal.
+        /// </summary>
+        /// <param name="multiplier">Multiplicador positivo. 1f = normal, 2f = coste doble.</param>
+        public void SetManaCostMultiplier(float multiplier)
+        {
+            _manaCostMultiplier = Mathf.Max(0.01f, multiplier);
+            Debug.Log($"[PlayerResourceComponent] ManaCostMultiplier set to {_manaCostMultiplier:0.##}x.");
+        }
 
         // ─────────────────────────────────────────────────────────────────────
         //  UNITY LIFECYCLE
@@ -152,9 +175,13 @@ namespace TopDownShooter.Player
                 return false;
             }
 
-            if (_currentMana < amount) return false;
+            // Aplicar el multiplicador del sistema D20 y redondear hacia arriba
+            // para garantizar que siempre se cobre al menos el coste base.
+            int effectiveCost = Mathf.CeilToInt(amount * _manaCostMultiplier);
 
-            _currentMana -= amount;
+            if (_currentMana < effectiveCost) return false;
+
+            _currentMana -= effectiveCost;
             OnManaChanged?.Invoke(GetNormalizedMana());
             return true;
         }

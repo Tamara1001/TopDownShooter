@@ -70,7 +70,14 @@ namespace TopDownShooter.Enemy
         // IWEAPON PROPERTY
         // ----------------------------------------------------------
 
-        public float Cooldown { get; private set; }
+        public float Cooldown => _baseCooldown * _cooldownMultiplier;
+
+        // Base cooldown, before any multipliers are applied.
+        private float _baseCooldown;
+
+        // Dungeon Master multipliers
+        private float _damageMultiplier = 1f;
+        private float _cooldownMultiplier = 1f;
 
         [Header("Hit Detection")]
         [Tooltip("Radius of the OverlapSphere centered on this transform. " +
@@ -122,7 +129,7 @@ namespace TopDownShooter.Enemy
 
         private void Awake()
         {
-            Cooldown       = _defaultCooldown;
+            _baseCooldown  = _defaultCooldown;
             _transform     = transform;
             _hitBuffer     = new Collider[_hitBufferSize];
             _cosHalfAngle  = Mathf.Cos(_attackAngle * 0.5f * Mathf.Deg2Rad);
@@ -190,12 +197,13 @@ namespace TopDownShooter.Enemy
                 // TryGetComponent<T> is allocation-free in modern Unity.
                 if (hit.TryGetComponent<IDamageable>(out IDamageable target))
                 {
-                    target.TakeDamage(_damage);
+                    int finalDamage = Mathf.Max(1, Mathf.RoundToInt(_damage * _damageMultiplier));
+                    target.TakeDamage(finalDamage);
                     hitAnything = true;
 
                     // Logging scoped to the Editor; stripped from builds.
 #if UNITY_EDITOR
-                    Debug.Log($"[MeleeWeapon] '{name}' hit '{hit.name}' for {_damage} damage.");
+                    Debug.Log($"[MeleeWeapon] '{name}' hit '{hit.name}' for {finalDamage} damage.");
 #endif
                 }
             }
@@ -211,6 +219,13 @@ namespace TopDownShooter.Enemy
             // destroyed colliders alive after the buffer is reused.
             for (int i = 0; i < hitCount; i++)
                 _hitBuffer[i] = null;
+        }
+
+        public void SetDungeonMultipliers(float damageMultiplier, float cooldownMultiplier)
+        {
+            _damageMultiplier = damageMultiplier;
+            _cooldownMultiplier = cooldownMultiplier;
+            Debug.Log($"[MeleeWeapon] '{name}' multipliers set: Damagex{_damageMultiplier}, CDx{_cooldownMultiplier}");
         }
 
         // ----------------------------------------------------------
@@ -243,7 +258,7 @@ namespace TopDownShooter.Enemy
             }
 
             _damage = stats.BaseDamage;
-            Cooldown = stats.AttackCooldown;
+            _baseCooldown = stats.AttackCooldown;
 
             // ► Part 3: inject stats.AttackRange into _attackRadius here
             //             once WeaponDataSO gains a dedicated range field.

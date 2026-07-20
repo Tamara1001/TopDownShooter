@@ -53,7 +53,7 @@ namespace TopDownShooter.Player
         /// plus any active consumable bonus.<br/>
         /// Examples: 1.0 = no change, 1.2 = +20%, 1.5 = relic +20% and potion +30%.
         /// </summary>
-        public float MoveSpeedMultiplier => 1f + _relicSpeedModifier + _consumableSpeedModifier;
+        public float MoveSpeedMultiplier => 1f + _relicSpeedModifier + _consumableSpeedModifier + _dungeonSpeedModifier;
 
         // ─────────────────────────────────────────────────────────────────────
         //  PRIVATE STATE
@@ -73,6 +73,11 @@ namespace TopDownShooter.Player
         // Handle to the running speed-buff coroutine, or null if none is active.
         // Stored so a new buff can cancel an in-progress one before starting fresh.
         private Coroutine _activeBuffCoroutine;
+
+        // Modificador de velocidad persistente inyectado por el sistema D20 Dungeon Master.
+        // A diferencia del consumable (temporizado), este dura hasta que el Director
+        // llame explícitamente a SetDungeonSpeedModifier(0f) al despejar la sala.
+        private float _dungeonSpeedModifier = 0f;
 
         // ─────────────────────────────────────────────────────────────────────
         //  INSPECTOR-EXPOSED VFX
@@ -151,6 +156,19 @@ namespace TopDownShooter.Player
             }
 
             _activeBuffCoroutine = StartCoroutine(SpeedBuffRoutine(boostMultiplier, duration));
+        }
+
+        /// <summary>
+        /// Establece un modificador de velocidad persistente desde el sistema Dungeon Master.
+        /// A diferencia de <see cref="ApplyTemporarySpeedBoost"/>, este NO expira por tiempo:
+        /// el llamador es responsable de revertirlo llamando con 0f al limpiar la sala.
+        /// </summary>
+        /// <param name="modifier">Modificador fraccional aditivo (ej. 0.4 = +40%, -0.3 = -30%).</param>
+        public void SetDungeonSpeedModifier(float modifier)
+        {
+            _dungeonSpeedModifier = modifier;
+            Debug.Log($"[PlayerStatsComponent] DungeonSpeedModifier set to {modifier:+0.##;-0.##;0}. " +
+                      $"MoveSpeedMultiplier = {MoveSpeedMultiplier:0.##}x");
         }
 
         // ─────────────────────────────────────────────────────────────────────

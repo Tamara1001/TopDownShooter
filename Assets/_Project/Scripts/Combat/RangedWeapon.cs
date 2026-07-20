@@ -84,7 +84,14 @@ namespace TopDownShooter.Enemy
         // IWEAPON PROPERTY
         // ----------------------------------------------------------
 
-        public float Cooldown { get; private set; }
+        public float Cooldown => _baseCooldown * _cooldownMultiplier;
+
+        // Base cooldown, before any multipliers are applied.
+        private float _baseCooldown;
+
+        // Dungeon Master multipliers
+        private float _damageMultiplier = 1f;
+        private float _cooldownMultiplier = 1f;
 
         // ----------------------------------------------------------
         // PRIVATE STATE
@@ -102,7 +109,7 @@ namespace TopDownShooter.Enemy
 
         private void Awake()
         {
-            Cooldown = _defaultCooldown;
+            _baseCooldown = _defaultCooldown;
             ValidateReferences();
             InitialisePool();
         }
@@ -142,6 +149,13 @@ namespace TopDownShooter.Enemy
             // ► Audio hook: _audioSource?.PlayOneShot(_fireSFX);
         }
 
+        public void SetDungeonMultipliers(float damageMultiplier, float cooldownMultiplier)
+        {
+            _damageMultiplier = damageMultiplier;
+            _cooldownMultiplier = cooldownMultiplier;
+            Debug.Log($"[RangedWeapon] '{name}' multipliers set: Damagex{_damageMultiplier}, CDx{_cooldownMultiplier}");
+        }
+
         // ----------------------------------------------------------
         // IWEAPONCONFIGURABLE IMPLEMENTATION
         // ----------------------------------------------------------
@@ -164,8 +178,8 @@ namespace TopDownShooter.Enemy
             }
 
             _damage = stats.BaseDamage;
-            Cooldown = stats.AttackCooldown;
-            Debug.Log($"[RangedWeapon] Configured via SO: damage={_damage}, cooldown={Cooldown}");
+            _baseCooldown = stats.AttackCooldown;
+            Debug.Log($"[RangedWeapon] Configured via SO: damage={_damage}, cooldown={_baseCooldown}");
         }
 
         // ----------------------------------------------------------
@@ -197,7 +211,8 @@ namespace TopDownShooter.Enemy
 
             // Stamp the current damage value. Re-stamped in OnGetProjectile()
             // so recycled instances always carry the up-to-date value.
-            instance.SetDamage(_damage);
+            int finalDamage = Mathf.Max(1, Mathf.RoundToInt(_damage * _damageMultiplier));
+            instance.SetDamage(finalDamage);
 
             // Start deactivated; OnGetProjectile will activate it.
             instance.gameObject.SetActive(false);
@@ -225,7 +240,8 @@ namespace TopDownShooter.Enemy
 
             // Re-stamp damage so recycled instances always reflect the
             // latest _damage value (e.g. after Configure() is called).
-            projectile.SetDamage(_damage);
+            int finalDamage = Mathf.Max(1, Mathf.RoundToInt(_damage * _damageMultiplier));
+            projectile.SetDamage(finalDamage);
 
             // Reset internal state: timer, _isReturned flag, SetActive(true).
             projectile.OnGetFromPool();

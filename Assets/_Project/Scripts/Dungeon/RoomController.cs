@@ -29,6 +29,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TopDownShooter.Combat;
+using TopDownShooter.DungeonMaster;
 using TopDownShooter.Enemy;
 using TopDownShooter.Managers.UI;
 
@@ -67,6 +68,12 @@ namespace TopDownShooter.Dungeon
 
         private RoomState _state = RoomState.Waiting;
         private int _activeEnemyCount = 0;
+
+        /// <summary>
+        /// Referencia al jugador cacheada en OnTriggerEnter y pasada al
+        /// DungeonMasterDirector para que el modificador pueda afectarlo.
+        /// </summary>
+        private GameObject _playerGameObject;
 
         // ─────────────────────────────────────────────────────────────────────
         //  READ-ONLY PROPERTIES
@@ -196,12 +203,24 @@ namespace TopDownShooter.Dungeon
             {
                 _state = RoomState.Active;
 
+                // Cachear el jugador antes de hacer cualquier otra operación,
+                // porque SpawnEntities puede modificar el estado del contador.
+                _playerGameObject = other.gameObject;
+
                 SpawnEntities();
 
                 if (_activeEnemyCount > 0)
                 {
-                    // Close all doors to lock the player in
+                    // Cerrar las puertas para encerrar al jugador en la sala.
                     SetAllDoors(true);
+
+                    // Sólo las salas Combat y Boss activan el dado D20.
+                    // Las salas Start, Corridor, Key y Treasure no tienen combate
+                    // y no deben alterar el estado del modificador activo.
+                    if (_roomType == RoomType.Combat || _roomType == RoomType.Boss)
+                    {
+                        DungeonMasterDirector.Instance?.TriggerRoomRoll(this, _playerGameObject);
+                    }
                 }
                 else
                 {
@@ -267,10 +286,19 @@ namespace TopDownShooter.Dungeon
         {
             _state = RoomState.Cleared;
 
-            // Open doors
+            // Revertir el modificador D20 antes de abrir las puertas, de forma
+            // que los efectos no persistan en la sala siguiente.
+            // Si el tier fue Normal (7-14) o la sala no era Combat/Boss, este
+            // método es un no-op seguro.
+            if (_roomType == RoomType.Combat || _roomType == RoomType.Boss)
+            {
+                DungeonMasterDirector.Instance?.ClearActiveModifier();
+            }
+
+            // Abrir puertas
             SetAllDoors(false);
 
-            // Spawn loot at all loot nodes
+            // Spawnear loot en los nodos correspondientes.
             for (int i = 0; i < _spawners.Count; i++)
             {
                 EntitySpawnerNode node = _spawners[i];

@@ -115,6 +115,18 @@ namespace TopDownShooter.Combat
             set => canAttack = value;   // FSM can disable attacks during animations
         }
 
+        /// <summary>
+        /// Inyecta multiplicadores de combate directamente al arma equipada
+        /// (invocado por modificadores del Dungeon Master).
+        /// </summary>
+        public void SetWeaponDungeonMultipliers(float damageMultiplier, float cooldownMultiplier)
+        {
+            if (_equippedWeapon != null)
+            {
+                _equippedWeapon.SetDungeonMultipliers(damageMultiplier, cooldownMultiplier);
+            }
+        }
+
         // ─────────────────────────────────────────────────────────────────────
         //  STATIC EVENTS  (subscribed by HUD / other UI without needing a reference)
         // ─────────────────────────────────────────────────────────────────────
