@@ -112,7 +112,25 @@ namespace TopDownShooter.World
 
             if (inventory.CurrentConsumable == _requiredKey)
             {
-                Debug.Log($"[VictoryDoor] Key '{neededKeyName}' accepted. Triggering Victory!");
+                Debug.Log($"[VictoryDoor] Key '{neededKeyName}' accepted.");
+
+                // ── Verificación del modo de juego activo ────────────────────
+                // El comportamiento post-victoria depende de si el jugador
+                // completó el Tutorial o una partida Normal.
+                if (GameManager.Instance.CurrentMode == GameManager.GameMode.Tutorial)
+                {
+                    // Modo Tutorial: en lugar de mostrar la pantalla de victoria,
+                    // se lanza una partida Normal desde cero. StartNewGame() se
+                    // encarga de cambiar el modo a Normal y recargar la escena,
+                    // lo que dispara la generación procedural en OnSceneLoaded.
+                    Debug.Log("[VictoryDoor] Tutorial completed! Starting a fresh Normal run.");
+                    GameManager.Instance.StartNewGame();
+                    return; // Evitar que el resto de la lógica de victoria se ejecute.
+                }
+
+                // Modo Normal: flujo de victoria estándar.
+                // El GameManager congela el tiempo y notifica a la UI.
+                Debug.Log($"[VictoryDoor] Triggering Victory!");
                 IsUnlocked = true;
                 GameManager.Instance.ChangeState(GameManager.GameState.Victory);
             }

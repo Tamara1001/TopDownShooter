@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TopDownShooter.Dungeon;   // DungeonGenerator
 
 /// <summary>
 /// Cerebro central del Top-Down Shooter. Maneja la Máquina de Estados Finita (FSM)
@@ -32,6 +33,22 @@ public class GameManager : MonoBehaviour
 
     /// <summary>Estado actual del juego. Solo puede ser modificado internamente.</summary>
     public GameState CurrentState { get; private set; }
+
+    // -------------------------------------------------------------------------
+    // Modo de Juego
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Distingue entre una partida procedural estándar (Normal) y
+    /// el nivel tutorial prediseñado a mano (Tutorial).
+    /// </summary>
+    public enum GameMode { Normal, Tutorial }
+
+    /// <summary>
+    /// Modo activo en la sesión actual. Solo GameManager puede escribirlo.
+    /// Los demás sistemas lo leen para adaptar su comportamiento.
+    /// </summary>
+    public GameMode CurrentMode { get; private set; } = GameMode.Normal;
 
     // -------------------------------------------------------------------------
     // Eventos
@@ -119,11 +136,32 @@ public class GameManager : MonoBehaviour
         _sessionTimer    = 0f;
         HasActiveSession = true;
 
-        // Ensure time is running before broadcasting the Playing state.
+        // Asegurarse de que el tiempo corra antes de transmitir el estado Playing.
         Time.timeScale = 1f;
         ChangeState(GameState.Playing);
 
         Debug.Log("[GameManager] Scene fully loaded — new session started.");
+
+        // ── Verificación del modo de juego ────────────────────────────────────
+        if (CurrentMode == GameMode.Normal)
+        {
+            // Modo Normal: disparar la generación procedural del calabozo.
+            DungeonGenerator generator = FindAnyObjectByType<DungeonGenerator>();
+            if (generator != null)
+            {
+                generator.Generate();
+            }
+            else
+            {
+                Debug.LogWarning("[GameManager] Normal mode active but no DungeonGenerator " +
+                                 "was found in the scene. Is the GameObject present?");
+            }
+        }
+        else if (CurrentMode == GameMode.Tutorial)
+        {
+            // Modo Tutorial: el nivel está prediseñado a mano; omitir la generación procedural.
+            Debug.Log("[GameManager] Tutorial mode active. Procedural generation skipped.");
+        }
     }
 
     private void Update()
@@ -185,15 +223,40 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void StartNewGame()
     {
-        // Ensure time runs during the scene load so Unity's async work is not
-        // blocked (some scene activation logic requires unscaled time).
+        // Establecer el modo Normal antes de recargar la escena para que
+        // OnSceneLoaded pueda disparar la generación procedural correctamente.
+        CurrentMode = GameMode.Normal;
+
+        // Asegurar que el tiempo corra durante la carga de escena para que
+        // la lógica de activación asíncrona de Unity no quede bloqueada.
         Time.timeScale = 1f;
 
-        // Mark pending restart BEFORE LoadScene so OnSceneLoaded fires correctly
-        // even on scenes that load extremely fast (single-frame load).
+        // Marcar el reinicio ANTES de LoadScene para que OnSceneLoaded se
+        // dispare correctamente incluso en escenas que cargan en un solo frame.
         _pendingRestart = true;
 
-        Debug.Log("[GameManager] Reloading scene for a new game...");
+        Debug.Log("[GameManager] Reloading scene for a new game (Normal mode)...");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    /// <summary>
+    /// Inicia una partida en modo Tutorial, cargando el nivel prediseñado.
+    /// La generación procedural queda desactivada en esta sesión.
+    /// Ideal para llamarlo desde el botón "Tutorial" en el Menú Principal.
+    /// </summary>
+    public void StartTutorial()
+    {
+        // Cambiar al modo Tutorial ANTES de recargar para que OnSceneLoaded
+        // sepa que debe omitir el DungeonGenerator.
+        CurrentMode = GameMode.Tutorial;
+
+        // Garantizar que el tiempo corra durante la carga de escena.
+        Time.timeScale = 1f;
+
+        // Marcar el reinicio ANTES de LoadScene (mismo flujo que StartNewGame).
+        _pendingRestart = true;
+
+        Debug.Log("[GameManager] Reloading scene for Tutorial mode...");
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
