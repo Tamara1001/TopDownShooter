@@ -134,7 +134,9 @@ namespace TopDownShooter.Dungeon
 
         private void Start()
         {
-            Generate();
+            // La generación ya no se dispara automáticamente.
+            // El GameManager es el responsable de llamar Generate()
+            // según el modo de juego activo (Normal o Tutorial).
         }
 
         // ─────────────────────────────────────────────────────────────────────
