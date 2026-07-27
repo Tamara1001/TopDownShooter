@@ -4,43 +4,84 @@
 //
 //  PROPÓSITO
 //  ---------
-//  Componente raíz del prefab Tutorial_Map. Tiene exactamente dos
+//  Componente raíz del prefab Tutorial_Map. Tiene exactamente tres
 //  responsabilidades, sin solapamiento con otros sistemas:
 //
-//  1. HORNEADO DEL NAVMESH
+//  1. ENLACE MANUAL DE SOCKETS Y PUERTAS (Awake)
+//     El generador procedural vincula RoomSockets con DoorControllers
+//     automáticamente durante la generación. En el nivel tutorial, las salas
+//     son artesanales y no pasan por ese pipeline. Este componente expone
+//     una lista serializable (SocketDoorLink) que permite a los diseñadores
+//     realizar ese mismo vínculo manualmente desde el Inspector, sin tocar
+//     ningún sistema de generación.
+//
+//  2. HORNEADO DEL NAVMESH (Start)
 //     El prefab se instancia dinámicamente en runtime, por lo que la
 //     superficie de navegación no puede quedar pre-horneada en el Editor.
 //     Start() dispara BuildNavMesh() para que los enemigos del tutorial
 //     puedan navegar correctamente desde el primer frame útil.
 //
-//  2. TELETRANSPORTE SEGURO DEL JUGADOR
+//  3. TELETRANSPORTE SEGURO DEL JUGADOR (Start → Coroutine)
 //     El jugador se registra en GameManager un frame después (según el orden
 //     de ejecución), por lo que se usa una Coroutine que espera hasta que
 //     la referencia esté disponible antes de moverlo al punto de spawn.
 //     Se deshabilita temporalmente el NavMeshAgent para evitar que el
 //     componente rechace el reposicionamiento instantáneo.
 //
+//  ORDEN DE EJECUCIÓN
+//  ------------------
+//  Awake  → ApplyDoorLinks()       (vínculos antes de que las puertas despierten)
+//  Start  → BakeNavMesh()          (NavMesh antes de que los agentes lo muestreen)
+//  Start  → SetupPlayerPosition()  (coroutine: espera al jugador, luego teleporta)
+//
 //  USO
 //  ----
 //  Adjuntar al GameObject raíz del prefab Tutorial_Map.
-//  Asignar _navMeshSurface y _playerSpawnPoint en el Inspector.
+//  Asignar _navMeshSurface, _playerSpawnPoint y _doorLinks en el Inspector.
 // =============================================================================
 
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using Unity.AI.Navigation;
+using TopDownShooter.Dungeon;   // RoomSocket, DoorController
 
 /// <summary>
 /// Componente raíz del prefab Tutorial_Map.
-/// Hornea el NavMesh en runtime y teletransporta al jugador al spawn point
-/// del tutorial de forma segura, respetando el orden de inicialización.
+/// Gestiona el enlace manual de sockets/puertas, el horneado del NavMesh
+/// y el teletransporte seguro del jugador al spawn point del tutorial.
 /// </summary>
 public class TutorialManager : MonoBehaviour
 {
     // -------------------------------------------------------------------------
+    // Nested Types
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Par serializable que vincula un <see cref="RoomSocket"/> con el
+    /// <see cref="DoorController"/> que lo ocupa físicamente en el nivel
+    /// tutorial. Rellena la función que el generador procedural realiza
+    /// de forma automática en las partidas normales.
+    /// </summary>
+    [System.Serializable]
+    public struct SocketDoorLink
+    {
+        [Tooltip("Socket de la sala artesanal al que pertenece la puerta.")]
+        public RoomSocket Socket;
+
+        [Tooltip("DoorController ya colocado en la escena que ocupa este socket.")]
+        public DoorController Door;
+    }
+
+    // -------------------------------------------------------------------------
     // Inspector Fields
     // -------------------------------------------------------------------------
+
+    [Header("Manual Door Links")]
+    [Tooltip("Lista de vínculos Socket ↔ DoorController definidos a mano para el nivel tutorial. " +
+             "Reemplaza el enlace automático que realiza el DungeonGenerator en las partidas normales.")]
+    [SerializeField] private List<SocketDoorLink> _doorLinks = new List<SocketDoorLink>();
 
     [Header("Navegación")]
     [Tooltip("Superficie de NavMesh que cubre las salas del nivel tutorial. " +
@@ -56,16 +97,69 @@ public class TutorialManager : MonoBehaviour
     // Unity Lifecycle
     // -------------------------------------------------------------------------
 
+    private void Awake()
+    {
+        // ── Responsabilidad 1: Enlace manual de sockets y puertas ────────────
+        // Se ejecuta en Awake para que los vínculos estén establecidos antes
+        // de que cualquier Start() (propio o de las puertas) los consulte.
+        ApplyDoorLinks();
+    }
+
     private void Start()
     {
-        // ── Responsabilidad 1: Horneado del NavMesh ──────────────────────────
+        // ── Responsabilidad 2: Horneado del NavMesh ──────────────────────────
         BakeNavMesh();
 
-        // ── Responsabilidad 2: Posicionar al jugador ─────────────────────────
+        // ── Responsabilidad 3: Posicionar al jugador ─────────────────────────
         // Se delega a una coroutine porque GameManager.Instance.PlayerTransform
         // puede no estar disponible en este frame exacto (depende del Script
         // Execution Order entre PlayerRegistration y TutorialManager).
         StartCoroutine(SetupPlayerPosition());
+    }
+
+    // -------------------------------------------------------------------------
+    // Door Linking
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Itera la lista <see cref="_doorLinks"/> e invoca
+    /// <see cref="RoomSocket.AssignDoor"/> en cada par válido.
+    /// Los pares con <c>Socket</c> o <c>Door</c> nulos se omiten con una
+    /// advertencia para facilitar la detección de errores de configuración.
+    /// </summary>
+    private void ApplyDoorLinks()
+    {
+        if (_doorLinks == null || _doorLinks.Count == 0)
+        {
+            // Lista vacía es válida: el nivel tutorial puede no tener puertas.
+            Debug.Log("[TutorialManager] No hay SocketDoorLinks configurados. " +
+                      "Si el nivel tiene puertas, asígnalos en el Inspector.");
+            return;
+        }
+
+        int linked = 0;
+
+        for (int i = 0; i < _doorLinks.Count; i++)
+        {
+            SocketDoorLink link = _doorLinks[i];
+
+            // Validar ambos extremos del vínculo antes de operar.
+            if (link.Socket == null || link.Door == null)
+            {
+                Debug.LogWarning($"[TutorialManager] _doorLinks[{i}] tiene un campo nulo " +
+                                 $"(Socket={link.Socket}, Door={link.Door}). " +
+                                 "Revisa la asignación en el Inspector.",
+                                 this);
+                continue; // Saltar este par y continuar con los demás
+            }
+
+            // Registrar la puerta en el socket; el socket notifica al
+            // DoorController su posición para el estado inicial correcto.
+            link.Socket.AssignDoor(link.Door);
+            linked++;
+        }
+
+        Debug.Log($"[TutorialManager] {linked}/{_doorLinks.Count} vínculos Socket↔Door aplicados.");
     }
 
     // -------------------------------------------------------------------------

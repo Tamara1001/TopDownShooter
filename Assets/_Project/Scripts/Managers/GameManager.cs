@@ -68,6 +68,15 @@ public class GameManager : MonoBehaviour
     public static event Action<Transform> OnPlayerRegistered;
 
     // -------------------------------------------------------------------------
+    // Prefabs
+    // -------------------------------------------------------------------------
+
+    [Header("Prefabs")]
+    [Tooltip("Prefab del mapa del Tutorial. Se instancia en la raíz de la escena " +
+             "cuando el modo activo es Tutorial. Debe contener un TutorialManager en su raíz.")]
+    [SerializeField] private GameObject _tutorialMapPrefab;
+
+    // -------------------------------------------------------------------------
     // Variables Internas
     // -------------------------------------------------------------------------
 
@@ -159,8 +168,18 @@ public class GameManager : MonoBehaviour
         }
         else if (CurrentMode == GameMode.Tutorial)
         {
-            // Modo Tutorial: el nivel está prediseñado a mano; omitir la generación procedural.
-            Debug.Log("[GameManager] Tutorial mode active. Procedural generation skipped.");
+            // Modo Tutorial: instanciar el mapa prediseñado a mano en el origen de la escena.
+            // TutorialManager (en la raíz del prefab) se encarga del NavMesh y del spawn.
+            if (_tutorialMapPrefab != null)
+            {
+                Instantiate(_tutorialMapPrefab, Vector3.zero, Quaternion.identity);
+                Debug.Log("[GameManager] Tutorial mode active — Tutorial_Map instantiated.");
+            }
+            else
+            {
+                Debug.LogWarning("[GameManager] Tutorial mode active but _tutorialMapPrefab " +
+                                 "is not assigned. Drag the Tutorial_Map prefab into the Inspector.");
+            }
         }
     }
 
