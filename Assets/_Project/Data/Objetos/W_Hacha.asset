@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ccb66eb53b83dc448fe0f6b44c08451, type: 3}
+  m_Name: W_Hacha
+  m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Inventory.WeaponDataSO
+  _itemID: Hacha
+  _displayName: Hacha
+  _icon: {fileID: 21300000, guid: 452d47b23a1beb14c858ecf77f07874e, type: 3}
+  _dropPrefab: {fileID: 5816329985700582511, guid: 9a64939a06e9603438a938faacb2417d, type: 3}
+  _baseDamage: 60
+  _attackCooldown: 0.5
+  _resourceType: 2
+  _resourceCost: 20
+  _weaponLogicPrefab: {fileID: 8705166504018021910, guid: ab7baf325b387e44c8a8bca674b296cf, type: 3}

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ccb66eb53b83dc448fe0f6b44c08451, type: 3}
+  m_Name: W_Arco
+  m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Inventory.WeaponDataSO
+  _itemID: Arco
+  _displayName: Arco
+  _icon: {fileID: 21300000, guid: 43c3a6d498800204cabb2031e6bf9687, type: 3}
+  _dropPrefab: {fileID: 7795597736152488179, guid: 89e5b4ee1e7427940a04c74192e56c74, type: 3}
+  _baseDamage: 40
+  _attackCooldown: 1
+  _resourceType: 2
+  _resourceCost: 20
+  _weaponLogicPrefab: {fileID: 4259044740850919402, guid: de9441cd6bf2249408f7aad92448ccdf, type: 3}
