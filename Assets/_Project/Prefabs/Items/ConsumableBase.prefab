@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5576361807435778767}
   - component: {fileID: 4578469916183349964}
   - component: {fileID: 6692370223098806179}
+  - component: {fileID: 8887039895206241162}
   m_Layer: 7
   m_Name: ConsumableBase
   m_TagString: Untagged
@@ -129,3 +130,20 @@ MonoBehaviour:
   _hoverAmplitude: 0.15
   _hoverFrequency: 1.2
   _spinSpeed: 45
+--- !u!114 &8887039895206241162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5865150788261630754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1aa1b4992e821f245bb8d7e780c97be2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.VFX.ItemGlowEffect
+  _glowColor: {r: 1, g: 0.39999998, b: 0.7768299, a: 1}
+  _minIntensity: 0.6
+  _maxIntensity: 1.8
+  _pulseSpeed: 1.4
+  _lightRange: 2

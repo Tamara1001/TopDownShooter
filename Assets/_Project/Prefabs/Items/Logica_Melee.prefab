@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Enemy.MeleeWeapon
   _damage: 25
+  _defaultCooldown: 1
   _attackRadius: 2
   _attackAngle: 45
   _targetMask:
@@ -53,6 +54,7 @@ MonoBehaviour:
     m_Bits: 247
   _hitBufferSize: 8
   _impulseSource: {fileID: -2499949817195834254}
+  _slashEffectPrefab: {fileID: 4006778123703877440, guid: 479cc1106a0ba104cb436ffdc65eb939, type: 3}
 --- !u!114 &-2499949817195834254
 MonoBehaviour:
   m_ObjectHideFlags: 0

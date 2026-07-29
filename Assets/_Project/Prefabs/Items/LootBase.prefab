@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6134693941586683007}
   - component: {fileID: 603639036010535770}
   - component: {fileID: -5261815217679188036}
+  - component: {fileID: 5898205668108294118}
   m_Layer: 7
   m_Name: LootBase
   m_TagString: Untagged
@@ -166,3 +167,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02953604e76b11c409ae338d6f4eb942, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Loot.AutoPickupTrigger
+--- !u!114 &5898205668108294118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9083666416130811567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1aa1b4992e821f245bb8d7e780c97be2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.VFX.ItemGlowEffect
+  _glowColor: {r: 0.84730107, g: 0.8490566, b: 0.8050018, a: 1}
+  _minIntensity: 0.1
+  _maxIntensity: 1.2
+  _pulseSpeed: 0.5
+  _lightRange: 1.5

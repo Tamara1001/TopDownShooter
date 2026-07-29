@@ -58,6 +58,15 @@ namespace TopDownShooter.Enemy
         [SerializeField] private float _defaultCooldown = 1f;
 
         // ----------------------------------------------------------
+        // VFX
+        // ----------------------------------------------------------
+
+        [Header("VFX")]
+        [Tooltip("Color of the projectile sprite and trail. For enemies, set this in the Inspector. " +
+                 "For the player, this is overridden by WeaponDataSO at runtime.")]
+        [SerializeField] private Color _projectileColor = Color.white;
+
+        // ----------------------------------------------------------
         // IWEAPON PROPERTY
         // ----------------------------------------------------------
 
@@ -158,6 +167,7 @@ namespace TopDownShooter.Enemy
             if (stats == null) return;
             _damage = stats.BaseDamage;
             _baseCooldown = stats.AttackCooldown;
+            _projectileColor = stats.ProjectileTrailColor;
         }
 
         // ----------------------------------------------------------
@@ -184,6 +194,9 @@ namespace TopDownShooter.Enemy
             projectile.transform.SetPositionAndRotation(_firePoint.position, _currentSpawnRotation);
             int finalDamage = Mathf.Max(1, Mathf.RoundToInt(_damage * _damageMultiplier));
             projectile.SetDamage(finalDamage);
+            
+            projectile.SetColor(_projectileColor);
+            
             projectile.OnGetFromPool();
         }
 

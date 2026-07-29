@@ -48,6 +48,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 770c4dc8a1296204a907a72b77ef5953, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b723fd47b24b347428aeb3434e8556ae, type: 2}
     - target: {fileID: 919132149155446097, guid: 770c4dc8a1296204a907a72b77ef5953, type: 3}
       propertyPath: m_Name
       value: Heart_Full
@@ -74,6 +78,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2864178480633843804, guid: 448f00ffab1a41e478b2ba3164ecb27e, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b723fd47b24b347428aeb3434e8556ae, type: 2}
     - target: {fileID: 2996492696521445339, guid: 448f00ffab1a41e478b2ba3164ecb27e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

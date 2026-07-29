@@ -162,6 +162,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 2d3c6051c32e7234ca9223c62c92d2cb, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a3fb56c6e50f3d64ea4f901e1d0f8c90, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 2d3c6051c32e7234ca9223c62c92d2cb, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 16d33deb33c0db44cb41fed946360739, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 2d3c6051c32e7234ca9223c62c92d2cb, type: 3}
+      propertyPath: 'm_Materials.Array.data[2]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b723fd47b24b347428aeb3434e8556ae, type: 2}
     - target: {fileID: 919132149155446097, guid: 2d3c6051c32e7234ca9223c62c92d2cb, type: 3}
       propertyPath: m_Name
       value: Book2_Closed

@@ -34,6 +34,7 @@
 //     and resolves its own spatial logic.
 // ==============================================================
 
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.Cinemachine;
 using TopDownShooter.Combat;
@@ -104,6 +105,12 @@ namespace TopDownShooter.Enemy
                  "IDamageable target was hit. Leave unassigned to skip (null-safe).")]
         [SerializeField] private CinemachineImpulseSource _impulseSource;
 
+        [Header("VFX")]
+        [Tooltip("Prefab del efecto de slash que se instancia en cada ataque melee. " +
+                 "Debe tener un MeleeSlashEffect en la raíz. " +
+                 "Dejar vacío para omitir el efecto (null-safe).")]
+        [SerializeField] private GameObject _slashEffectPrefab;
+
         // ----------------------------------------------------------
         // PRIVATE STATE
         // ----------------------------------------------------------
@@ -122,6 +129,9 @@ namespace TopDownShooter.Enemy
         // Cached transform reference — avoids the property overhead of
         // accessing UnityEngine.Object.transform in a tight loop.
         private Transform _transform;
+
+        // Simple inline pool para evitar instanciar efectos de slash sin fin.
+        private List<GameObject> _slashPool = new List<GameObject>();
 
         // ----------------------------------------------------------
         // UNITY LIFECYCLE
@@ -208,13 +218,47 @@ namespace TopDownShooter.Enemy
                 }
             }
 
-            // ── Step 5: camera impulse on successful hit ─────────
+            // ── Step 5: camera impulse on successful hit ────────────────────
             // Fires once per swing regardless of how many targets were hit,
             // preventing jarring multi-shake when cleaving through a crowd.
             if (hitAnything)
                 _impulseSource?.GenerateImpulse();
 
-            // ── Step 6: clear buffer references ─────────────────
+            // ── Step 6: instanciar o reciclar efecto visual de slash ────────────
+            // Reutiliza instancias desactivadas en el pool para no saturar
+            // la memoria ni ensuciar la Jerarquía.
+            if (_slashEffectPrefab != null)
+            {
+                GameObject slashInstance = null;
+
+                // Buscar una instancia inactiva en el pool
+                for (int i = 0; i < _slashPool.Count; i++)
+                {
+                    if (!_slashPool[i].activeSelf)
+                    {
+                        slashInstance = _slashPool[i];
+                        break;
+                    }
+                }
+
+                if (slashInstance == null)
+                {
+                    // No hay disponibles: instanciar uno nuevo y agregarlo al pool
+                    slashInstance = Instantiate(_slashEffectPrefab,
+                                                _transform.position,
+                                                _transform.rotation);
+                    _slashPool.Add(slashInstance);
+                }
+                else
+                {
+                    // Reciclar el existente: actualizar posición/rotación ANTES de activar
+                    // para que OnEnable evalúe el localRotation correctamente.
+                    slashInstance.transform.SetPositionAndRotation(_transform.position, _transform.rotation);
+                    slashInstance.SetActive(true);
+                }
+            }
+
+            // ── Step 7: clear buffer references ─────────────────────────
             // Nulling used slots prevents the GC from keeping
             // destroyed colliders alive after the buffer is reused.
             for (int i = 0; i < hitCount; i++)

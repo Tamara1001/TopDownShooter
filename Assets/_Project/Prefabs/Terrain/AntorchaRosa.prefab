@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &7844805550718808518
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2133720018585680387, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2133720018585680387, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2133720018585680387, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2133720018585680387, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2133720018585680387, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2133720018585680387, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2133720018585680387, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2133720018585680387, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2133720018585680387, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2133720018585680387, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2570186629516807696, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: m_Name
+      value: AntorchaRosa
+      objectReference: {fileID: 0}
+    - target: {fileID: 3772838614152864793, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key1.b
+      value: 0.833687
+      objectReference: {fileID: 0}
+    - target: {fileID: 3772838614152864793, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key1.g
+      value: 0.5304824
+      objectReference: {fileID: 0}
+    - target: {fileID: 3772838614152864793, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key1.r
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 3772838614152864793, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key2.b
+      value: 0.403231
+      objectReference: {fileID: 0}
+    - target: {fileID: 3772838614152864793, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key2.g
+      value: 0.15472588
+      objectReference: {fileID: 0}
+    - target: {fileID: 3772838614152864793, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key2.r
+      value: 0.5754717
+      objectReference: {fileID: 0}
+    - target: {fileID: 3772838614152864793, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.m_ColorSpace
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7509778445346921102, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: m_Color.b
+      value: 0.9938075
+      objectReference: {fileID: 0}
+    - target: {fileID: 7509778445346921102, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: m_Color.g
+      value: 0.3066038
+      objectReference: {fileID: 0}
+    - target: {fileID: 7509778445346921102, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6431abe1329f8e84fb8bff0cbb904425, type: 3}

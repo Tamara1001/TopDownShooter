@@ -136,7 +136,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 1c9525e499bae0d4d9145829ebd48b7a, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: ae3ee6e09f318dd4a86266f55e383bbb, type: 2}
+      objectReference: {fileID: 2100000, guid: cf4c10bf237627e4b9a56e1fd76baa41, type: 2}
     - target: {fileID: 919132149155446097, guid: 1c9525e499bae0d4d9145829ebd48b7a, type: 3}
       propertyPath: m_Name
       value: Weapon_DoubleAxe

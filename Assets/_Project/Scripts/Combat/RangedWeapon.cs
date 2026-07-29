@@ -104,6 +104,15 @@ namespace TopDownShooter.Enemy
         private IObjectPool<Projectile> _projectilePool;
 
         // ----------------------------------------------------------
+        // VFX
+        // ----------------------------------------------------------
+
+        [Header("VFX")]
+        [Tooltip("Color of the projectile sprite and trail. For enemies, set this in the Inspector. " +
+                 "For the player, this is overridden by WeaponDataSO at runtime.")]
+        [SerializeField] private Color _projectileColor = Color.white;
+
+        // ----------------------------------------------------------
         // UNITY LIFECYCLE
         // ----------------------------------------------------------
 
@@ -179,7 +188,12 @@ namespace TopDownShooter.Enemy
 
             _damage = stats.BaseDamage;
             _baseCooldown = stats.AttackCooldown;
-            Debug.Log($"[RangedWeapon] Configured via SO: damage={_damage}, cooldown={_baseCooldown}");
+
+            // Cachear el color de la estela para usarlo en OnGetProjectile()
+            // sin necesidad de guardar una referencia viva al SO.
+            _projectileColor = stats.ProjectileTrailColor;
+
+            Debug.Log($"[RangedWeapon] Configured via SO: damage={_damage}, cooldown={_baseCooldown}, trailColor={_projectileColor}");
         }
 
         // ----------------------------------------------------------
@@ -242,6 +256,10 @@ namespace TopDownShooter.Enemy
             // latest _damage value (e.g. after Configure() is called).
             int finalDamage = Mathf.Max(1, Mathf.RoundToInt(_damage * _damageMultiplier));
             projectile.SetDamage(finalDamage);
+
+            // Aplicar el color de estela configurado en el WeaponDataSO (o Inspector para enemigos).
+            // No-op seguro si el prefab no tiene TrailRenderer o SpriteRenderer.
+            projectile.SetColor(_projectileColor);
 
             // Reset internal state: timer, _isReturned flag, SetActive(true).
             projectile.OnGetFromPool();

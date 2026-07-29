@@ -14,4 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Dungeon.RoomDataSO
   _type: 5
   _prefab: {fileID: 2751493676524330205, guid: 8484d94cf0eb3df4ea618b8feda1e6ec, type: 3}
-  _weight: 5
+  _weight: 10
+  _footprint:
+  - {x: 0, y: 0}

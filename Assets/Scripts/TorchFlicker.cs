@@ -22,8 +22,8 @@ public class TorchFlicker : MonoBehaviour
     void Update()
     {
         // Calculate noise value using PerlinNoise based on time and our random offset.
-        // We use randomOffset as the X coordinate and time as the Y coordinate.
-        float noise = Mathf.PerlinNoise(randomOffset, Time.time * flickerSpeed);
+        // Using 1D noise (y=0) is more stable in WebGL with large Time.time values.
+        float noise = Mathf.PerlinNoise((Time.time + randomOffset) * flickerSpeed, 0f);
         
         // Interpolate between min and max intensity based on the noise value
         torchLight.intensity = Mathf.Lerp(minIntensity, maxIntensity, noise);

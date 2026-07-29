@@ -88,6 +88,13 @@ namespace TopDownShooter.Combat
         // same frame (e.g. if two colliders trigger on the same physics step).
         private bool _isReturned;
 
+        // TrailRenderer cacheado — resuelto una sola vez para evitar
+        // GetComponent en cada disparo. Puede ser null si el prefab no lo tiene.
+        private TrailRenderer _trailRenderer;
+        
+        // SpriteRenderer cacheado — para colorear el sprite principal del proyectil.
+        private SpriteRenderer _spriteRenderer;
+
         // ─────────────────────────────────────────────────────────────────────
         //  UNITY LIFECYCLE
         // ─────────────────────────────────────────────────────────────────────
@@ -137,6 +144,52 @@ namespace TopDownShooter.Combat
         }
 
         /// <summary>
+        /// Aplica un color al <see cref="SpriteRenderer"/> y un degradado al <see cref="TrailRenderer"/>.
+        /// El degradado transiciona del color indicado (opaco) hasta completamente
+        /// transparente, creando un efecto de estela que se desvanece al final.
+        /// <para>
+        /// Si el prefab no tiene SpriteRenderer o TrailRenderer, este método es un no-op
+        /// parcial seguro — no lanza excepción ni genera GC extra.
+        /// </para>
+        /// </summary>
+        /// <param name="color">
+        /// Color base del proyectil y de la estela.
+        /// </param>
+        public void SetColor(Color color)
+        {
+            // Resolver el SpriteRenderer de forma perezosa
+            if (_spriteRenderer == null)
+                _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+            if (_spriteRenderer != null)
+                _spriteRenderer.color = color;
+
+            // Resolver el TrailRenderer de forma perezosa
+            if (_trailRenderer == null)
+                _trailRenderer = GetComponentInChildren<TrailRenderer>();
+
+            if (_trailRenderer == null) return;   // Prefab sin TrailRenderer — no-op para la estela.
+
+            // Construir el gradiente: color opaco al inicio, transparente al final.
+            var gradient = new Gradient();
+
+            gradient.SetKeys(
+                new GradientColorKey[]
+                {
+                    new GradientColorKey(color, 0f),
+                    new GradientColorKey(color, 1f)
+                },
+                new GradientAlphaKey[]
+                {
+                    new GradientAlphaKey(color.a, 0f),   // Opaco al frente
+                    new GradientAlphaKey(0f,            1f)   // Transparente al final
+                }
+            );
+
+            _trailRenderer.colorGradient = gradient;
+        }
+
+        /// <summary>
         /// Called by the pool's <c>actionOnGet</c> delegate.
         /// Resets all state so a recycled instance behaves like a fresh one.
         /// </summary>
@@ -145,6 +198,14 @@ namespace TopDownShooter.Combat
             _isReturned  = false;
             _activeTimer = 0f;
             gameObject.SetActive(true);
+
+            // Limpiar la estela de la vida anterior para que no aparezca
+            // un artefacto al reutilizar el proyectil desde el pool.
+            if (_trailRenderer == null)
+                _trailRenderer = GetComponent<TrailRenderer>();
+
+            if (_trailRenderer != null)
+                _trailRenderer.Clear();
         }
 
         /// <summary>

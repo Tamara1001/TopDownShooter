@@ -92,6 +92,17 @@ namespace TopDownShooter.Inventory
         [SerializeField] private MonoBehaviour _weaponLogicPrefab;
 
         // ─────────────────────────────────────────────────────────────────────
+        //  VFX
+        // ─────────────────────────────────────────────────────────────────────
+
+        [Header("VFX")]
+        [Tooltip("Color del rastro (TrailRenderer) de los proyectiles de esta arma. " +
+                 "Se inyecta en el proyectil via Projectile.SetTrailColor() justo " +
+                 "después de obtenerlo del pool. Usa el alpha del color para controlar " +
+                 "la opacidad inicial; el trail se desvanece a transparente automáticamente.")]
+        [SerializeField] public Color projectileTrailColor = Color.white;
+
+        // ─────────────────────────────────────────────────────────────────────
         //  PUBLIC GETTERS
         // ─────────────────────────────────────────────────────────────────────
 
@@ -114,10 +125,17 @@ namespace TopDownShooter.Inventory
         public int                ResourceCost       => _resourceCost;
 
         /// <summary>
-        /// The MonoBehaviour prefab PlayerCombat instantiates as a child of the Player
-        /// when this weapon is equipped. Must implement <see cref="TopDownShooter.Combat.IWeapon"/>.
+        /// El MonoBehaviour prefab PlayerCombat instancia como hijo del Player
+        /// al equipar esta arma. Debe implementar <see cref="TopDownShooter.Combat.IWeapon"/>.
         /// </summary>
         public MonoBehaviour      WeaponLogicPrefab  => _weaponLogicPrefab;
+
+        /// <summary>
+        /// Color del rastro del proyectil. Inyectado en cada proyectil en el momento
+        /// del disparo vía <see cref="TopDownShooter.Combat.Projectile.SetTrailColor"/>.
+        /// El gradiente va de este color (opaco) hasta transparente automáticamente.
+        /// </summary>
+        public Color              ProjectileTrailColor => projectileTrailColor;
 
 #if UNITY_EDITOR
         protected override void OnValidate()

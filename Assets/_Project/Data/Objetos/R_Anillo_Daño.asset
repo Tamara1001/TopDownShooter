@@ -18,4 +18,4 @@ MonoBehaviour:
   _dropPrefab: {fileID: 8139866486074890665, guid: f09b75219094a3b4ea266d60a8ac16ab, type: 3}
   _moveSpeedModifier: 0
   _maxHealthBonus: 0
-  _damageModifier: 1.5
+  _damageModifier: 1.3
