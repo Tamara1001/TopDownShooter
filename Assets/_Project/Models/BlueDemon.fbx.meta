@@ -17,65 +17,7 @@ ModelImporter:
     removeConstantScaleCurves: 0
     motionNodeName: 
     animationImportErrors: 
-    animationImportWarnings: "\nClip 'CharacterArmature|Death' has import animation
-      warnings that might lower retargeting quality:\nNote: Activate translation
-      DOF on avatar to improve retargeting quality.\n\t'Body' has translation animation
-      that will be discarded.\n\t'Body' is inbetween humanoid transforms and has
-      rotation animation that will be discarded.\n\nClip 'CharacterArmature|Duck'
-      has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'Body'
-      has translation animation that will be discarded.\n\t'Body' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\nClip 'CharacterArmature|HitReact'
-      has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'Body'
-      has translation animation that will be discarded.\n\t'Body' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\nClip 'CharacterArmature|Idle'
-      has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'Body'
-      has translation animation that will be discarded.\n\nClip 'CharacterArmature|Jump'
-      has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'Body'
-      has translation animation that will be discarded.\n\nClip 'CharacterArmature|Jump_Idle'
-      has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'Body'
-      has translation animation that will be discarded.\n\nClip 'CharacterArmature|Jump_Land'
-      has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'Body'
-      has translation animation that will be discarded.\n\nClip 'CharacterArmature|No'
-      has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'Body'
-      has translation animation that will be discarded.\n\nClip 'CharacterArmature|Punch'
-      has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'Body'
-      has translation animation that will be discarded.\n\t'Body' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\t'Shoulder.L'
-      has translation animation that will be discarded.\n\t'Shoulder.R' has translation
-      animation that will be discarded.\n\nClip 'CharacterArmature|Run' has import
-      animation warnings that might lower retargeting quality:\nNote: Activate translation
-      DOF on avatar to improve retargeting quality.\n\t'Body' has translation animation
-      that will be discarded.\n\nClip 'CharacterArmature|Run2' has import animation
-      warnings that might lower retargeting quality:\nNote: Activate translation
-      DOF on avatar to improve retargeting quality.\n\t'Body' has translation animation
-      that will be discarded.\n\nClip 'CharacterArmature|Walk' has import animation
-      warnings that might lower retargeting quality:\nNote: Activate translation
-      DOF on avatar to improve retargeting quality.\n\t'Body' has translation animation
-      that will be discarded.\n\t'Body' is inbetween humanoid transforms and has
-      rotation animation that will be discarded.\n\t'UpperLeg.L' has translation
-      animation that will be discarded.\n\t'UpperLeg.R' has translation animation
-      that will be discarded.\n\nClip 'CharacterArmature|Wave' has import animation
-      warnings that might lower retargeting quality:\nNote: Activate translation
-      DOF on avatar to improve retargeting quality.\n\t'Body' has translation animation
-      that will be discarded.\n\t'Body' is inbetween humanoid transforms and has
-      rotation animation that will be discarded.\n\nClip 'CharacterArmature|Weapon'
-      has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'Body'
-      has translation animation that will be discarded.\n\t'Body' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\t'Shoulder.L'
-      has translation animation that will be discarded.\n\t'Shoulder.R' has translation
-      animation that will be discarded.\n\nClip 'CharacterArmature|Yes' has import
-      animation warnings that might lower retargeting quality:\nNote: Activate translation
-      DOF on avatar to improve retargeting quality.\n\t'Body' has translation animation
-      that will be discarded.\n"
+    animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -88,7 +30,7 @@ ModelImporter:
     extraExposedTransformPaths: []
     extraUserProperties: []
     clipAnimations: []
-    isReadable: 0
+    isReadable: 1
   meshes:
     lODScreenPercentages: []
     globalScale: 1

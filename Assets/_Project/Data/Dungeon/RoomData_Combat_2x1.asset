@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: RoomData_Combat_2x1
   m_EditorClassIdentifier: Assembly-CSharp::TopDownShooter.Dungeon.RoomDataSO
   _type: 1
-  _prefab: {fileID: 0}
-  _weight: 1
+  _prefab: {fileID: 8035130637892845929, guid: 2aebb8f9db16d71498122ffc7e265821, type: 3}
+  _weight: 10
   _footprint:
   - {x: 0, y: 0}
+  - {x: 1, y: 0}
