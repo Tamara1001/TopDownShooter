@@ -22,6 +22,7 @@
 //    likely to be picked as a room with weight 1.
 // =============================================================================
 
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TopDownShooter.Dungeon
@@ -55,6 +56,13 @@ namespace TopDownShooter.Dungeon
         [Min(1)]
         [SerializeField] private int _weight = 1;
 
+        [Header("Spatial Footprint")]
+        [Tooltip("Lista de coordenadas locales que ocupa esta sala en la grilla. " +
+                 "(0,0) es la celda pivote donde se instancia el prefab. " +
+                 "Salas 1×1 clásicas solo necesitan el elemento (0,0) predeterminado. " +
+                 "Salas en forma de 'L' o 'T' agregan los offsets adicionales.")]
+        [SerializeField] private List<Vector2Int> _footprint = new List<Vector2Int> { Vector2Int.zero };
+
         // ─────────────────────────────────────────────────────────────────────
         //  READ-ONLY PROPERTIES
         // ─────────────────────────────────────────────────────────────────────
@@ -67,5 +75,12 @@ namespace TopDownShooter.Dungeon
 
         /// <summary>Relative selection weight for the random picker.</summary>
         public int Weight => _weight;
+
+        /// <summary>
+        /// Lista de celdas locales que ocupa la sala, relativas al pivote (0,0).
+        /// Usada por el generador para registrar todas las celdas de la huella
+        /// en el HashSet de celdas ocupadas y evitar solapamientos.
+        /// </summary>
+        public IReadOnlyList<Vector2Int> Footprint => _footprint;
     }
 }

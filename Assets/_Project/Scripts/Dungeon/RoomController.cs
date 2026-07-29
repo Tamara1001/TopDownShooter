@@ -176,6 +176,31 @@ namespace TopDownShooter.Dungeon
         }
 
         /// <summary>
+        /// Devuelve TODOS los sockets libres que apuntan en la dirección indicada.
+        /// Usado por <see cref="DungeonGenerator.TryFitRoom"/> para probar cada
+        /// alineación posible antes de declarar que la sala no cabe.
+        /// En salas multi-celda puede haber más de un socket sur, norte, etc.,
+        /// cada uno con un <see cref="RoomSocket.LocalGridPosition"/> distinto,
+        /// generando orígenes de sala diferentes que pueden o no colisionar.
+        /// </summary>
+        /// <param name="direction">Dirección cardinal a filtrar.</param>
+        /// <returns>Lista (posiblemente vacía) de sockets compatibles y disponibles.</returns>
+        public List<RoomSocket> GetAllAvailableSockets(SocketDirection direction)
+        {
+            // Capacidad inicial 2: la mayoría de salas tienen a lo sumo dos
+            // sockets por cara, evitando reasignaciones internas innecesarias.
+            var result = new List<RoomSocket>(2);
+
+            for (int i = 0; i < _sockets.Count; i++)
+            {
+                if (_sockets[i].Direction == direction && !_sockets[i].IsConnected)
+                    result.Add(_sockets[i]);
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Returns all spawner nodes of a specific type.
         /// Used by the WaveManager (Enemy), LootSpawner (Loot), or
         /// PropPlacer (Environment) to find their respective spawn points.

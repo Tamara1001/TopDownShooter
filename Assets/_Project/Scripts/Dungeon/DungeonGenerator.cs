@@ -10,25 +10,36 @@
 //  ALGORITHM OVERVIEW
 //  ──────────────────
 //  1. Place the Start room at the grid origin (0,0).
+//     Register ALL cells of its Footprint in the occupied set.
 //  2. For each step along the main path:
 //     a. Pick a random open socket from the frontier.
-//     b. Check whether the target cell is already occupied.
-//        – If occupied, discard that socket and try another.
-//        – If free, spawn a room there.
-//     c. Connect both sockets (origin ↔ new room).
-//     d. Register the new room’s unconnected sockets into the frontier
-//        UNLESS it is the final Boss room — Boss sockets are withheld
-//        entirely so GenerateBranches() cannot attach anything to them,
-//        making the Boss room a guaranteed terminal dead-end.
+//     b. Instantiate the candidate room prefab at Vector3.zero (probe instance).
+//     c. Call TryFitRoom() to:
+//        i.  Find the matching socket on the probe instance (opposite direction).
+//        ii. Compute roomOrigin = frontierSocket.TargetGridPos − matchingSocket.LocalGridPosition
+//            so the matching socket aligns perfectly with the frontier socket.
+//       iii. Iterate the room's Footprint: if ANY cell (roomOrigin + local) is
+//            already occupied, the fit fails → Destroy the probe, burn the socket.
+//     d. If TryFitRoom succeeds:
+//        – Move the room to GridToWorld(roomOrigin).
+//        – Register every footprint cell in _occupiedCells.
+//        – Connect sockets and push unconnected sockets into the frontier.
+//     e. If TryFitRoom fails:
+//        – Destroy the probe instance.
+//        – Decrement the loop counter (i--) to retry this step.
+//        – The frontier socket is already consumed; FindValidSocket() will
+//          try the next one on the next attempt.
 //  3. Repeat until MainPathLength rooms are placed (or the frontier is
 //     exhausted — a graceful early exit).
 //
 //  GRID MODEL
 //  ──────────
-//  • Every room occupies exactly one 20×20 unit cell.
+//  • Rooms can span one or more 20×20 unit cells (multi-cell / "Tetris" shapes).
 //  • Cell (x,y) → World (x * _cellSize, 0, y * _cellSize).
-//  • A HashSet<Vector2Int> tracks occupied cells — O(1) overlap check,
-//    zero reliance on Physics (which is unreliable on frame 0).
+//  • A HashSet<Vector2Int> tracks ALL occupied cells — O(1) overlap check
+//    per footprint cell, zero reliance on Physics (unreliable on frame 0).
+//  • roomOrigin is the grid coordinate where the prefab pivot (0,0) lands.
+//    Each additional footprint offset is registered as roomOrigin + local.
 //
 //  DESIGN NOTES
 //  ─────────────
@@ -69,17 +80,20 @@ namespace TopDownShooter.Dungeon
 
         /// <summary>
         /// Lightweight binding between a live <see cref="RoomSocket"/> on an
-        /// already-placed room and the grid coordinate of the cell it connects to.
+        /// already-placed room and the absolute grid coordinate of the cell
+        /// it points toward (accounting for the socket's LocalGridPosition).
         /// Used as the frontier data structure during generation.
         /// </summary>
         private sealed class SocketData
         {
-            /// <summary>The socket component on the already-placed room.</summary>
+            /// <summary>El socket físico en la sala ya colocada.</summary>
             public RoomSocket Socket;
 
             /// <summary>
-            /// Grid cell that a new room would occupy if it connected to this socket.
-            /// Computed as: roomGridPos + GetDirectionVector(socket.Direction).
+            /// Celda absoluta de la grilla a la que apunta este socket.
+            /// Calculado como: roomOrigin + socket.LocalGridPosition + GetDirectionVector(socket.Direction).
+            /// Una sala candidata cuyo socket opuesto tenga LocalGridPosition (lx, ly)
+            /// quedará con su origen en TargetGridPos − (lx, ly).
             /// </summary>
             public Vector2Int TargetGridPos;
         }
@@ -180,10 +194,18 @@ namespace TopDownShooter.Dungeon
             }
 
             Vector2Int startCell = Vector2Int.zero;
-            RoomController startRoom = SpawnRoom(startRoomData, startCell);
+            RoomController startRoom = InstantiateRoomPrefab(startRoomData);
+
+            // Posicionar en el origen del mundo y registrar TODAS las celdas
+            // de la huella para salas multi-celda.
+            startRoom.transform.position = GridToWorld(startCell);
+            foreach (Vector2Int local in startRoomData.Footprint)
+                _occupiedCells.Add(startCell + local);
+
             RegisterOpenSockets(startRoom, startCell);
 
-            Debug.Log($"[DungeonGenerator] Start room placed at cell {startCell}.");
+            Debug.Log($"[DungeonGenerator] Start room placed at cell {startCell} " +
+                      $"(footprint: {startRoomData.Footprint.Count} cell(s)).");
 
             // ── Step 2: Main path loop ───────────────────────────────────────
             // MainPathLength includes the Start room, so we need
@@ -193,12 +215,12 @@ namespace TopDownShooter.Dungeon
 
             for (int i = 0; i < roomsToPlace; i++)
             {
-                // Determine the RoomType for this step:
-                // Last step = Boss, everything in between = Combat/Corridor.
+                // Determinar el tipo de sala para este paso:
+                // Último paso = Boss, el resto = Combat.
                 bool isFinalRoom = (i == roomsToPlace - 1);
                 RoomType desiredType = isFinalRoom ? RoomType.Boss : RoomType.Combat;
 
-                // ── Find a valid socket + cell pair from the frontier ────────
+                // ── Obtener un socket válido del frontier ────────────────────
                 SocketData chosenSocket = FindValidSocket();
 
                 if (chosenSocket == null)
@@ -209,14 +231,14 @@ namespace TopDownShooter.Dungeon
                     break;
                 }
 
-                // ── Pick a room from the pool ────────────────────────────────
+                // ── Seleccionar sala del pool ────────────────────────────────
                 RoomDataSO roomData = isFinalRoom
                     ? FindRoomByType(RoomType.Boss)
                     : PickWeightedRoom(desiredType);
 
                 if (roomData == null)
                 {
-                    // Fallback: if no Boss/Combat room exists, try any room.
+                    // Fallback: si no existe sala del tipo deseado, intentar cualquiera.
                     roomData = PickWeightedRoom(null);
                     if (roomData == null)
                     {
@@ -226,32 +248,47 @@ namespace TopDownShooter.Dungeon
                     }
                 }
 
-                // ── Step 3: Spawn the room ───────────────────────────────────
-                Vector2Int targetCell = chosenSocket.TargetGridPos;
-                RoomController newRoom = SpawnRoom(roomData, targetCell);
+                // ── Instanciar la sala como sonda en el origen ───────────────
+                // El prefab se crea en Vector3.zero para poder leer sus sockets
+                // antes de decidir si cabe. Si no cabe, se destruye sin costo.
+                RoomController newRoom = InstantiateRoomPrefab(roomData);
 
+                // ── Validar la huella completa contra las celdas ocupadas ────
+                if (!TryFitRoom(roomData, newRoom, chosenSocket,
+                                out Vector2Int roomOrigin, out RoomSocket _))
+                {
+                    // La sala no cabe: destruir la sonda y reintentar este paso.
+                    Destroy(newRoom.gameObject);
+                    i--; // Reintentar el mismo paso con otro socket/sala.
+                    continue;
+                }
+
+                // ── Cabe: posicionar, registrar celdas, conectar ─────────────
+                newRoom.transform.position = GridToWorld(roomOrigin);
+                newRoom.transform.SetParent(_dungeonRoot);
+
+                foreach (Vector2Int local in roomData.Footprint)
+                    _occupiedCells.Add(roomOrigin + local);
+
+                // CRÍTICO: el bossRoomInstance solo se asigna si TryFitRoom tuvo éxito.
                 if (isFinalRoom)
-                {
                     bossRoomInstance = newRoom;
-                }
 
-                // ── Step 4: Connect sockets ──────────────────────────────────
-                ConnectSockets(chosenSocket.Socket, newRoom, targetCell);
+                // ── Conectar sockets ─────────────────────────────────────────
+                ConnectSockets(chosenSocket.Socket, newRoom, roomOrigin);
 
-                // ── Step 5: Register the new room's open sockets ─────────────
-                // CRITICAL: Boss room sockets are intentionally WITHHELD from
-                // the frontier. If we registered them, GenerateBranches() could
-                // attach a Key or Treasure room directly to the Boss room,
-                // creating a path that bypasses the locked-door boundary from
-                // an adjacent wall. The Boss room must be a terminal dead-end.
+                // ── Registrar sockets abiertos en el frontier ────────────────
+                // CRÍTICO: los sockets de la sala Boss se retienen intencionalmente
+                // para que GenerateBranches() no pueda adjuntar nada a ella,
+                // garantizando que sea un callejón sin salida terminal.
                 if (!isFinalRoom)
-                {
-                    RegisterOpenSockets(newRoom, targetCell);
-                }
+                    RegisterOpenSockets(newRoom, roomOrigin);
 
                 Debug.Log($"[DungeonGenerator] Room '{roomData.name}' ({roomData.Type}) " +
-                          $"placed at cell {targetCell}. ({i + 2}/{_config.MainPathLength})"
-                          + (isFinalRoom ? " [TERMINAL — sockets withheld from frontier]" : ""));
+                          $"placed at origin {roomOrigin} " +
+                          $"(footprint: {roomData.Footprint.Count} cell(s)). " +
+                          $"({i + 2}/{_config.MainPathLength})" +
+                          (isFinalRoom ? " [TERMINAL — sockets withheld from frontier]" : ""));
             }
 
             Debug.Log($"[DungeonGenerator] Main path complete. " +
@@ -290,17 +327,34 @@ namespace TopDownShooter.Dungeon
 
                 if (roomData == null) continue;
 
-                Vector2Int targetCell = chosenSocket.TargetGridPos;
-                RoomController newRoom = SpawnRoom(roomData, targetCell);
+                // ── Instanciar sonda y validar huella ────────────────────────
+                RoomController newRoom = InstantiateRoomPrefab(roomData);
 
-                ConnectSockets(chosenSocket.Socket, newRoom, targetCell);
-                RegisterOpenSockets(newRoom, targetCell);
+                if (!TryFitRoom(roomData, newRoom, chosenSocket,
+                                out Vector2Int roomOrigin, out RoomSocket _))
+                {
+                    // No cabe: destruir la sonda y quemar este socket.
+                    Destroy(newRoom.gameObject);
+                    i--; // Reintentar este slot de rama con otro socket.
+                    continue;
+                }
+
+                // ── Cabe: posicionar, registrar celdas, conectar ─────────────
+                newRoom.transform.position = GridToWorld(roomOrigin);
+                newRoom.transform.SetParent(_dungeonRoot);
+
+                foreach (Vector2Int local in roomData.Footprint)
+                    _occupiedCells.Add(roomOrigin + local);
+
+                ConnectSockets(chosenSocket.Socket, newRoom, roomOrigin);
+                RegisterOpenSockets(newRoom, roomOrigin);
 
                 if (targetType == RoomType.Key)
                     hasSpawnedKeyRoom = true;
 
                 Debug.Log($"[DungeonGenerator] Branch '{roomData.name}' ({roomData.Type}) " +
-                          $"placed at cell {targetCell}.");
+                          $"placed at origin {roomOrigin} " +
+                          $"(footprint: {roomData.Footprint.Count} cell(s)).");
             }
         }
 
@@ -308,15 +362,61 @@ namespace TopDownShooter.Dungeon
         {
             if (bossRoom == null || _victoryDoorPrefab == null) return;
 
+            // Reconstruir la celda origen de la sala Boss a partir de su
+            // posición en el mundo. RoundToInt absorbe cualquier imprecisión
+            // de punto flotante acumulada durante el posicionamiento.
+            Vector2Int roomOrigin = new Vector2Int(
+                Mathf.RoundToInt(bossRoom.transform.position.x / _cellSize),
+                Mathf.RoundToInt(bossRoom.transform.position.z / _cellSize));
+
             IReadOnlyList<RoomSocket> sockets = bossRoom.Sockets;
+
+            // ── Primera pasada: socket preferido que apunta al espacio libre ──
+            // Calcular la celda absoluta hacia la que apunta cada socket y
+            // verificar que no esté ocupada antes de colocar la puerta.
+            // Esto evita que la puerta de victoria spawne contra una pared
+            // cuando el dungeon forma un bucle cerrado alrededor de la Boss room.
+            for (int i = 0; i < sockets.Count; i++)
+            {
+                RoomSocket socket = sockets[i];
+                if (socket.IsConnected) continue;
+
+                // Celda absoluta a la que apunta este socket.
+                Vector2Int targetCell = roomOrigin
+                                       + socket.LocalGridPosition
+                                       + GetDirectionVector(socket.Direction);
+
+                if (!_occupiedCells.Contains(targetCell))
+                {
+                    // La celda de destino está libre — la puerta es accesible.
+                    Instantiate(_victoryDoorPrefab,
+                                socket.transform.position,
+                                socket.transform.rotation,
+                                _dungeonRoot);
+                    socket.AssignDoor(null);
+                    return;
+                }
+            }
+
+            // ── Fallback: el mapa está tan denso que todos los sockets libres
+            //    de la Boss room enfrentan celdas ocupadas. En ese caso extremo
+            //    usar el primer socket desconectado sin restricción, para
+            //    garantizar que siempre exista una salida.
             for (int i = 0; i < sockets.Count; i++)
             {
                 RoomSocket socket = sockets[i];
                 if (!socket.IsConnected)
                 {
-                    Instantiate(_victoryDoorPrefab, socket.transform.position, socket.transform.rotation, _dungeonRoot);
+                    Debug.LogWarning("[DungeonGenerator] SpawnVictoryDoor: all free sockets on " +
+                                     "the Boss room face occupied cells. " +
+                                     "Placing victory door on first available socket as fallback.",
+                                     this);
+                    Instantiate(_victoryDoorPrefab,
+                                socket.transform.position,
+                                socket.transform.rotation,
+                                _dungeonRoot);
                     socket.AssignDoor(null);
-                    break;
+                    return;
                 }
             }
         }
@@ -326,22 +426,21 @@ namespace TopDownShooter.Dungeon
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Instantiates a room prefab at the world position corresponding
-        /// to the given grid cell and registers the cell as occupied.
+        /// Instancia el prefab de la sala en Vector3.zero como objeto sonda.
+        /// NO asigna posición final ni registra celdas — eso le corresponde al
+        /// llamador una vez que <see cref="TryFitRoom"/> confirma que la huella
+        /// completa de la sala cabe en el grid sin solapamientos.
         /// </summary>
-        private RoomController SpawnRoom(RoomDataSO data, Vector2Int cell)
+        private RoomController InstantiateRoomPrefab(RoomDataSO data)
         {
-            Vector3 worldPos = GridToWorld(cell);
-
+            // Instanciar en el origen; la posición real se aplica después de
+            // validar la huella con TryFitRoom.
             GameObject instance = Instantiate(
                 data.Prefab,
-                worldPos,
-                Quaternion.identity,
-                _dungeonRoot);
+                Vector3.zero,
+                Quaternion.identity);
 
-            _occupiedCells.Add(cell);
-
-            // RoomController.Awake() auto-discovers sockets/spawners.
+            // RoomController.Awake() auto-descubre sockets y spawners.
             RoomController controller = instance.GetComponent<RoomController>();
             if (controller == null)
             {
@@ -350,6 +449,87 @@ namespace TopDownShooter.Dungeon
             }
 
             return controller;
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        //  FOOTPRINT VALIDATION
+        // ─────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Determina si la sala candidata cabe en el grid respecto al socket
+        /// del frontier dado, y calcula el origen de la sala si cabe.
+        /// <para>
+        /// Itera TODOS los sockets disponibles en la dirección opuesta:
+        /// cada socket con un <see cref="RoomSocket.LocalGridPosition"/> distinto
+        /// produce un <paramref name="roomOrigin"/> diferente. El método prueba
+        /// cada alineación y retorna en el primer ajuste sin colisiones.
+        /// Solo retorna false si TODAS las alineaciones posibles colisionan.
+        /// </para>
+        /// </summary>
+        /// <param name="data">Datos de la sala (contiene la huella).</param>
+        /// <param name="roomInstance">Instancia sonda ya creada (para leer sockets reales del prefab).</param>
+        /// <param name="frontierSocket">Socket del frontier al que se conectará la sala.</param>
+        /// <param name="roomOrigin">Celda de la grilla donde debe instanciarse el pivote (0,0) de la sala.</param>
+        /// <param name="matchingSocket">Socket de la sala candidata elegido para conectar con el frontier.</param>
+        /// <returns>True si al menos una alineación cabe sin solapamientos; false si todas colisionan.</returns>
+        private bool TryFitRoom(RoomDataSO data, RoomController roomInstance,
+                                SocketData frontierSocket,
+                                out Vector2Int roomOrigin, out RoomSocket matchingSocket)
+        {
+            // ── Paso 1: Obtener TODOS los sockets opuestos disponibles ────────
+            // En salas 1×1 esto devuelve exactamente 1 elemento (comportamiento
+            // idéntico a la versión anterior). En salas multi-celda puede haber
+            // varios sockets sur/norte/etc. con LocalGridPosition distintos, cada
+            // uno ofreciendo una alineación diferente con el socket del frontier.
+            SocketDirection oppositeDir =
+                RoomSocket.GetOppositeDirection(frontierSocket.Socket.Direction);
+
+            List<RoomSocket> matchingSockets =
+                roomInstance.GetAllAvailableSockets(oppositeDir);
+
+            if (matchingSockets.Count == 0)
+            {
+                // La sala no expone ningún socket en la dirección requerida.
+                roomOrigin    = Vector2Int.zero;
+                matchingSocket = null;
+                return false;
+            }
+
+            // ── Paso 2: Probar cada alineación hasta encontrar una que quepa ──
+            // Para cada socket candidato se calcula un roomOrigin independiente:
+            //   roomOrigin = TargetGridPos − candidateSocket.LocalGridPosition
+            // Esto coloca el pivote de la sala de modo que ese socket quede
+            // exactamente en la celda a la que apunta el frontier.
+            foreach (RoomSocket candidateSocket in matchingSockets)
+            {
+                Vector2Int candidateOrigin =
+                    frontierSocket.TargetGridPos - candidateSocket.LocalGridPosition;
+
+                // ── Paso 3: Validar la huella completa para esta alineación ───
+                bool fits = true;
+                foreach (Vector2Int local in data.Footprint)
+                {
+                    if (_occupiedCells.Contains(candidateOrigin + local))
+                    {
+                        // Al menos una celda de la huella choca — probar el siguiente socket.
+                        fits = false;
+                        break;
+                    }
+                }
+
+                if (fits)
+                {
+                    // Esta alineación es válida: propagar resultados y retornar.
+                    roomOrigin     = candidateOrigin;
+                    matchingSocket = candidateSocket;
+                    return true;
+                }
+            }
+
+            // Todos los sockets disponibles produjeron colisión — la sala no cabe.
+            roomOrigin    = Vector2Int.zero;
+            matchingSocket = null;
+            return false;
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -416,10 +596,11 @@ namespace TopDownShooter.Dungeon
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Scans a newly-placed room and adds all of its unconnected sockets
-        /// to the frontier, each tagged with the grid cell they point toward.
+        /// Escanea la sala recién colocada y agrega todos sus sockets sin conectar
+        /// al frontier, cada uno etiquetado con la celda absoluta de la grilla
+        /// a la que apunta (teniendo en cuenta su LocalGridPosition).
         /// </summary>
-        private void RegisterOpenSockets(RoomController room, Vector2Int roomCell)
+        private void RegisterOpenSockets(RoomController room, Vector2Int roomOrigin)
         {
             if (room == null) return;
 
@@ -429,7 +610,15 @@ namespace TopDownShooter.Dungeon
                 RoomSocket socket = sockets[i];
                 if (socket.IsConnected) continue;
 
-                Vector2Int targetCell = roomCell + GetDirectionVector(socket.Direction);
+                // La celda a la que apunta este socket es la celda de la grilla
+                // donde reside el socket (roomOrigin + LocalGridPosition) más el
+                // vector unitario en su dirección. Esto garantiza que una sala
+                // candidata cuyo socket opuesto tenga LocalGridPosition (lx, ly)
+                // calcule su origen como TargetGridPos − (lx, ly), alineando
+                // correctamente los sockets de ambos lados.
+                Vector2Int targetCell = roomOrigin
+                                       + socket.LocalGridPosition
+                                       + GetDirectionVector(socket.Direction);
 
                 _availableSockets.Add(new SocketData
                 {
@@ -599,21 +788,20 @@ namespace TopDownShooter.Dungeon
         {
             if (_occupiedCells == null || _occupiedCells.Count == 0) return;
 
-            // Draw a flat wire cube for every occupied cell so the grid is
-            // visible in the Scene view during and after generation.
+            // Dibujar un cubo de alambre plano para cada celda ocupada.
+            // GridToWorld ya devuelve la posición exacta del pivote de la sala
+            // (0,0,0 local), por lo que no se necesita offset de media celda.
             Gizmos.color = new Color(0.2f, 0.7f, 1f, 0.3f);
             Vector3 cellExtents = new Vector3(_cellSize, 0.1f, _cellSize);
 
             foreach (Vector2Int cell in _occupiedCells)
             {
-                Vector3 centre = GridToWorld(cell) + new Vector3(_cellSize * 0.5f, 0f, _cellSize * 0.5f);
-                // Offset centre by half cell so the wire cube is centred on the room.
-                // Actually, rooms are instantiated at the cell's corner (GridToWorld),
-                // so centre = corner + half-cell.
+                // El cubo se centra directamente en el pivote de la sala.
+                Vector3 centre = GridToWorld(cell);
                 Gizmos.DrawWireCube(centre, cellExtents);
             }
 
-            // Draw open sockets as yellow spheres.
+            // Dibujar los sockets abiertos del frontier como esferas amarillas.
             Gizmos.color = new Color(1f, 0.9f, 0.1f, 0.6f);
             foreach (SocketData sd in _availableSockets)
             {

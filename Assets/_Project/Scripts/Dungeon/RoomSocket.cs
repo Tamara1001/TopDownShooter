@@ -44,6 +44,12 @@ namespace TopDownShooter.Dungeon
                  "North = +Z, East = +X, South = −Z, West = −X.")]
         [SerializeField] private SocketDirection _direction;
 
+        [Tooltip("Coordenada local en la grilla de este socket relativo al pivote (0,0) de la sala. " +
+                 "En salas 1×1 siempre es (0,0). En salas multi-celda indica qué celda " +
+                 "de la huella posee este socket, para que el generador calcule " +
+                 "la posición absoluta de la celda adyacente correctamente.")]
+        [SerializeField] private Vector2Int _localGridPosition = Vector2Int.zero;
+
         [Header("Wall Reference")]
         [Tooltip("The solid wall GameObject that blocks this doorway when unconnected. " +
                  "Disabled by Connect() and replaced with a door prefab.")]
@@ -65,6 +71,14 @@ namespace TopDownShooter.Dungeon
 
         /// <summary>True if this socket has been connected to another room.</summary>
         public bool IsConnected => _isConnected;
+
+        /// <summary>
+        /// Coordenada local en la grilla donde reside este socket,
+        /// relativa al pivote (0,0) de la sala propietaria.
+        /// El generador la suma a la posición de la celda de la sala para
+        /// obtener la coordenada absoluta de la celda vecina a la que apunta.
+        /// </summary>
+        public Vector2Int LocalGridPosition => _localGridPosition;
 
         /// <summary>The shared door assigned to this connection, if any.</summary>
         public DoorController AssignedDoor { get; private set; }

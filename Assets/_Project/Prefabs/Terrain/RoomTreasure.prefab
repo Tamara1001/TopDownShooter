@@ -116,7 +116,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
       propertyPath: _lootPrefabs.Array.size
-      value: 2
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
       propertyPath: _enemyPrefabs.Array.size
@@ -133,13 +133,21 @@ PrefabInstance:
     - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
       propertyPath: '_lootPrefabs.Array.data[2]'
       value: 
-      objectReference: {fileID: 8139866486074890665, guid: f09b75219094a3b4ea266d60a8ac16ab, type: 3}
+      objectReference: {fileID: 7795597736152488179, guid: 89e5b4ee1e7427940a04c74192e56c74, type: 3}
     - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
       propertyPath: '_lootPrefabs.Array.data[3]'
       value: 
-      objectReference: {fileID: 3467533474170925825, guid: a00ff01823815884cad25ebc80f944be, type: 3}
+      objectReference: {fileID: 5816329985700582511, guid: 9a64939a06e9603438a938faacb2417d, type: 3}
     - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
       propertyPath: '_lootPrefabs.Array.data[4]'
+      value: 
+      objectReference: {fileID: 8139866486074890665, guid: f09b75219094a3b4ea266d60a8ac16ab, type: 3}
+    - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
+      propertyPath: '_lootPrefabs.Array.data[5]'
+      value: 
+      objectReference: {fileID: 3467533474170925825, guid: a00ff01823815884cad25ebc80f944be, type: 3}
+    - target: {fileID: 4161433631716479996, guid: 912328d0174620f4e90e1786f779a543, type: 3}
+      propertyPath: '_lootPrefabs.Array.data[6]'
       value: 
       objectReference: {fileID: 6448227493324704502, guid: ef618727e07a1c047945a650acc28d34, type: 3}
     - target: {fileID: 6951606062908258739, guid: 912328d0174620f4e90e1786f779a543, type: 3}
