@@ -42,7 +42,6 @@ El juego utiliza el **New Input System** de Unity con el modo *Send Messages*. L
 | **Apuntar** | `Mouse` (posición absoluta en pantalla) | `PlayerController3D` → `OnLook()` |
 | **Disparar / Atacar** | `Clic Izquierdo` | `PlayerCombat` → `OnAttack()` |
 | **Correr** | `Shift` (mantener) | `PlayerController3D` → `OnSprint()` |
-| **Saltar** | `Espacio` | `PlayerController3D` → `OnJump()` |
 | **Dash** | `Espacio` *(acción "Dash")* | `PlayerController3D` → `OnDash()` |
 | **Interactuar / Recoger** | `E` | `PlayerInventory` → `OnInteract()` |
 | **Usar Consumible** | `Q` | `PlayerInventory` → `OnConsume()` |
@@ -428,7 +427,10 @@ Assets/_Project/Scripts/
 | Autor | Rol |
 |---|---|
 | **Tamara D'Angelo** | Desarrollo, diseño de sistemas y arquitectura |
-| **Alejo Nicolas Warner** | Desarrollo, diseño de sistemas y arquitectura |
+| **Alejo Nicolas Warner** | Desarrollo, artista técnico |
+
+Agradecimientos especiales a: Lucio Riccobono (Arte 2D), Santiago Leal Britos (Audio) y Mateo Molina (Early Game Design)
+Ellos ayudaron en una version preliminar de este proyecto que fue realizada en Construct 3.
 
 ---
 
