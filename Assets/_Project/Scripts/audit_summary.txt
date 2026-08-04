@@ -1,0 +1,1452 @@
+[COMMENT] Analyzer.cs: 1. Find empty Unity lifecycle methods
+[COMMENT] Analyzer.cs: 2. Find public fields (not properties, not constants, not readonly)
+[COMMENT] Analyzer.cs: 3. Extract some comments to check language and quality
+[COMMENT] Analyzer.cs: (.*?)$", RegexOptions.Multiline);
+[COMMENT] Analyzer.cs: 4. Extract declarations to check code language
+[COMMENT] Analyzer.cs: 5. Look for commented code (very basic heuristic: ends with ; or contains { })
+[COMMENT] Analyzer.cs: \s*([A-Za-z0-9_]+\s*\([^)]*\)\s*;|.*\{.*\}|.*=.*;)", RegexOptions.Multiline);
+[DECLARATION] Analyzer.cs: Program
+[DECLARATION] Analyzer.cs: fields
+[COMMENTED_CODE] Analyzer.cs: // 5. Look for commented code (very basic heuristic: ends with ; or contains { }
+[COMMENTED_CODE] Analyzer.cs: //\s*([A-Za-z0-9_]+\s*\([^)]*\)\s*;|.*\{.*\}
+[DECLARATION] Combat\DamageFlasher.cs: DamageFlasher
+[DECLARATION] Combat\DamageFlasher.cs: _renderers
+[DECLARATION] Combat\DamageFlasher.cs: _flashColor
+[DECLARATION] Combat\DamageFlasher.cs: _flashDuration
+[DECLARATION] Combat\DamageFlasher.cs: _health
+[DECLARATION] Combat\DamageFlasher.cs: _baseColorID
+[DECLARATION] Combat\DamageFlasher.cs: _previousHealth
+[DECLARATION] Combat\DamageFlasher.cs: _flashCoroutine
+[DECLARATION] Combat\DamageFlasher.cs: Awake
+[DECLARATION] Combat\DamageFlasher.cs: OnEnable
+[DECLARATION] Combat\DamageFlasher.cs: OnDisable
+[DECLARATION] Combat\DamageFlasher.cs: CheckDamage
+[DECLARATION] Combat\DamageFlasher.cs: FlashRoutine
+[COMMENT] Combat\DamageZone.cs: DamageZone.cs
+[COMMENT] Combat\DamageZone.cs: PURPOSE:
+[COMMENT] Combat\DamageZone.cs: A static hazard module for continuous-damage traps such as
+[COMMENT] Combat\DamageZone.cs: spikes, fire pits, or acid pools. Any entity with a Collider
+[COMMENT] Combat\DamageZone.cs: and a component implementing IDamageable that enters/stays
+[COMMENT] Combat\DamageZone.cs: in this trigger zone will receive periodic damage.
+[COMMENT] Combat\DamageZone.cs: HOW IT WORKS (Decoupling via Interface):
+[COMMENT] Combat\DamageZone.cs: This script never references PlayerController, EnemyAI, or
+[COMMENT] Combat\DamageZone.cs: any concrete type. It only asks: "Does whatever just entered
+[COMMENT] Combat\DamageZone.cs: my trigger implement IDamageable?" If yes, it calls
+[COMMENT] Combat\DamageZone.cs: TryGetComponent is safe here; it avoids a null-check antipattern.
+[DECLARATION] Combat\DamageZone.cs: DamageZone
+[DECLARATION] Combat\DamageZone.cs: damageAmount
+[DECLARATION] Combat\DamageZone.cs: damageTickRate
+[DECLARATION] Combat\DamageZone.cs: OnTriggerEnter
+[DECLARATION] Combat\DamageZone.cs: OnTriggerStay
+[DECLARATION] Combat\DamageZone.cs: and
+[DECLARATION] Combat\DamageZone.cs: OnTriggerExit
+[DECLARATION] Combat\DamageZone.cs: OnDrawGizmos
+[COMMENT] Combat\DestroyOnDeath.cs: / <summary>
+[COMMENT] Combat\DestroyOnDeath.cs: / Script de utilidad que escucha la muerte de un HealthComponent
+[COMMENT] Combat\DestroyOnDeath.cs: / y destruye el GameObject. Ideal para cajas, jarrones, etc.
+[COMMENT] Combat\DestroyOnDeath.cs: / </summary>
+[DECLARATION] Combat\DestroyOnDeath.cs: DestroyOnDeath
+[DECLARATION] Combat\DestroyOnDeath.cs: Awake
+[DECLARATION] Combat\DestroyOnDeath.cs: HandleDeath
+[COMMENT] Combat\HealthComponent.cs: HealthComponent.cs
+[COMMENT] Combat\HealthComponent.cs: PURPOSE:
+[COMMENT] Combat\HealthComponent.cs: A reusable, self-contained health state manager that can be
+[COMMENT] Combat\HealthComponent.cs: attached to ANY entity (Player, Enemy, Destructible Prop).
+[COMMENT] Combat\HealthComponent.cs: It implements IDamageable and communicates all health changes
+[COMMENT] Combat\HealthComponent.cs: outward via C# events (Observer Pattern), keeping it
+[COMMENT] Combat\HealthComponent.cs: completely decoupled from UI, animations, and AI systems.
+[COMMENT] Combat\HealthComponent.cs: STRICT RULES — This script MUST NOT:
+[COMMENT] Combat\HealthComponent.cs: All those concerns belong to LISTENERS of its events.
+[COMMENT] Combat\HealthComponent.cs: HOW TO USE:
+[COMMENT] Combat\HealthComponent.cs: healthComponent.OnHealthChanged += UpdateBar;
+[COMMENT] Combat\HealthComponent.cs: healthComponent.OnDied          += ShowDeathScreen;
+[DECLARATION] Combat\HealthComponent.cs: HealthComponent
+[DECLARATION] Combat\HealthComponent.cs: maxHealth
+[DECLARATION] Combat\HealthComponent.cs: currentHealth
+[DECLARATION] Combat\HealthComponent.cs: isDead
+[DECLARATION] Combat\HealthComponent.cs: IsInvulnerable
+[DECLARATION] Combat\HealthComponent.cs: Awake
+[DECLARATION] Combat\HealthComponent.cs: Start
+[DECLARATION] Combat\HealthComponent.cs: TakeDamage
+[DECLARATION] Combat\HealthComponent.cs: Heal
+[DECLARATION] Combat\HealthComponent.cs: ScaleMaxHealth
+[DECLARATION] Combat\HealthComponent.cs: CurrentHealth
+[DECLARATION] Combat\HealthComponent.cs: MaxHealth
+[DECLARATION] Combat\HealthComponent.cs: GetNormalizedHealth
+[DECLARATION] Combat\HealthComponent.cs: IsDead
+[COMMENTED_CODE] Combat\HealthComponent.cs: //        healthComponent.OnHealthChanged += UpdateBar;
+[COMMENTED_CODE] Combat\HealthComponent.cs: //        healthComponent.OnDied          += ShowDeathScreen;
+[COMMENT] Combat\IDamageable.cs: IDamageable.cs
+[COMMENT] Combat\IDamageable.cs: PURPOSE:
+[COMMENT] Combat\IDamageable.cs: Defines the universal contract for any entity in the game
+[COMMENT] Combat\IDamageable.cs: that can receive damage. By depending on this interface
+[COMMENT] Combat\IDamageable.cs: instead of concrete classes, damage dealers (projectiles,
+[COMMENT] Combat\IDamageable.cs: traps, melee attacks) are completely decoupled from damage
+[COMMENT] Combat\IDamageable.cs: receivers (players, enemies, destructible props).
+[COMMENT] Combat\IDamageable.cs: USAGE:
+[COMMENT] Combat\IDamageable.cs: Any MonoBehaviour that can be damaged must implement this
+[COMMENT] Combat\IDamageable.cs: interface. The HealthComponent script provides the canonical
+[DECLARATION] Combat\IDamageable.cs: IDamageable
+[COMMENT] Combat\IWeapon.cs: IWeapon.cs
+[COMMENT] Combat\IWeapon.cs: Author  : [Your Name]
+[COMMENT] Combat\IWeapon.cs: Project : TopDownShooter – Protagonist: Lunaria (Mage)
+[COMMENT] Combat\IWeapon.cs: Created : 2026
+[COMMENT] Combat\IWeapon.cs: PURPOSE
+[COMMENT] Combat\IWeapon.cs: Defines the contract that every weapon in the game must fulfil.
+[COMMENT] Combat\IWeapon.cs: This is the core of the Strategy Pattern for the weapon system.
+[COMMENT] Combat\IWeapon.cs: STRATEGY PATTERN ROLE: Abstract Strategy
+[COMMENT] Combat\IWeapon.cs: ─────────────────────────────────────────
+[COMMENT] Combat\IWeapon.cs: • IWeapon is the abstract "strategy" interface.
+[COMMENT] Combat\IWeapon.cs: ► SO   : Add a WeaponDataSO property to expose stats without subclassing.
+[COMMENT] Combat\IWeapon.cs: ► FSM  : Add bool CanFire { get; } so the FSM can gate attacks.
+[COMMENT] Combat\IWeapon.cs: ► UI   : Add string WeaponName / Sprite WeaponIcon for HUD display.
+[COMMENT] Combat\IWeapon.cs: void ExecuteAlternateAttack();   // Right-click / secondary fire
+[COMMENT] Combat\IWeapon.cs: void Reload();                   // For ammo-based weapons
+[COMMENT] Combat\IWeapon.cs: bool CanFire { get; }            // FSM gate: is the weapon ready?
+[DECLARATION] Combat\IWeapon.cs: can
+[DECLARATION] Combat\IWeapon.cs: IWeapon
+[COMMENTED_CODE] Combat\IWeapon.cs: //  ► FSM  : Add bool CanFire { get; }
+[COMMENTED_CODE] Combat\IWeapon.cs: // bool CanFire { get; }
+[COMMENT] Combat\IWeaponConfigurable.cs: IWeaponConfigurable.cs
+[COMMENT] Combat\IWeaponConfigurable.cs: Project : TopDownShooter
+[COMMENT] Combat\IWeaponConfigurable.cs: PURPOSE
+[COMMENT] Combat\IWeaponConfigurable.cs: Optional configuration interface for weapon logic MonoBehaviours.
+[COMMENT] Combat\IWeaponConfigurable.cs: Separates the concern of "how a weapon attacks" (IWeapon) from
+[COMMENT] Combat\IWeaponConfigurable.cs: "how a weapon receives its stats" (IWeaponConfigurable).
+[COMMENT] Combat\IWeaponConfigurable.cs: WHY A SEPARATE INTERFACE?
+[COMMENT] Combat\IWeaponConfigurable.cs: ─────────────────────────
+[COMMENT] Combat\IWeaponConfigurable.cs: IWeapon's contract is intentionally minimal: void ExecuteAttack().
+[COMMENT] Combat\IWeaponConfigurable.cs: Adding Configure() there would force EVERY weapon to implement it,
+[COMMENT] Combat\IWeaponConfigurable.cs: if (weapon is IWeaponConfigurable cfg) cfg.Configure(weaponData);
+[COMMENT] Combat\IWeaponConfigurable.cs: ► Add void Deconfigure() if weapons need cleanup when unequipped.
+[COMMENT] Combat\IWeaponConfigurable.cs: automatically; weapon logic just reads the properties it cares about.
+[COMMENT] Combat\IWeaponConfigurable.cs: /     configurable.Configure(weaponData);
+[DECLARATION] Combat\IWeaponConfigurable.cs: for
+[DECLARATION] Combat\IWeaponConfigurable.cs: implemented
+[DECLARATION] Combat\IWeaponConfigurable.cs: entirely
+[DECLARATION] Combat\IWeaponConfigurable.cs: IWeaponConfigurable
+[COMMENT] Combat\IWorldInteractable.cs: IWorldInteractable.cs
+[COMMENT] Combat\IWorldInteractable.cs: Project : TopDownShooter
+[COMMENT] Combat\IWorldInteractable.cs: PURPOSE
+[COMMENT] Combat\IWorldInteractable.cs: Marker interface that any world object (doors, switches, NPCs) must implement
+[COMMENT] Combat\IWorldInteractable.cs: to receive an interaction call from the player's E-key press.
+[COMMENT] Combat\IWorldInteractable.cs: ARCHITECTURE
+[COMMENT] Combat\IWorldInteractable.cs: ─────────────
+[COMMENT] Combat\IWorldInteractable.cs: Follows the Interface Segregation Principle. PlayerInventory only knows about
+[COMMENT] Combat\IWorldInteractable.cs: this contract; it never depends on concrete interactable types (VictoryDoor,
+[COMMENT] Combat\IWorldInteractable.cs: ShopKeeper, etc.), keeping both sides fully decoupled.
+[DECLARATION] Combat\IWorldInteractable.cs: that
+[DECLARATION] Combat\IWorldInteractable.cs: IWorldInteractable
+[COMMENT] Combat\MeleeWeapon.cs: MeleeWeapon.cs
+[COMMENT] Combat\MeleeWeapon.cs: PURPOSE:
+[COMMENT] Combat\MeleeWeapon.cs: Concrete Strategy implementation of IWeapon for close-range
+[COMMENT] Combat\MeleeWeapon.cs: melee attacks. When the AttackState calls ExecuteAttack(),
+[COMMENT] Combat\MeleeWeapon.cs: this component performs a cone-shaped Physics.OverlapSphere
+[COMMENT] Combat\MeleeWeapon.cs: query — zero per-frame allocations after warmup — and applies
+[COMMENT] Combat\MeleeWeapon.cs: damage to every IDamageable hit inside the arc.
+[COMMENT] Combat\MeleeWeapon.cs: STRATEGY PATTERN ROLE: Concrete Strategy
+[COMMENT] Combat\MeleeWeapon.cs: • IWeapon             = Abstract Strategy   (attack contract)
+[COMMENT] Combat\MeleeWeapon.cs: • IWeaponConfigurable = Configuration hook   (stat injection)
+[COMMENT] Combat\MeleeWeapon.cs: Allocated once in Awake() using the Inspector value; never
+[COMMENT] Combat\MeleeWeapon.cs: Logging scoped to the Editor; stripped from builds.
+[DECLARATION] Combat\MeleeWeapon.cs: importing
+[DECLARATION] Combat\MeleeWeapon.cs: MeleeWeapon
+[DECLARATION] Combat\MeleeWeapon.cs: _damage
+[DECLARATION] Combat\MeleeWeapon.cs: _defaultCooldown
+[DECLARATION] Combat\MeleeWeapon.cs: Cooldown
+[DECLARATION] Combat\MeleeWeapon.cs: _baseCooldown
+[DECLARATION] Combat\MeleeWeapon.cs: _damageMultiplier
+[DECLARATION] Combat\MeleeWeapon.cs: _cooldownMultiplier
+[DECLARATION] Combat\MeleeWeapon.cs: _attackRadius
+[DECLARATION] Combat\MeleeWeapon.cs: _attackAngle
+[DECLARATION] Combat\MeleeWeapon.cs: _targetMask
+[DECLARATION] Combat\MeleeWeapon.cs: _hitBufferSize
+[DECLARATION] Combat\MeleeWeapon.cs: _impulseSource
+[DECLARATION] Combat\MeleeWeapon.cs: _slashEffectPrefab
+[DECLARATION] Combat\MeleeWeapon.cs: _hitBuffer
+[COMMENT] Combat\Projectile.cs: Projectile.cs
+[COMMENT] Combat\Projectile.cs: Author  : [Your Name]
+[COMMENT] Combat\Projectile.cs: Project : TopDownShooter – Protagonist: Lunaria (Mage)
+[COMMENT] Combat\Projectile.cs: Created : 2026
+[COMMENT] Combat\Projectile.cs: PURPOSE
+[COMMENT] Combat\Projectile.cs: Drives a single magic projectile that travels in a straight line along its
+[COMMENT] Combat\Projectile.cs: local forward axis (world direction inherited from the player's rotation at
+[COMMENT] Combat\Projectile.cs: the moment of firing). Returns itself to the Object Pool on collision or
+[COMMENT] Combat\Projectile.cs: when its lifetime expires – never uses Destroy().
+[COMMENT] Combat\Projectile.cs: ARCHITECTURE NOTES
+[COMMENT] Combat\Projectile.cs: / Hides the GameObject; the pool keeps it alive for future reuse.
+[COMMENT] Combat\Projectile.cs: / ► ICombat  : Call other.GetComponent&lt;IDamageable&gt;()?.TakeDamage(damage)
+[DECLARATION] Combat\Projectile.cs: Projectile
+[DECLARATION] Combat\Projectile.cs: projectileSpeed
+[DECLARATION] Combat\Projectile.cs: lifetime
+[DECLARATION] Combat\Projectile.cs: ignoreLayers
+[DECLARATION] Combat\Projectile.cs: _impulseSource
+[DECLARATION] Combat\Projectile.cs: _pool
+[DECLARATION] Combat\Projectile.cs: _damage
+[DECLARATION] Combat\Projectile.cs: _activeTimer
+[DECLARATION] Combat\Projectile.cs: _transform
+[DECLARATION] Combat\Projectile.cs: _isReturned
+[DECLARATION] Combat\Projectile.cs: _trailRenderer
+[DECLARATION] Combat\Projectile.cs: _spriteRenderer
+[DECLARATION] Combat\Projectile.cs: Awake
+[DECLARATION] Combat\Projectile.cs: Update
+[DECLARATION] Combat\Projectile.cs: SetPool
+[COMMENTED_CODE] Combat\Projectile.cs: /// <see cref="ObjectPool{T}
+[COMMENT] Combat\RangedWeapon.cs: RangedWeapon.cs
+[COMMENT] Combat\RangedWeapon.cs: PURPOSE:
+[COMMENT] Combat\RangedWeapon.cs: Concrete Strategy implementation of IWeapon for ranged attacks.
+[COMMENT] Combat\RangedWeapon.cs: Owns and manages a UnityEngine.Pool.ObjectPool<Projectile>,
+[COMMENT] Combat\RangedWeapon.cs: mirroring the architecture of MagicWand.cs used by the player.
+[COMMENT] Combat\RangedWeapon.cs: STRATEGY PATTERN ROLE: Concrete Strategy
+[COMMENT] Combat\RangedWeapon.cs: • IWeapon       = Abstract Strategy  (contract)
+[COMMENT] Combat\RangedWeapon.cs: • RangedWeapon  = Concrete Strategy  (this file)
+[COMMENT] Combat\RangedWeapon.cs: • EnemyBrain    = Context            (calls ExecuteAttack())
+[COMMENT] Combat\RangedWeapon.cs: OBJECT POOL LIFECYCLE (mirrors MagicWand.cs):
+[COMMENT] Combat\RangedWeapon.cs: IObjectPool<T> is the interface; ObjectPool<T> is the implementation,
+[COMMENT] Combat\RangedWeapon.cs: ► VFX hook: VFXManager.Instance?.PlayMuzzleFlash(_firePoint.position, _firePoint.rotation);
+[COMMENT] Combat\RangedWeapon.cs: ► Audio hook: _audioSource?.PlayOneShot(_fireSFX);
+[COMMENT] Combat\RangedWeapon.cs: Start deactivated; OnGetProjectile will activate it.
+[COMMENT] Combat\RangedWeapon.cs: / Deactivates the GameObject; it remains in memory for reuse.
+[DECLARATION] Combat\RangedWeapon.cs: RangedWeapon
+[DECLARATION] Combat\RangedWeapon.cs: _firePoint
+[DECLARATION] Combat\RangedWeapon.cs: _projectilePrefab
+[DECLARATION] Combat\RangedWeapon.cs: _poolDefaultCapacity
+[DECLARATION] Combat\RangedWeapon.cs: _poolMaxSize
+[DECLARATION] Combat\RangedWeapon.cs: _damage
+[DECLARATION] Combat\RangedWeapon.cs: _defaultCooldown
+[DECLARATION] Combat\RangedWeapon.cs: Cooldown
+[DECLARATION] Combat\RangedWeapon.cs: _baseCooldown
+[DECLARATION] Combat\RangedWeapon.cs: _damageMultiplier
+[DECLARATION] Combat\RangedWeapon.cs: _cooldownMultiplier
+[DECLARATION] Combat\RangedWeapon.cs: _projectilePool
+[DECLARATION] Combat\RangedWeapon.cs: _projectileColor
+[DECLARATION] Combat\RangedWeapon.cs: Awake
+[DECLARATION] Combat\RangedWeapon.cs: OnDestroy
+[COMMENTED_CODE] Combat\RangedWeapon.cs: /// Constructs the <see cref="ObjectPool{T}
+[COMMENT] Combat\SpreadRangedWeapon.cs: SpreadRangedWeapon.cs
+[COMMENT] Combat\SpreadRangedWeapon.cs: PURPOSE:
+[COMMENT] Combat\SpreadRangedWeapon.cs: Concrete Strategy implementation of IWeapon for a "Bullet Hell" ranged attack.
+[COMMENT] Combat\SpreadRangedWeapon.cs: Fires multiple Projectile instances simultaneously in a radial spread arc
+[COMMENT] Combat\SpreadRangedWeapon.cs: or a full 360-degree nova.
+[COMMENT] Combat\SpreadRangedWeapon.cs: POOLING WORKAROUND:
+[COMMENT] Combat\SpreadRangedWeapon.cs: Since ObjectPool.Get() does not accept arbitrary arguments to pass down to
+[COMMENT] Combat\SpreadRangedWeapon.cs: OnGetProjectile(), this script calculates the rotation for each bullet in
+[COMMENT] Combat\SpreadRangedWeapon.cs: the loop, caches it in _currentSpawnRotation, and then calls Get().
+[COMMENT] Combat\SpreadRangedWeapon.cs: OnGetProjectile() reads that cached field to instantly snap the projectile
+[DECLARATION] Combat\SpreadRangedWeapon.cs: SpreadRangedWeapon
+[DECLARATION] Combat\SpreadRangedWeapon.cs: _firePoint
+[DECLARATION] Combat\SpreadRangedWeapon.cs: _projectilePrefab
+[DECLARATION] Combat\SpreadRangedWeapon.cs: _projectileCount
+[DECLARATION] Combat\SpreadRangedWeapon.cs: _spreadAngle
+[DECLARATION] Combat\SpreadRangedWeapon.cs: _poolDefaultCapacity
+[DECLARATION] Combat\SpreadRangedWeapon.cs: _poolMaxSize
+[DECLARATION] Combat\SpreadRangedWeapon.cs: _damage
+[DECLARATION] Combat\SpreadRangedWeapon.cs: _defaultCooldown
+[DECLARATION] Combat\SpreadRangedWeapon.cs: _projectileColor
+[DECLARATION] Combat\SpreadRangedWeapon.cs: Cooldown
+[DECLARATION] Combat\SpreadRangedWeapon.cs: _baseCooldown
+[DECLARATION] Combat\SpreadRangedWeapon.cs: _damageMultiplier
+[DECLARATION] Combat\SpreadRangedWeapon.cs: _cooldownMultiplier
+[DECLARATION] Combat\SpreadRangedWeapon.cs: _projectilePool
+[COMMENT] Dungeon\DoorController.cs: DoorController.cs
+[COMMENT] Dungeon\DoorController.cs: Project : TopDownShooter – Procedural Dungeon System
+[COMMENT] Dungeon\DoorController.cs: PURPOSE
+[COMMENT] Dungeon\DoorController.cs: Handles the physical collision toggle and smooth vertical translation of
+[COMMENT] Dungeon\DoorController.cs: door prefabs. Replaces the previous alpha-fade approach with an opaque
+[COMMENT] Dungeon\DoorController.cs: "sink into the floor" animation that is fully compatible with URP Opaque
+[COMMENT] Dungeon\DoorController.cs: materials and eliminates all transparent-sorting artifacts.
+[COMMENT] Dungeon\DoorController.cs: Used by RoomController to lock players in during combat encounters and
+[COMMENT] Dungeon\DoorController.cs: release them when cleared.
+[COMMENT] Dungeon\DoorController.cs: ARCHITECTURE
+[COMMENT] Dungeon\DoorController.cs: / Opens by sinking child visual parts below the floor; closes by raising
+[DECLARATION] Dungeon\DoorController.cs: DoorController
+[DECLARATION] Dungeon\DoorController.cs: VisualPartCache
+[DECLARATION] Dungeon\DoorController.cs: Part
+[DECLARATION] Dungeon\DoorController.cs: ClosedLocalPosition
+[DECLARATION] Dungeon\DoorController.cs: OpenLocalPosition
+[DECLARATION] Dungeon\DoorController.cs: _slideDuration
+[DECLARATION] Dungeon\DoorController.cs: _sinkDistance
+[DECLARATION] Dungeon\DoorController.cs: _colliders
+[DECLARATION] Dungeon\DoorController.cs: _visualParts
+[DECLARATION] Dungeon\DoorController.cs: _slideCoroutine
+[DECLARATION] Dungeon\DoorController.cs: _lock
+[DECLARATION] Dungeon\DoorController.cs: Awake
+[DECLARATION] Dungeon\DoorController.cs: CloseDoor
+[DECLARATION] Dungeon\DoorController.cs: OpenDoor
+[DECLARATION] Dungeon\DoorController.cs: SlideRoutine
+[COMMENT] Dungeon\DungeonConfigSO.cs: DungeonConfigSO.cs
+[COMMENT] Dungeon\DungeonConfigSO.cs: Project : TopDownShooter – Procedural Dungeon System
+[COMMENT] Dungeon\DungeonConfigSO.cs: PURPOSE
+[COMMENT] Dungeon\DungeonConfigSO.cs: Top-level configuration asset consumed by the dungeon generator.
+[COMMENT] Dungeon\DungeonConfigSO.cs: Contains all tunable parameters for a single dungeon "recipe":
+[COMMENT] Dungeon\DungeonConfigSO.cs: how long the main path is, how many branches to allow, and which
+[COMMENT] Dungeon\DungeonConfigSO.cs: room archetypes are in the pool.
+[COMMENT] Dungeon\DungeonConfigSO.cs: USAGE
+[COMMENT] Dungeon\DungeonConfigSO.cs: ─────
+[COMMENT] Dungeon\DungeonConfigSO.cs: 1. Right-click in the Project window → Create → Dungeon → Dungeon Config.
+[DECLARATION] Dungeon\DungeonConfigSO.cs: DungeonConfigSO
+[DECLARATION] Dungeon\DungeonConfigSO.cs: _mainPathLength
+[DECLARATION] Dungeon\DungeonConfigSO.cs: _maxBranches
+[DECLARATION] Dungeon\DungeonConfigSO.cs: _availableRooms
+[DECLARATION] Dungeon\DungeonConfigSO.cs: MainPathLength
+[DECLARATION] Dungeon\DungeonConfigSO.cs: MaxBranches
+[DECLARATION] Dungeon\DungeonConfigSO.cs: AvailableRooms
+[DECLARATION] Dungeon\DungeonConfigSO.cs: OnValidate
+[COMMENT] Dungeon\DungeonEnums.cs: DungeonEnums.cs
+[COMMENT] Dungeon\DungeonEnums.cs: Project : TopDownShooter – Procedural Dungeon System
+[COMMENT] Dungeon\DungeonEnums.cs: PURPOSE
+[COMMENT] Dungeon\DungeonEnums.cs: Central home for all enum types used by the dungeon generation pipeline.
+[COMMENT] Dungeon\DungeonEnums.cs: Grouped here because they are small, tightly coupled, and always imported
+[COMMENT] Dungeon\DungeonEnums.cs: together — one file is easier to find and maintain than four single-enum files.
+[COMMENT] Dungeon\DungeonEnums.cs: ENUMS
+[COMMENT] Dungeon\DungeonEnums.cs: ─────
+[COMMENT] Dungeon\DungeonEnums.cs: • RoomType        : Classifies a room's gameplay purpose (Start, Combat, etc.)
+[COMMENT] Dungeon\DungeonEnums.cs: • SocketDirection  : Cardinal direction of a doorway within a room prefab.
+[DECLARATION] Dungeon\DungeonEnums.cs: types
+[DECLARATION] Dungeon\DungeonEnums.cs: files
+[DECLARATION] Dungeon\DungeonEnums.cs: RoomType
+[DECLARATION] Dungeon\DungeonEnums.cs: SocketDirection
+[COMMENT] Dungeon\DungeonGenerator.cs: DungeonGenerator.cs
+[COMMENT] Dungeon\DungeonGenerator.cs: Project : TopDownShooter – Procedural Dungeon System
+[COMMENT] Dungeon\DungeonGenerator.cs: PURPOSE
+[COMMENT] Dungeon\DungeonGenerator.cs: Core generation algorithm that consumes DungeonConfigSO + Room Prefabs
+[COMMENT] Dungeon\DungeonGenerator.cs: to procedurally build a connected dungeon at runtime.
+[COMMENT] Dungeon\DungeonGenerator.cs: ALGORITHM OVERVIEW
+[COMMENT] Dungeon\DungeonGenerator.cs: ──────────────────
+[COMMENT] Dungeon\DungeonGenerator.cs: 1. Place the Start room at the grid origin (0,0).
+[COMMENT] Dungeon\DungeonGenerator.cs: Register ALL cells of its Footprint in the occupied set.
+[COMMENT] Dungeon\DungeonGenerator.cs: 2. For each step along the main path:
+[COMMENT] Dungeon\DungeonGenerator.cs: – The frontier socket is already consumed; FindValidSocket() will
+[COMMENT] Dungeon\DungeonGenerator.cs: Instanciar en el origen; la posición real se aplica después de
+[COMMENT] Dungeon\DungeonGenerator.cs: / <returns>True si al menos una alineación cabe sin solapamientos; false si todas colisionan.</returns>
+[DECLARATION] Dungeon\DungeonGenerator.cs: DungeonGenerator
+[DECLARATION] Dungeon\DungeonGenerator.cs: SocketData
+[DECLARATION] Dungeon\DungeonGenerator.cs: Socket
+[DECLARATION] Dungeon\DungeonGenerator.cs: TargetGridPos
+[DECLARATION] Dungeon\DungeonGenerator.cs: _config
+[DECLARATION] Dungeon\DungeonGenerator.cs: _maxBranches
+[DECLARATION] Dungeon\DungeonGenerator.cs: _doorPrefab
+[DECLARATION] Dungeon\DungeonGenerator.cs: _doorPrefabBoss
+[DECLARATION] Dungeon\DungeonGenerator.cs: _doorPrefabTreasure
+[DECLARATION] Dungeon\DungeonGenerator.cs: _doorPrefabKey
+[DECLARATION] Dungeon\DungeonGenerator.cs: _victoryDoorPrefab
+[DECLARATION] Dungeon\DungeonGenerator.cs: _cellSize
+[DECLARATION] Dungeon\DungeonGenerator.cs: _navMeshSurface
+[DECLARATION] Dungeon\DungeonGenerator.cs: _occupiedCells
+[DECLARATION] Dungeon\DungeonGenerator.cs: _availableSockets
+[COMMENT] Dungeon\EntitySpawnerNode.cs: EntitySpawnerNode.cs
+[COMMENT] Dungeon\EntitySpawnerNode.cs: Project : TopDownShooter – Procedural Dungeon System
+[COMMENT] Dungeon\EntitySpawnerNode.cs: PURPOSE
+[COMMENT] Dungeon\EntitySpawnerNode.cs: Lightweight marker component placed on empty GameObjects inside a room
+[COMMENT] Dungeon\EntitySpawnerNode.cs: prefab to indicate where entities should spawn at runtime.
+[COMMENT] Dungeon\EntitySpawnerNode.cs: The RoomController collects all nodes via GetComponentsInChildren and
+[COMMENT] Dungeon\EntitySpawnerNode.cs: passes them to the WaveManager / LootSpawner when the room activates.
+[COMMENT] Dungeon\EntitySpawnerNode.cs: HOW TO USE
+[COMMENT] Dungeon\EntitySpawnerNode.cs: ──────────
+[COMMENT] Dungeon\EntitySpawnerNode.cs: 1. Inside a room prefab, create empty child GameObjects at each desired
+[DECLARATION] Dungeon\EntitySpawnerNode.cs: because
+[DECLARATION] Dungeon\EntitySpawnerNode.cs: EntitySpawnerNode
+[DECLARATION] Dungeon\EntitySpawnerNode.cs: SpawnerType
+[DECLARATION] Dungeon\EntitySpawnerNode.cs: _type
+[DECLARATION] Dungeon\EntitySpawnerNode.cs: Type
+[DECLARATION] Dungeon\EntitySpawnerNode.cs: OnDrawGizmos
+[COMMENT] Dungeon\IDoorLock.cs: IDoorLock.cs
+[COMMENT] Dungeon\IDoorLock.cs: Project : TopDownShooter – Procedural Dungeon System
+[COMMENT] Dungeon\IDoorLock.cs: PURPOSE
+[COMMENT] Dungeon\IDoorLock.cs: Lightweight veto interface for any component that can prevent a
+[COMMENT] Dungeon\IDoorLock.cs: DoorController from opening. Keeps DoorController decoupled from
+[COMMENT] Dungeon\IDoorLock.cs: concrete lock types (LockedBossDoor, etc.) living in other namespaces.
+[COMMENT] Dungeon\IDoorLock.cs: CONTRACT
+[COMMENT] Dungeon\IDoorLock.cs: ─────────
+[COMMENT] Dungeon\IDoorLock.cs: • Implement this on any MonoBehaviour that sits on (or is a sibling of)
+[COMMENT] Dungeon\IDoorLock.cs: a DoorController and needs to block its OpenDoor() call.
+[DECLARATION] Dungeon\IDoorLock.cs: for
+[DECLARATION] Dungeon\IDoorLock.cs: can
+[DECLARATION] Dungeon\IDoorLock.cs: IDoorLock
+[COMMENT] Dungeon\RoomController.cs: RoomController.cs
+[COMMENT] Dungeon\RoomController.cs: Project : TopDownShooter – Procedural Dungeon System
+[COMMENT] Dungeon\RoomController.cs: PURPOSE
+[COMMENT] Dungeon\RoomController.cs: Root MonoBehaviour attached to the root of every room prefab.
+[COMMENT] Dungeon\RoomController.cs: Acts as the central hub for the room's anatomy: sockets (doors) and
+[COMMENT] Dungeon\RoomController.cs: entity spawner nodes.  Auto-discovers all child components in Awake()
+[COMMENT] Dungeon\RoomController.cs: so designers never need to manually drag-and-drop references.
+[COMMENT] Dungeon\RoomController.cs: CURRENT STATE: SHELL
+[COMMENT] Dungeon\RoomController.cs: ─────────────────────
+[COMMENT] Dungeon\RoomController.cs: This version only collects child components and exposes them.
+[DECLARATION] Dungeon\RoomController.cs: RoomController
+[DECLARATION] Dungeon\RoomController.cs: RoomState
+[DECLARATION] Dungeon\RoomController.cs: _roomType
+[DECLARATION] Dungeon\RoomController.cs: _enemyPrefabs
+[DECLARATION] Dungeon\RoomController.cs: _environmentPrefabs
+[DECLARATION] Dungeon\RoomController.cs: _lootPrefabs
+[DECLARATION] Dungeon\RoomController.cs: _sockets
+[DECLARATION] Dungeon\RoomController.cs: _spawners
+[DECLARATION] Dungeon\RoomController.cs: _state
+[DECLARATION] Dungeon\RoomController.cs: _activeEnemyCount
+[DECLARATION] Dungeon\RoomController.cs: _playerGameObject
+[DECLARATION] Dungeon\RoomController.cs: Type
+[DECLARATION] Dungeon\RoomController.cs: Sockets
+[DECLARATION] Dungeon\RoomController.cs: Spawners
+[DECLARATION] Dungeon\RoomController.cs: Awake
+[COMMENT] Dungeon\RoomDataSO.cs: RoomDataSO.cs
+[COMMENT] Dungeon\RoomDataSO.cs: Project : TopDownShooter – Procedural Dungeon System
+[COMMENT] Dungeon\RoomDataSO.cs: PURPOSE
+[COMMENT] Dungeon\RoomDataSO.cs: Immutable data container (ScriptableObject) describing a single room
+[COMMENT] Dungeon\RoomDataSO.cs: archetype: what type it is, which prefab to instantiate, and how likely
+[COMMENT] Dungeon\RoomDataSO.cs: it is to be selected during generation.
+[COMMENT] Dungeon\RoomDataSO.cs: USAGE
+[COMMENT] Dungeon\RoomDataSO.cs: ─────
+[COMMENT] Dungeon\RoomDataSO.cs: 1. Right-click in the Project window → Create → Dungeon → Room Data.
+[COMMENT] Dungeon\RoomDataSO.cs: 2. Assign the room Type, drag the prefab, and set the Weight.
+[COMMENT] Dungeon\RoomDataSO.cs: 3. Add the asset to a DungeonConfigSO's _availableRooms array.
+[DECLARATION] Dungeon\RoomDataSO.cs: RoomDataSO
+[DECLARATION] Dungeon\RoomDataSO.cs: _type
+[DECLARATION] Dungeon\RoomDataSO.cs: _prefab
+[DECLARATION] Dungeon\RoomDataSO.cs: _weight
+[DECLARATION] Dungeon\RoomDataSO.cs: _footprint
+[DECLARATION] Dungeon\RoomDataSO.cs: Type
+[DECLARATION] Dungeon\RoomDataSO.cs: Prefab
+[DECLARATION] Dungeon\RoomDataSO.cs: Weight
+[DECLARATION] Dungeon\RoomDataSO.cs: Footprint
+[COMMENT] Dungeon\RoomSocket.cs: RoomSocket.cs
+[COMMENT] Dungeon\RoomSocket.cs: Project : TopDownShooter – Procedural Dungeon System
+[COMMENT] Dungeon\RoomSocket.cs: PURPOSE
+[COMMENT] Dungeon\RoomSocket.cs: Represents a single doorway attachment point on a room prefab.
+[COMMENT] Dungeon\RoomSocket.cs: Each room prefab has up to 4 sockets (one per cardinal wall).
+[COMMENT] Dungeon\RoomSocket.cs: The dungeon generator queries available sockets to determine which
+[COMMENT] Dungeon\RoomSocket.cs: directions a room can connect to, and calls Connect() to finalise
+[COMMENT] Dungeon\RoomSocket.cs: the link — disabling the solid wall and instantiating a door.
+[COMMENT] Dungeon\RoomSocket.cs: PLACEMENT GUIDE
+[COMMENT] Dungeon\RoomSocket.cs: ─────────────────
+[DECLARATION] Dungeon\RoomSocket.cs: RoomSocket
+[DECLARATION] Dungeon\RoomSocket.cs: _direction
+[DECLARATION] Dungeon\RoomSocket.cs: _localGridPosition
+[DECLARATION] Dungeon\RoomSocket.cs: _solidWall
+[DECLARATION] Dungeon\RoomSocket.cs: _isConnected
+[DECLARATION] Dungeon\RoomSocket.cs: Direction
+[DECLARATION] Dungeon\RoomSocket.cs: IsConnected
+[DECLARATION] Dungeon\RoomSocket.cs: LocalGridPosition
+[DECLARATION] Dungeon\RoomSocket.cs: AssignedDoor
+[DECLARATION] Dungeon\RoomSocket.cs: set
+[DECLARATION] Dungeon\RoomSocket.cs: AssignDoor
+[DECLARATION] Dungeon\RoomSocket.cs: OnDrawGizmos
+[COMMENT] DungeonMaster\DungeonMasterDirector.cs: DungeonMasterDirector.cs
+[COMMENT] DungeonMaster\DungeonMasterDirector.cs: Project : TopDownShooter – Dungeon Master System
+[COMMENT] DungeonMaster\DungeonMasterDirector.cs: PROPÓSITO
+[COMMENT] DungeonMaster\DungeonMasterDirector.cs: Manager Singleton que orquesta el sistema de dados D20 "Dungeon Master".
+[COMMENT] DungeonMaster\DungeonMasterDirector.cs: Es el único punto de entrada para iniciar un roll y para limpiar el
+[COMMENT] DungeonMaster\DungeonMasterDirector.cs: modificador activo. La HUD y otros sistemas escuchan sus eventos estáticos
+[COMMENT] DungeonMaster\DungeonMasterDirector.cs: sin necesitar una referencia directa a esta instancia.
+[COMMENT] DungeonMaster\DungeonMasterDirector.cs: FLUJO DE EJECUCIÓN
+[COMMENT] DungeonMaster\DungeonMasterDirector.cs: ──────────────────
+[COMMENT] DungeonMaster\DungeonMasterDirector.cs: 1. RoomController detecta al jugador entrando en una sala Combat/Boss.
+[COMMENT] DungeonMaster\DungeonMasterDirector.cs: • El Director NO conoce tipos concretos de modificador; sólo DungeonModifierSO.
+[COMMENT] DungeonMaster\DungeonMasterDirector.cs: • RoomController NO conoce DungeonModifierSO; sólo llama a los dos métodos
+[DECLARATION] DungeonMaster\DungeonMasterDirector.cs: DungeonMasterDirector
+[DECLARATION] DungeonMaster\DungeonMasterDirector.cs: set
+[DECLARATION] DungeonMaster\DungeonMasterDirector.cs: criticalFailures
+[DECLARATION] DungeonMaster\DungeonMasterDirector.cs: badRolls
+[DECLARATION] DungeonMaster\DungeonMasterDirector.cs: goodRolls
+[DECLARATION] DungeonMaster\DungeonMasterDirector.cs: criticalSuccesses
+[DECLARATION] DungeonMaster\DungeonMasterDirector.cs: _activeModifier
+[DECLARATION] DungeonMaster\DungeonMasterDirector.cs: _cachedPlayer
+[DECLARATION] DungeonMaster\DungeonMasterDirector.cs: _cachedRoomEnemies
+[DECLARATION] DungeonMaster\DungeonMasterDirector.cs: Awake
+[DECLARATION] DungeonMaster\DungeonMasterDirector.cs: TriggerRoomRoll
+[DECLARATION] DungeonMaster\DungeonMasterDirector.cs: ClearActiveModifier
+[DECLARATION] DungeonMaster\DungeonMasterDirector.cs: SelectModifierForRoll
+[DECLARATION] DungeonMaster\DungeonMasterDirector.cs: ApplySelectedModifier
+[DECLARATION] DungeonMaster\DungeonMasterDirector.cs: OnValidate
+[COMMENT] DungeonMaster\DungeonModifierSO.cs: DungeonModifierSO.cs
+[COMMENT] DungeonMaster\DungeonModifierSO.cs: Project : TopDownShooter – Dungeon Master System
+[COMMENT] DungeonMaster\DungeonModifierSO.cs: PROPÓSITO
+[COMMENT] DungeonMaster\DungeonModifierSO.cs: ScriptableObject abstracto que sirve como contrato base para todos los
+[COMMENT] DungeonMaster\DungeonModifierSO.cs: modificadores del sistema D20 "Dungeon Master".
+[COMMENT] DungeonMaster\DungeonModifierSO.cs: PATRÓN DE DISEÑO: Strategy + Template Method
+[COMMENT] DungeonMaster\DungeonModifierSO.cs: ─────────────────────────────────────────────
+[COMMENT] DungeonMaster\DungeonModifierSO.cs: • Cada modificador concreto (ej. SpeedBoostModifier, DoubleDamageModifier)
+[COMMENT] DungeonMaster\DungeonModifierSO.cs: hereda de esta clase e implementa ApplyModifier / RevertModifier.
+[COMMENT] DungeonMaster\DungeonModifierSO.cs: • El DungeonMasterDirector actúa como Context: sólo conoce esta interfaz,
+[DECLARATION] DungeonMaster\DungeonModifierSO.cs: DungeonModifierSO
+[DECLARATION] DungeonMaster\DungeonModifierSO.cs: _modifierName
+[DECLARATION] DungeonMaster\DungeonModifierSO.cs: _description
+[DECLARATION] DungeonMaster\DungeonModifierSO.cs: ModifierName
+[DECLARATION] DungeonMaster\DungeonModifierSO.cs: Description
+[COMMENT] DungeonMaster\Modifiers\EnemyStatsModifier.cs: EnemyStatsModifier.cs
+[COMMENT] DungeonMaster\Modifiers\EnemyStatsModifier.cs: Project : TopDownShooter – Dungeon Master System
+[COMMENT] DungeonMaster\Modifiers\EnemyStatsModifier.cs: PROPÓSITO
+[COMMENT] DungeonMaster\Modifiers\EnemyStatsModifier.cs: Un "Mega-Modificador" impulsado por datos para alterar múltiples
+[COMMENT] DungeonMaster\Modifiers\EnemyStatsModifier.cs: estadísticas de los enemigos al mismo tiempo al entrar en una sala.
+[COMMENT] DungeonMaster\Modifiers\EnemyStatsModifier.cs: ─────────────────────────────────────────────────────────────────────
+[COMMENT] DungeonMaster\Modifiers\EnemyStatsModifier.cs: CONFIGURACIÓN DATA-DRIVEN (Toggles)
+[COMMENT] DungeonMaster\Modifiers\EnemyStatsModifier.cs: ─────────────────────────────────────────────────────────────────────
+[COMMENT] DungeonMaster\Modifiers\EnemyStatsModifier.cs: ─────────────────────────────────────────────────────────────────────
+[COMMENT] DungeonMaster\Modifiers\EnemyStatsModifier.cs: APPLY
+[DECLARATION] DungeonMaster\Modifiers\EnemyStatsModifier.cs: EnemyStatsModifier
+[DECLARATION] DungeonMaster\Modifiers\EnemyStatsModifier.cs: _modifySpeed
+[DECLARATION] DungeonMaster\Modifiers\EnemyStatsModifier.cs: _speedMultiplier
+[DECLARATION] DungeonMaster\Modifiers\EnemyStatsModifier.cs: _modifyMaxHealth
+[DECLARATION] DungeonMaster\Modifiers\EnemyStatsModifier.cs: _healthMultiplier
+[DECLARATION] DungeonMaster\Modifiers\EnemyStatsModifier.cs: _modifyDamage
+[DECLARATION] DungeonMaster\Modifiers\EnemyStatsModifier.cs: _damageMultiplier
+[DECLARATION] DungeonMaster\Modifiers\EnemyStatsModifier.cs: _modifyCooldown
+[DECLARATION] DungeonMaster\Modifiers\EnemyStatsModifier.cs: _cooldownMultiplier
+[COMMENT] DungeonMaster\Modifiers\PlayerStatsModifier.cs: PlayerStatsModifier.cs
+[COMMENT] DungeonMaster\Modifiers\PlayerStatsModifier.cs: Project : TopDownShooter – Dungeon Master System
+[COMMENT] DungeonMaster\Modifiers\PlayerStatsModifier.cs: PROPÓSITO
+[COMMENT] DungeonMaster\Modifiers\PlayerStatsModifier.cs: Un "Mega-Modificador" impulsado por datos que permite a los diseñadores
+[COMMENT] DungeonMaster\Modifiers\PlayerStatsModifier.cs: crear cualquier tipo de buff o debuff para el jugador combinando variables.
+[COMMENT] DungeonMaster\Modifiers\PlayerStatsModifier.cs: Reemplaza la necesidad de tener scripts individuales para cada efecto.
+[COMMENT] DungeonMaster\Modifiers\PlayerStatsModifier.cs: ─────────────────────────────────────────────────────────────────────
+[COMMENT] DungeonMaster\Modifiers\PlayerStatsModifier.cs: CONFIGURACIÓN DATA-DRIVEN (Toggles)
+[COMMENT] DungeonMaster\Modifiers\PlayerStatsModifier.cs: ─────────────────────────────────────────────────────────────────────
+[COMMENT] DungeonMaster\Modifiers\PlayerStatsModifier.cs: ─────────────────────────────────────────────────────────────────────
+[DECLARATION] DungeonMaster\Modifiers\PlayerStatsModifier.cs: PlayerStatsModifier
+[DECLARATION] DungeonMaster\Modifiers\PlayerStatsModifier.cs: _modifySpeed
+[DECLARATION] DungeonMaster\Modifiers\PlayerStatsModifier.cs: _speedBonus
+[DECLARATION] DungeonMaster\Modifiers\PlayerStatsModifier.cs: _modifyManaCost
+[DECLARATION] DungeonMaster\Modifiers\PlayerStatsModifier.cs: _manaCostMultiplier
+[DECLARATION] DungeonMaster\Modifiers\PlayerStatsModifier.cs: _modifyDamage
+[DECLARATION] DungeonMaster\Modifiers\PlayerStatsModifier.cs: _damageMultiplier
+[DECLARATION] DungeonMaster\Modifiers\PlayerStatsModifier.cs: _modifyCooldown
+[DECLARATION] DungeonMaster\Modifiers\PlayerStatsModifier.cs: _cooldownMultiplier
+[COMMENT] DungeonMaster\UI\DungeonMasterHUD.cs: DungeonMasterHUD.cs
+[COMMENT] DungeonMaster\UI\DungeonMasterHUD.cs: Project : TopDownShooter – Dungeon Master System
+[COMMENT] DungeonMaster\UI\DungeonMasterHUD.cs: PROPÓSITO
+[COMMENT] DungeonMaster\UI\DungeonMasterHUD.cs: Se encarga exclusivamente de la representación visual del sistema D20 en la
+[COMMENT] DungeonMaster\UI\DungeonMasterHUD.cs: pantalla. Escucha los eventos estáticos del DungeonMasterDirector (Patrón
+[COMMENT] DungeonMaster\UI\DungeonMasterHUD.cs: Observer), lo que garantiza que la lógica del juego y la UI estén totalmente
+[COMMENT] DungeonMaster\UI\DungeonMasterHUD.cs: desacopladas.
+[COMMENT] DungeonMaster\UI\DungeonMasterHUD.cs: COMPORTAMIENTO
+[COMMENT] DungeonMaster\UI\DungeonMasterHUD.cs: 1. Al recibir OnDiceRolled, inicia una corrutina que simula el giro de un
+[COMMENT] DungeonMaster\UI\DungeonMasterHUD.cs: dado D20 cambiando números rápidamente antes de mostrar el resultado final.
+[DECLARATION] DungeonMaster\UI\DungeonMasterHUD.cs: DungeonMasterHUD
+[DECLARATION] DungeonMaster\UI\DungeonMasterHUD.cs: _dicePanel
+[DECLARATION] DungeonMaster\UI\DungeonMasterHUD.cs: _diceRollText
+[DECLARATION] DungeonMaster\UI\DungeonMasterHUD.cs: _modifierPanel
+[DECLARATION] DungeonMaster\UI\DungeonMasterHUD.cs: _modifierNameText
+[DECLARATION] DungeonMaster\UI\DungeonMasterHUD.cs: _diceAnimationCoroutine
+[DECLARATION] DungeonMaster\UI\DungeonMasterHUD.cs: OnEnable
+[DECLARATION] DungeonMaster\UI\DungeonMasterHUD.cs: OnDisable
+[DECLARATION] DungeonMaster\UI\DungeonMasterHUD.cs: Start
+[DECLARATION] DungeonMaster\UI\DungeonMasterHUD.cs: HandleDiceRolled
+[DECLARATION] DungeonMaster\UI\DungeonMasterHUD.cs: HandleModifierApplied
+[DECLARATION] DungeonMaster\UI\DungeonMasterHUD.cs: HandleModifierCleared
+[DECLARATION] DungeonMaster\UI\DungeonMasterHUD.cs: AnimateDiceRoll
+[PUBLIC_FIELD] Editor\PrefabReplacer.cs: public GameObject newPrefab;
+[COMMENT] Editor\PrefabReplacer.cs: PrefabReplacer.cs
+[COMMENT] Editor\PrefabReplacer.cs: Project : TopDownShooter – Editor Tools
+[COMMENT] Editor\PrefabReplacer.cs: PROPÓSITO
+[COMMENT] Editor\PrefabReplacer.cs: Herramienta de Editor que permite reemplazar múltiples GameObjects
+[COMMENT] Editor\PrefabReplacer.cs: seleccionados en la escena por un nuevo Prefab especificado.
+[COMMENT] Editor\PrefabReplacer.cs: USO
+[COMMENT] Editor\PrefabReplacer.cs: 1. Selecciona en la Jerarquía los objetos que deseas reemplazar.
+[COMMENT] Editor\PrefabReplacer.cs: 2. Ve a Tools -> Replace Selected Prefabs en el menú superior.
+[COMMENT] Editor\PrefabReplacer.cs: 3. Asigna el "New Prefab" en la ventana del wizard.
+[COMMENT] Editor\PrefabReplacer.cs: 4. Haz clic en "Replace".
+[DECLARATION] Editor\PrefabReplacer.cs: PrefabReplacer
+[DECLARATION] Editor\PrefabReplacer.cs: newPrefab
+[DECLARATION] Editor\PrefabReplacer.cs: OnWizardCreate
+[COMMENT] Enemy\BossBrain.cs: BossBrain.cs
+[COMMENT] Enemy\BossBrain.cs: Project : TopDownShooter – Enemy AI
+[COMMENT] Enemy\BossBrain.cs: PURPOSE
+[COMMENT] Enemy\BossBrain.cs: Extends EnemyBrain with a multi-phase boss fight architecture.
+[COMMENT] Enemy\BossBrain.cs: • Supports a full weapon arsenal (multiple IWeapons).
+[COMMENT] Enemy\BossBrain.cs: • Monitors its own health via HealthComponent.OnHealthChanged.
+[COMMENT] Enemy\BossBrain.cs: • Forces a forced state transition to BossTransitionState when health
+[COMMENT] Enemy\BossBrain.cs: drops to or below the Phase 2 threshold.
+[COMMENT] Enemy\BossBrain.cs: • Exposes ExecuteBossWeapon(int index) for Phase 2 bullet-hell patterns.
+[COMMENT] Enemy\BossBrain.cs: DESIGN NOTES
+[DECLARATION] Enemy\BossBrain.cs: BossBrain
+[DECLARATION] Enemy\BossBrain.cs: _bossWeapons
+[DECLARATION] Enemy\BossBrain.cs: _bossDisplayName
+[DECLARATION] Enemy\BossBrain.cs: _phase2HealthThreshold
+[DECLARATION] Enemy\BossBrain.cs: _phase2AnchorPoint
+[DECLARATION] Enemy\BossBrain.cs: _equippedBossWeapons
+[DECLARATION] Enemy\BossBrain.cs: _bossHealth
+[DECLARATION] Enemy\BossBrain.cs: BossDisplayName
+[DECLARATION] Enemy\BossBrain.cs: IsInPhase2
+[DECLARATION] Enemy\BossBrain.cs: set
+[DECLARATION] Enemy\BossBrain.cs: Phase2AnchorPoint
+[DECLARATION] Enemy\BossBrain.cs: wiring
+[DECLARATION] Enemy\BossBrain.cs: HandleBossHealth
+[DECLARATION] Enemy\BossBrain.cs: ExecuteBossWeapon
+[DECLARATION] Enemy\BossBrain.cs: GetBossWeaponCooldown
+[COMMENT] Enemy\BossPhase2State.cs: BossPhase2State.cs
+[COMMENT] Enemy\BossPhase2State.cs: Project : TopDownShooter – Enemy AI
+[COMMENT] Enemy\BossPhase2State.cs: PURPOSE
+[COMMENT] Enemy\BossPhase2State.cs: Distinct Phase 2 combat pattern for the boss fight.
+[COMMENT] Enemy\BossPhase2State.cs: BEHAVIOUR
+[COMMENT] Enemy\BossPhase2State.cs: ──────────
+[COMMENT] Enemy\BossPhase2State.cs: Enter  → Resume agent. Move to the room's anchor point (e.g., centre).
+[COMMENT] Enemy\BossPhase2State.cs: Tick   → While travelling: keep updating destination.
+[COMMENT] Enemy\BossPhase2State.cs: Once arrived:     switch to ranged bullet-hell mode.
+[COMMENT] Enemy\BossPhase2State.cs: • Face the player.
+[DECLARATION] Enemy\BossPhase2State.cs: BossPhase2State
+[DECLARATION] Enemy\BossPhase2State.cs: _bossBrain
+[DECLARATION] Enemy\BossPhase2State.cs: _lastAttackTime
+[DECLARATION] Enemy\BossPhase2State.cs: _hasArrived
+[DECLARATION] Enemy\BossPhase2State.cs: TickRepositioning
+[DECLARATION] Enemy\BossPhase2State.cs: TickBulletHell
+[DECLARATION] Enemy\BossPhase2State.cs: FacePlayer
+[COMMENT] Enemy\BossTransitionState.cs: BossTransitionState.cs
+[COMMENT] Enemy\BossTransitionState.cs: Project : TopDownShooter – Enemy AI
+[COMMENT] Enemy\BossTransitionState.cs: PURPOSE
+[COMMENT] Enemy\BossTransitionState.cs: A brief cinematic "breather" state the boss enters when its health
+[COMMENT] Enemy\BossTransitionState.cs: crosses the Phase 2 threshold.
+[COMMENT] Enemy\BossTransitionState.cs: BEHAVIOUR
+[COMMENT] Enemy\BossTransitionState.cs: ──────────
+[COMMENT] Enemy\BossTransitionState.cs: Enter  → Stop agent. Make boss invulnerable. Fire "PhaseTransition" anim.
+[COMMENT] Enemy\BossTransitionState.cs: Tick   → Count down a timer. On expiry → transition to BossPhase2State.
+[COMMENT] Enemy\BossTransitionState.cs: Exit   → Remove invulnerability so the boss can take damage again.
+[DECLARATION] Enemy\BossTransitionState.cs: BossTransitionState
+[DECLARATION] Enemy\BossTransitionState.cs: _timer
+[DECLARATION] Enemy\BossTransitionState.cs: _health
+[COMMENT] Enemy\EnemyBrain.cs: EnemyBrain.cs
+[COMMENT] Enemy\EnemyBrain.cs: PURPOSE:
+[COMMENT] Enemy\EnemyBrain.cs: The central "brain" MonoBehaviour for every enemy in the game.
+[COMMENT] Enemy\EnemyBrain.cs: It orchestrates a modular, class-based Finite State Machine
+[COMMENT] Enemy\EnemyBrain.cs: (FSM) and wires together all sub-systems:
+[COMMENT] Enemy\EnemyBrain.cs: • NavMeshAgent  — pathfinding / movement
+[COMMENT] Enemy\EnemyBrain.cs: • HealthComponent — damage & death events
+[COMMENT] Enemy\EnemyBrain.cs: • Animator        — animation triggers
+[COMMENT] Enemy\EnemyBrain.cs: • EnemyStatsSO    — data-driven configuration
+[COMMENT] Enemy\EnemyBrain.cs: ARCHITECTURE (Composition over Inheritance):
+[COMMENT] Enemy\EnemyBrain.cs: • Adding a NEW state (e.g., DashState) = adding ONE new class.
+[COMMENT] Enemy\EnemyBrain.cs: • No public mutable state; all fields are private/protected.
+[COMMENT] Enemy\EnemyBrain.cs: • Player is resolved via GameManager first; tag and coroutine
+[COMMENT] Enemy\EnemyBrain.cs: Written ONLY when Brain.PerformAttack() succeeds; never in Enter().
+[COMMENT] Enemy\EnemyBrain.cs: / Populated in <see cref="BuildStates"/>; override in subclasses
+[DECLARATION] Enemy\EnemyBrain.cs: derived
+[DECLARATION] Enemy\EnemyBrain.cs: state
+[DECLARATION] Enemy\EnemyBrain.cs: EnemyStateBase
+[DECLARATION] Enemy\EnemyBrain.cs: Brain
+[DECLARATION] Enemy\EnemyBrain.cs: set
+[DECLARATION] Enemy\EnemyBrain.cs: Initialise
+[DECLARATION] Enemy\EnemyBrain.cs: IdleState
+[DECLARATION] Enemy\EnemyBrain.cs: ChaseState
+[DECLARATION] Enemy\EnemyBrain.cs: AttackState
+[DECLARATION] Enemy\EnemyBrain.cs: _lastAttackTime
+[DECLARATION] Enemy\EnemyBrain.cs: FacePlayer
+[DECLARATION] Enemy\EnemyBrain.cs: EnemyBrain
+[DECLARATION] Enemy\EnemyBrain.cs: _stats
+[DECLARATION] Enemy\EnemyBrain.cs: types
+[DECLARATION] Enemy\EnemyBrain.cs: _weaponComponent
+[COMMENTED_CODE] Enemy\EnemyBrain.cs: /// Populated in <see cref="BuildStates"/>;
+[COMMENT] Enemy\EnemyDeathHandler.cs: / <summary>
+[COMMENT] Enemy\EnemyDeathHandler.cs: / Maneja la muerte visual de un enemigo: desactiva colisiones instantaneamente
+[COMMENT] Enemy\EnemyDeathHandler.cs: / y destruye el objeto tras un retardo para que la animacion de muerte se complete.
+[COMMENT] Enemy\EnemyDeathHandler.cs: / Patron: Observer — se suscribe a HealthComponent.OnDied en Awake.
+[COMMENT] Enemy\EnemyDeathHandler.cs: / </summary>
+[COMMENT] Enemy\EnemyDeathHandler.cs: Punto de extension para Object Pooling si se requiere en el futuro.
+[DECLARATION] Enemy\EnemyDeathHandler.cs: EnemyDeathHandler
+[DECLARATION] Enemy\EnemyDeathHandler.cs: _destroyDelay
+[DECLARATION] Enemy\EnemyDeathHandler.cs: _deathVFXPrefab
+[DECLARATION] Enemy\EnemyDeathHandler.cs: Awake
+[DECLARATION] Enemy\EnemyDeathHandler.cs: HandleDeath
+[DECLARATION] Enemy\EnemyDeathHandler.cs: DestroyAfterDelayRoutine
+[COMMENT] Enemy\EnemyStatsSO.cs: EnemyStatsSO.cs
+[COMMENT] Enemy\EnemyStatsSO.cs: PURPOSE:
+[COMMENT] Enemy\EnemyStatsSO.cs: A ScriptableObject that acts as a pure DATA CONTAINER for a
+[COMMENT] Enemy\EnemyStatsSO.cs: single enemy archetype (e.g., Zombie, Mummy, Boss).
+[COMMENT] Enemy\EnemyStatsSO.cs: Following the "Separate Data from Logic" principle, this asset
+[COMMENT] Enemy\EnemyStatsSO.cs: holds nothing but configuration values. Multiple enemy
+[COMMENT] Enemy\EnemyStatsSO.cs: prefabs can share the same SO, or each can have its own
+[COMMENT] Enemy\EnemyStatsSO.cs: tuned copy — without changing a single line of code.
+[COMMENT] Enemy\EnemyStatsSO.cs: USAGE:
+[COMMENT] Enemy\EnemyStatsSO.cs: 1. Right-click in the Project window.
+[DECLARATION] Enemy\EnemyStatsSO.cs: EnemyStatsSO
+[DECLARATION] Enemy\EnemyStatsSO.cs: maxHealth
+[DECLARATION] Enemy\EnemyStatsSO.cs: moveSpeed
+[DECLARATION] Enemy\EnemyStatsSO.cs: detectionRange
+[DECLARATION] Enemy\EnemyStatsSO.cs: attackRange
+[DECLARATION] Enemy\EnemyStatsSO.cs: attackCooldown
+[DECLARATION] Enemy\EnemyStatsSO.cs: MaxHealth
+[DECLARATION] Enemy\EnemyStatsSO.cs: MoveSpeed
+[DECLARATION] Enemy\EnemyStatsSO.cs: DetectionRange
+[DECLARATION] Enemy\EnemyStatsSO.cs: AttackRange
+[DECLARATION] Enemy\EnemyStatsSO.cs: AttackCooldown
+[DECLARATION] Enemy\EnemyStatsSO.cs: OnValidate
+[COMMENT] Inventory\ConsumableDataSO.cs: ConsumableDataSO.cs
+[COMMENT] Inventory\ConsumableDataSO.cs: Project : TopDownShooter
+[COMMENT] Inventory\ConsumableDataSO.cs: PURPOSE
+[COMMENT] Inventory\ConsumableDataSO.cs: Concrete ScriptableObject for CONSUMABLE item archetypes.
+[COMMENT] Inventory\ConsumableDataSO.cs: Consumables are single-use items activated via the Q key (OnConsume input).
+[COMMENT] Inventory\ConsumableDataSO.cs: Examples: health potions, speed boosts, temporary shields.
+[COMMENT] Inventory\ConsumableDataSO.cs: CURRENT SCOPE (Part 3 — Win/Loss Conditions):
+[COMMENT] Inventory\ConsumableDataSO.cs: Added IsQuestItem flag so KeyItems cannot be consumed via the Q key
+[COMMENT] Inventory\ConsumableDataSO.cs: (PlayerInventory guards the consume path).
+[COMMENT] Inventory\ConsumableDataSO.cs: Original effect fields from Part 1 remain unchanged.
+[COMMENT] Inventory\ConsumableDataSO.cs: / Consumed via the Consume input action (Q key); clears the slot on use.
+[DECLARATION] Inventory\ConsumableDataSO.cs: ConsumableDataSO
+[DECLARATION] Inventory\ConsumableDataSO.cs: _isQuestItem
+[DECLARATION] Inventory\ConsumableDataSO.cs: _healAmount
+[DECLARATION] Inventory\ConsumableDataSO.cs: _effectDuration
+[DECLARATION] Inventory\ConsumableDataSO.cs: _speedBoostMultiplier
+[DECLARATION] Inventory\ConsumableDataSO.cs: IsQuestItem
+[DECLARATION] Inventory\ConsumableDataSO.cs: HealAmount
+[DECLARATION] Inventory\ConsumableDataSO.cs: EffectDuration
+[DECLARATION] Inventory\ConsumableDataSO.cs: SpeedBoostMultiplier
+[PUBLIC_FIELD] Inventory\ItemAnimation.cs: public float floatAmplitude =
+[PUBLIC_FIELD] Inventory\ItemAnimation.cs: public float floatSpeed =
+[PUBLIC_FIELD] Inventory\ItemAnimation.cs: public Vector3 rotationSpeed =
+[PUBLIC_FIELD] Inventory\ItemAnimation.cs: public float squashAmount =
+[PUBLIC_FIELD] Inventory\ItemAnimation.cs: public float squashSpeed =
+[COMMENT] Inventory\ItemAnimation.cs: / <summary>
+[COMMENT] Inventory\ItemAnimation.cs: / Anima items del mundo con flotacion senoidal, rotacion continua y deformacion
+[COMMENT] Inventory\ItemAnimation.cs: / de squash-and-stretch para dar vida a los pickups en escena.
+[COMMENT] Inventory\ItemAnimation.cs: / Pensado para consumibles, monedas y cualquier objeto recogible.
+[COMMENT] Inventory\ItemAnimation.cs: / </summary>
+[COMMENT] Inventory\ItemAnimation.cs: Para top-down 3D se rota en Y. Cambiar a Z para proyectos 2D.
+[COMMENT] Inventory\ItemAnimation.cs: Flotacion: movimiento senoidal suave en el eje Y.
+[COMMENT] Inventory\ItemAnimation.cs: Squash y Stretch: al estirarse en Y se aplana en X y Z, y viceversa,
+[COMMENT] Inventory\ItemAnimation.cs: imitando la deformacion de materiales elasticos.
+[DECLARATION] Inventory\ItemAnimation.cs: ItemFloatAnimation
+[DECLARATION] Inventory\ItemAnimation.cs: floatAmplitude
+[DECLARATION] Inventory\ItemAnimation.cs: floatSpeed
+[DECLARATION] Inventory\ItemAnimation.cs: rotationSpeed
+[DECLARATION] Inventory\ItemAnimation.cs: squashAmount
+[DECLARATION] Inventory\ItemAnimation.cs: squashSpeed
+[DECLARATION] Inventory\ItemAnimation.cs: _startPos
+[DECLARATION] Inventory\ItemAnimation.cs: _startScale
+[DECLARATION] Inventory\ItemAnimation.cs: Start
+[DECLARATION] Inventory\ItemAnimation.cs: Update
+[COMMENT] Inventory\ItemDataSO.cs: ItemDataSO.cs
+[COMMENT] Inventory\ItemDataSO.cs: Project : TopDownShooter
+[COMMENT] Inventory\ItemDataSO.cs: PURPOSE
+[COMMENT] Inventory\ItemDataSO.cs: Abstract base ScriptableObject for ALL item archetypes in the game.
+[COMMENT] Inventory\ItemDataSO.cs: Stores only pure, serialised DATA — no runtime state, no MonoBehaviour
+[COMMENT] Inventory\ItemDataSO.cs: lifecycle. Any item that can be picked up, held, or dropped must derive
+[COMMENT] Inventory\ItemDataSO.cs: from this class.
+[COMMENT] Inventory\ItemDataSO.cs: DATA vs LOGIC SEPARATION:
+[COMMENT] Inventory\ItemDataSO.cs: • ItemDataSO  = the "blueprint" (what the item IS)
+[COMMENT] Inventory\ItemDataSO.cs: • ItemPickup  = the world object the player walks over (the physics body)
+[COMMENT] Inventory\ItemDataSO.cs: • Adding a new item category = subclassing this once (e.g. ArmourDataSO).
+[COMMENT] Inventory\ItemDataSO.cs: External systems read these; only the SO asset editor writes them.
+[DECLARATION] Inventory\ItemDataSO.cs: this
+[DECLARATION] Inventory\ItemDataSO.cs: ItemDataSO
+[DECLARATION] Inventory\ItemDataSO.cs: _itemID
+[DECLARATION] Inventory\ItemDataSO.cs: _displayName
+[DECLARATION] Inventory\ItemDataSO.cs: _icon
+[DECLARATION] Inventory\ItemDataSO.cs: _dropPrefab
+[DECLARATION] Inventory\ItemDataSO.cs: ItemID
+[DECLARATION] Inventory\ItemDataSO.cs: DisplayName
+[DECLARATION] Inventory\ItemDataSO.cs: Icon
+[DECLARATION] Inventory\ItemDataSO.cs: DropPrefab
+[COMMENT] Inventory\ItemPickup.cs: ItemPickup.cs
+[COMMENT] Inventory\ItemPickup.cs: Project : TopDownShooter
+[COMMENT] Inventory\ItemPickup.cs: PURPOSE
+[COMMENT] Inventory\ItemPickup.cs: Represents a physical item lying on the ground, waiting to be picked up.
+[COMMENT] Inventory\ItemPickup.cs: This component is the "world body" of an item — it connects the trigger
+[COMMENT] Inventory\ItemPickup.cs: collider volume to its associated ItemDataSO data blueprint.
+[COMMENT] Inventory\ItemPickup.cs: RESPONSIBILITIES (Single Responsibility Principle):
+[COMMENT] Inventory\ItemPickup.cs: • Store a reference to the ItemDataSO that describes this item.
+[COMMENT] Inventory\ItemPickup.cs: • Expose GetItemData() so PlayerInventory can read what it is.
+[COMMENT] Inventory\ItemPickup.cs: • Expose DestroyPickup() to cleanly remove the world object after pickup.
+[COMMENT] Inventory\ItemPickup.cs: World-space Y position recorded at spawn; hover oscillates around it.
+[COMMENT] Inventory\ItemPickup.cs: ► POOL HOOK: objectPool?.Release(this);
+[DECLARATION] Inventory\ItemPickup.cs: ItemPickup
+[DECLARATION] Inventory\ItemPickup.cs: _itemData
+[DECLARATION] Inventory\ItemPickup.cs: _hoverAmplitude
+[DECLARATION] Inventory\ItemPickup.cs: _hoverFrequency
+[DECLARATION] Inventory\ItemPickup.cs: _spinSpeed
+[DECLARATION] Inventory\ItemPickup.cs: _transform
+[DECLARATION] Inventory\ItemPickup.cs: _baseY
+[DECLARATION] Inventory\ItemPickup.cs: Awake
+[DECLARATION] Inventory\ItemPickup.cs: Update
+[DECLARATION] Inventory\ItemPickup.cs: GetItemData
+[DECLARATION] Inventory\ItemPickup.cs: DestroyPickup
+[DECLARATION] Inventory\ItemPickup.cs: ValidateSetup
+[DECLARATION] Inventory\ItemPickup.cs: OnDrawGizmosSelected
+[COMMENT] Inventory\RelicDataSO.cs: RelicDataSO.cs
+[COMMENT] Inventory\RelicDataSO.cs: Project : TopDownShooter
+[COMMENT] Inventory\RelicDataSO.cs: PURPOSE
+[COMMENT] Inventory\RelicDataSO.cs: Concrete ScriptableObject for RELIC item archetypes.
+[COMMENT] Inventory\RelicDataSO.cs: Relics are passive items that grant persistent stat modifiers to the player
+[COMMENT] Inventory\RelicDataSO.cs: while equipped in the Relic slot (e.g. +20% speed, damage aura, shield).
+[COMMENT] Inventory\RelicDataSO.cs: CURRENT SCOPE (Part 1 — Data Layer):
+[COMMENT] Inventory\RelicDataSO.cs: Defines the menu path and relic-specific extension fields.
+[COMMENT] Inventory\RelicDataSO.cs: The modifier fields below are stubs ready for the PlayerStats system
+[COMMENT] Inventory\RelicDataSO.cs: in Part 2.
+[COMMENT] Inventory\RelicDataSO.cs: / Equipped in the Relic slot; grants stat modifiers while held.
+[DECLARATION] Inventory\RelicDataSO.cs: RelicDataSO
+[DECLARATION] Inventory\RelicDataSO.cs: _moveSpeedModifier
+[DECLARATION] Inventory\RelicDataSO.cs: _maxHealthBonus
+[DECLARATION] Inventory\RelicDataSO.cs: _damageModifier
+[DECLARATION] Inventory\RelicDataSO.cs: MoveSpeedModifier
+[DECLARATION] Inventory\RelicDataSO.cs: MaxHealthBonus
+[DECLARATION] Inventory\RelicDataSO.cs: DamageModifier
+[COMMENT] Inventory\WeaponDataSO.cs: WeaponDataSO.cs
+[COMMENT] Inventory\WeaponDataSO.cs: Project : TopDownShooter
+[COMMENT] Inventory\WeaponDataSO.cs: PURPOSE
+[COMMENT] Inventory\WeaponDataSO.cs: Concrete ScriptableObject for WEAPON item archetypes.
+[COMMENT] Inventory\WeaponDataSO.cs: Extends ItemDataSO with weapon-specific stats and the logic prefab reference
+[COMMENT] Inventory\WeaponDataSO.cs: that PlayerCombat instantiates when this weapon is picked up.
+[COMMENT] Inventory\WeaponDataSO.cs: PART 2 — LIVE:
+[COMMENT] Inventory\WeaponDataSO.cs: WeaponLogicPrefab is the key link between DATA (this SO) and LOGIC (the
+[COMMENT] Inventory\WeaponDataSO.cs: IWeapon MonoBehaviour). PlayerCombat instantiates it as a child, then calls
+[COMMENT] Inventory\WeaponDataSO.cs: IWeaponConfigurable.Configure(this) so the logic reads its stats from here.
+[COMMENT] Inventory\WeaponDataSO.cs: Added WeaponResourceType enum and resource cost so PlayerCombat can gate
+[DECLARATION] Inventory\WeaponDataSO.cs: and
+[DECLARATION] Inventory\WeaponDataSO.cs: WeaponResourceType
+[DECLARATION] Inventory\WeaponDataSO.cs: WeaponDataSO
+[DECLARATION] Inventory\WeaponDataSO.cs: _baseDamage
+[DECLARATION] Inventory\WeaponDataSO.cs: _attackCooldown
+[DECLARATION] Inventory\WeaponDataSO.cs: _resourceType
+[DECLARATION] Inventory\WeaponDataSO.cs: _resourceCost
+[DECLARATION] Inventory\WeaponDataSO.cs: _weaponLogicPrefab
+[DECLARATION] Inventory\WeaponDataSO.cs: projectileTrailColor
+[DECLARATION] Inventory\WeaponDataSO.cs: BaseDamage
+[DECLARATION] Inventory\WeaponDataSO.cs: AttackCooldown
+[DECLARATION] Inventory\WeaponDataSO.cs: ResourceType
+[DECLARATION] Inventory\WeaponDataSO.cs: ResourceCost
+[DECLARATION] Inventory\WeaponDataSO.cs: WeaponLogicPrefab
+[DECLARATION] Inventory\WeaponDataSO.cs: ProjectileTrailColor
+[COMMENT] Loot\AutoPickupTrigger.cs: AutoPickupTrigger.cs
+[COMMENT] Loot\AutoPickupTrigger.cs: PURPOSE:
+[COMMENT] Loot\AutoPickupTrigger.cs: Acts as the single, centralised "sensor" for the Auto-Loot
+[COMMENT] Loot\AutoPickupTrigger.cs: system. It is the ONLY place responsible for:
+[COMMENT] Loot\AutoPickupTrigger.cs: 1. Detecting when the player enters the pickup trigger.
+[COMMENT] Loot\AutoPickupTrigger.cs: 2. Delegating the effect to an ICollectible implementor
+[COMMENT] Loot\AutoPickupTrigger.cs: (Strategy Pattern — the "what" is decoupled from the "when").
+[COMMENT] Loot\AutoPickupTrigger.cs: 3. Destroying the parent GameObject after collection.
+[COMMENT] Loot\AutoPickupTrigger.cs: This script MUST NOT contain any game-logic for health,
+[COMMENT] Loot\AutoPickupTrigger.cs: coins, or any other pickup type. It only calls Collect()
+[DECLARATION] Loot\AutoPickupTrigger.cs: AutoPickupTrigger
+[DECLARATION] Loot\AutoPickupTrigger.cs: _collectible
+[DECLARATION] Loot\AutoPickupTrigger.cs: Awake
+[DECLARATION] Loot\AutoPickupTrigger.cs: OnTriggerEnter
+[COMMENT] Loot\BouncyLoot.cs: / <summary>
+[COMMENT] Loot\BouncyLoot.cs: / Applies an explosive impulse force to the Rigidbody on Start,
+[COMMENT] Loot\BouncyLoot.cs: / making the dropped loot "pop" out of enemies or chests.
+[COMMENT] Loot\BouncyLoot.cs: / </summary>
+[COMMENT] Loot\BouncyLoot.cs: Generate a random upward/outward force
+[COMMENT] Loot\BouncyLoot.cs: Guarantee the force is pushing up, not burying it into the floor
+[DECLARATION] Loot\BouncyLoot.cs: BouncyLoot
+[DECLARATION] Loot\BouncyLoot.cs: Start
+[COMMENT] Loot\CoinCollectible.cs: CoinCollectible.cs
+[COMMENT] Loot\CoinCollectible.cs: PURPOSE:
+[COMMENT] Loot\CoinCollectible.cs: Concrete ICollectible strategy for coin pickups.
+[COMMENT] Loot\CoinCollectible.cs: Implements the "what happens" when a coin is collected:
+[COMMENT] Loot\CoinCollectible.cs: it adds _coinValue coins to the player's PlayerWallet.
+[COMMENT] Loot\CoinCollectible.cs: This script replaces CoinPickup.cs. The key architectural
+[COMMENT] Loot\CoinCollectible.cs: improvements are:
+[COMMENT] Loot\CoinCollectible.cs: SETUP:
+[COMMENT] Loot\CoinCollectible.cs: Add this component to the same GameObject as AutoPickupTrigger
+[COMMENT] Loot\CoinCollectible.cs: (or any of its children). Configure _coinValue in the Inspector.
+[DECLARATION] Loot\CoinCollectible.cs: CoinCollectible
+[DECLARATION] Loot\CoinCollectible.cs: _coinValue
+[DECLARATION] Loot\CoinCollectible.cs: Collect
+[COMMENT] Loot\HealthCollectible.cs: HealthCollectible.cs
+[COMMENT] Loot\HealthCollectible.cs: PURPOSE:
+[COMMENT] Loot\HealthCollectible.cs: Concrete ICollectible strategy for health pickups.
+[COMMENT] Loot\HealthCollectible.cs: Implements the "what happens" when a health pickup is collected:
+[COMMENT] Loot\HealthCollectible.cs: it restores _healAmount HP to the player's HealthComponent.
+[COMMENT] Loot\HealthCollectible.cs: This script replaces HealthPickup.cs. The key architectural
+[COMMENT] Loot\HealthCollectible.cs: improvements are:
+[COMMENT] Loot\HealthCollectible.cs: SETUP:
+[COMMENT] Loot\HealthCollectible.cs: Add this component to the same GameObject as AutoPickupTrigger
+[COMMENT] Loot\HealthCollectible.cs: (or any of its children). Configure _healAmount in the Inspector.
+[DECLARATION] Loot\HealthCollectible.cs: HealthCollectible
+[DECLARATION] Loot\HealthCollectible.cs: _healAmount
+[DECLARATION] Loot\HealthCollectible.cs: Collect
+[COMMENT] Loot\ICollectible.cs: ICollectible.cs
+[COMMENT] Loot\ICollectible.cs: PURPOSE:
+[COMMENT] Loot\ICollectible.cs: Defines the contract for any pickup object that can be
+[COMMENT] Loot\ICollectible.cs: collected by the player. This interface is the cornerstone
+[COMMENT] Loot\ICollectible.cs: of the Auto-Loot Strategy Pattern architecture.
+[COMMENT] Loot\ICollectible.cs: Separating the "what happens on collect" logic (Strategy)
+[COMMENT] Loot\ICollectible.cs: from the "who triggers the collect" logic (AutoPickupTrigger)
+[COMMENT] Loot\ICollectible.cs: eliminates code duplication and enables unlimited new pickup
+[COMMENT] Loot\ICollectible.cs: types without touching the trigger system.
+[COMMENT] Loot\ICollectible.cs: USAGE:
+[COMMENT] Loot\ICollectible.cs: / the trigger volume. Implementations must NOT call Destroy here;
+[DECLARATION] Loot\ICollectible.cs: for
+[DECLARATION] Loot\ICollectible.cs: ICollectible
+[COMMENT] Loot\LootDropper.cs: / <summary>
+[COMMENT] Loot\LootDropper.cs: / A struct defining a single item that can drop, paired with its drop chance.
+[COMMENT] Loot\LootDropper.cs: / </summary>
+[COMMENT] Loot\LootDropper.cs: / <summary>
+[COMMENT] Loot\LootDropper.cs: / Listens to a HealthComponent's death event and spawns a random
+[COMMENT] Loot\LootDropper.cs: / number of loot prefabs based on a weighted table.
+[COMMENT] Loot\LootDropper.cs: / </summary>
+[COMMENT] Loot\LootDropper.cs: Unsubscribe to prevent multiple executions if OnDied fires again.
+[COMMENT] Loot\LootDropper.cs: Sum the DropChance of every valid entry to form the total weight pool.
+[COMMENT] Loot\LootDropper.cs: Nothing to drop if the table is empty or all weights are zero.
+[DECLARATION] Loot\LootDropper.cs: defining
+[DECLARATION] Loot\LootDropper.cs: LootEntry
+[DECLARATION] Loot\LootDropper.cs: Prefab
+[DECLARATION] Loot\LootDropper.cs: DropChance
+[DECLARATION] Loot\LootDropper.cs: LootDropper
+[DECLARATION] Loot\LootDropper.cs: _minDrops
+[DECLARATION] Loot\LootDropper.cs: _maxDrops
+[DECLARATION] Loot\LootDropper.cs: _lootTable
+[DECLARATION] Loot\LootDropper.cs: _health
+[DECLARATION] Loot\LootDropper.cs: Awake
+[DECLARATION] Loot\LootDropper.cs: HandleDeath
+[PUBLIC_FIELD] Managers\AudioManager.cs: public string id;
+[PUBLIC_FIELD] Managers\AudioManager.cs: public AudioClip clip;
+[PUBLIC_FIELD] Managers\AudioManager.cs: public string id;
+[PUBLIC_FIELD] Managers\AudioManager.cs: public AudioClip clip;
+[COMMENT] Managers\AudioManager.cs: / <summary>
+[COMMENT] Managers\AudioManager.cs: / Controlador central de audio del proyecto.
+[COMMENT] Managers\AudioManager.cs: / Reglas de Arquitectura:
+[COMMENT] Managers\AudioManager.cs: / - Singleton con DontDestroyOnLoad. Los duplicados se autodestruyen en Awake.
+[COMMENT] Managers\AudioManager.cs: / - Se suscribe a GameManager.OnStateChanged para reaccionar a los estados globales.
+[COMMENT] Managers\AudioManager.cs: / - Usa diccionarios para buscar clips en tiempo O(1) y evitar iteraciones por frame.
+[COMMENT] Managers\AudioManager.cs: / - Las transiciones de BGM usan corrutinas de crossfade para evitar cortes abruptos.
+[COMMENT] Managers\AudioManager.cs: / </summary>
+[COMMENT] Managers\AudioManager.cs: Singleton
+[COMMENT] Managers\AudioManager.cs: Constants — AudioMixer parameters and PlayerPrefs keys
+[DECLARATION] Managers\AudioManager.cs: AudioManager
+[DECLARATION] Managers\AudioManager.cs: set
+[DECLARATION] Managers\AudioManager.cs: SFXEntry
+[DECLARATION] Managers\AudioManager.cs: clip
+[DECLARATION] Managers\AudioManager.cs: BGMEntry
+[DECLARATION] Managers\AudioManager.cs: clip
+[DECLARATION] Managers\AudioManager.cs: _musicMixerGroup
+[DECLARATION] Managers\AudioManager.cs: _sfxMixerGroup
+[DECLARATION] Managers\AudioManager.cs: _sfxLibrary
+[DECLARATION] Managers\AudioManager.cs: _bgmLibrary
+[DECLARATION] Managers\AudioManager.cs: _mainMenuMusic
+[DECLARATION] Managers\AudioManager.cs: _musicTargetVolume
+[DECLARATION] Managers\AudioManager.cs: _musicSource
+[DECLARATION] Managers\AudioManager.cs: _sfxSource
+[DECLARATION] Managers\AudioManager.cs: _fadeCoroutine
+[COMMENT] Managers\DebugManager.cs: 1. GLOBAL STATE
+[COMMENT] Managers\DebugManager.cs: 2. PLAYER
+[COMMENT] Managers\DebugManager.cs: Calculamos los centros de las dos esferas de la capsula para OverlapCapsule.
+[COMMENT] Managers\DebugManager.cs: El radio se expande 0.1f para detectar contactos rasantes con el suelo.
+[DECLARATION] Managers\DebugManager.cs: DebugManager
+[DECLARATION] Managers\DebugManager.cs: debugPanel
+[DECLARATION] Managers\DebugManager.cs: variablesText
+[DECLARATION] Managers\DebugManager.cs: watcherRefreshRate
+[DECLARATION] Managers\DebugManager.cs: _watcherCoroutine
+[DECLARATION] Managers\DebugManager.cs: Awake
+[DECLARATION] Managers\DebugManager.cs: Update
+[DECLARATION] Managers\DebugManager.cs: TogglePanel
+[DECLARATION] Managers\DebugManager.cs: AutoRefreshRoutine
+[DECLARATION] Managers\DebugManager.cs: RefreshVariableDisplay
+[COMMENT] Managers\GameManager.cs: DungeonGenerator
+[COMMENT] Managers\GameManager.cs: / <summary>
+[COMMENT] Managers\GameManager.cs: / Cerebro central del Top-Down Shooter. Maneja la Máquina de Estados Finita (FSM)
+[COMMENT] Managers\GameManager.cs: / y transmite los cambios de estado a todos los sistemas (UI, Audio, Spawners) mediante eventos.
+[COMMENT] Managers\GameManager.cs: / Reglas de Arquitectura:
+[COMMENT] Managers\GameManager.cs: / - Singleton con DontDestroyOnLoad.
+[COMMENT] Managers\GameManager.cs: / - Ningún otro script puede cambiar Time.timeScale directamente. Todo pasa por acá.
+[COMMENT] Managers\GameManager.cs: / - No contiene lógica de UI. La UI debe suscribirse a OnStateChanged para mostrar/ocultar paneles.
+[COMMENT] Managers\GameManager.cs: / </summary>
+[COMMENT] Managers\GameManager.cs: Singleton
+[COMMENT] Managers\GameManager.cs: Freeze on Pause, GameOver, or Victory; unfreeze for everything else.
+[DECLARATION] Managers\GameManager.cs: GameManager
+[DECLARATION] Managers\GameManager.cs: set
+[DECLARATION] Managers\GameManager.cs: GameState
+[DECLARATION] Managers\GameManager.cs: CurrentState
+[DECLARATION] Managers\GameManager.cs: set
+[DECLARATION] Managers\GameManager.cs: GameMode
+[DECLARATION] Managers\GameManager.cs: CurrentMode
+[DECLARATION] Managers\GameManager.cs: set
+[DECLARATION] Managers\GameManager.cs: _tutorialMapPrefab
+[DECLARATION] Managers\GameManager.cs: _sessionTimer
+[DECLARATION] Managers\GameManager.cs: _stateBeforePause
+[DECLARATION] Managers\GameManager.cs: _pendingRestart
+[DECLARATION] Managers\GameManager.cs: HasActiveSession
+[DECLARATION] Managers\GameManager.cs: set
+[DECLARATION] Managers\GameManager.cs: Awake
+[COMMENT] Managers\TutorialManager.cs: TutorialManager.cs
+[COMMENT] Managers\TutorialManager.cs: Project : TopDownShooter – Tutorial System
+[COMMENT] Managers\TutorialManager.cs: PROPÓSITO
+[COMMENT] Managers\TutorialManager.cs: Componente raíz del prefab Tutorial_Map. Tiene exactamente tres
+[COMMENT] Managers\TutorialManager.cs: responsabilidades, sin solapamiento con otros sistemas:
+[COMMENT] Managers\TutorialManager.cs: 1. ENLACE MANUAL DE SOCKETS Y PUERTAS (Awake)
+[COMMENT] Managers\TutorialManager.cs: El generador procedural vincula RoomSockets con DoorControllers
+[COMMENT] Managers\TutorialManager.cs: automáticamente durante la generación. En el nivel tutorial, las salas
+[COMMENT] Managers\TutorialManager.cs: son artesanales y no pasan por ese pipeline. Este componente expone
+[COMMENT] Managers\TutorialManager.cs: una lista serializable (SocketDoorLink) que permite a los diseñadores
+[COMMENT] Managers\TutorialManager.cs: Registrar la puerta en el socket; el socket notifica al
+[DECLARATION] Managers\TutorialManager.cs: TutorialManager
+[DECLARATION] Managers\TutorialManager.cs: SocketDoorLink
+[DECLARATION] Managers\TutorialManager.cs: Socket
+[DECLARATION] Managers\TutorialManager.cs: Door
+[DECLARATION] Managers\TutorialManager.cs: _doorLinks
+[DECLARATION] Managers\TutorialManager.cs: _navMeshSurface
+[DECLARATION] Managers\TutorialManager.cs: _playerSpawnPoint
+[DECLARATION] Managers\TutorialManager.cs: Awake
+[DECLARATION] Managers\TutorialManager.cs: Start
+[DECLARATION] Managers\TutorialManager.cs: ApplyDoorLinks
+[DECLARATION] Managers\TutorialManager.cs: BakeNavMesh
+[DECLARATION] Managers\TutorialManager.cs: SetupPlayerPosition
+[COMMENT] Managers\UI\BossHUD.cs: BossHUD.cs
+[COMMENT] Managers\UI\BossHUD.cs: PURPOSE:
+[COMMENT] Managers\UI\BossHUD.cs: Manages the visual presentation of the Boss's health and name.
+[COMMENT] Managers\UI\BossHUD.cs: Fades in smoothly when a boss is encountered and fades out on death.
+[DECLARATION] Managers\UI\BossHUD.cs: BossHUD
+[DECLARATION] Managers\UI\BossHUD.cs: set
+[DECLARATION] Managers\UI\BossHUD.cs: _canvasGroup
+[DECLARATION] Managers\UI\BossHUD.cs: _healthFill
+[DECLARATION] Managers\UI\BossHUD.cs: _bossNameText
+[DECLARATION] Managers\UI\BossHUD.cs: _fadeDuration
+[DECLARATION] Managers\UI\BossHUD.cs: _currentBossHealth
+[DECLARATION] Managers\UI\BossHUD.cs: _fadeCoroutine
+[DECLARATION] Managers\UI\BossHUD.cs: Awake
+[DECLARATION] Managers\UI\BossHUD.cs: Start
+[DECLARATION] Managers\UI\BossHUD.cs: ShowBossUI
+[DECLARATION] Managers\UI\BossHUD.cs: UpdateFill
+[DECLARATION] Managers\UI\BossHUD.cs: HideBossUI
+[DECLARATION] Managers\UI\BossHUD.cs: FadeCanvasGroup
+[COMMENT] Managers\UI\UIManager.cs: / <summary>
+[COMMENT] Managers\UI\UIManager.cs: / Direct visual bridge between the GameManager FSM and the UI layer.
+[COMMENT] Managers\UI\UIManager.cs: / Listens to global state changes and activates or deactivates the corresponding panels.
+[COMMENT] Managers\UI\UIManager.cs: / Reglas de Arquitectura:
+[COMMENT] Managers\UI\UIManager.cs: / - No contiene logica de juego ni manipula el tiempo directamente.
+[COMMENT] Managers\UI\UIManager.cs: / - Se comunica con el GameManager de forma unidireccional a traves de eventos.
+[COMMENT] Managers\UI\UIManager.cs: / </summary>
+[COMMENT] Managers\UI\UIManager.cs: Inspector Fields — Panels
+[COMMENT] Managers\UI\UIManager.cs: Unity Lifecycle
+[COMMENT] Managers\UI\UIManager.cs: Sync to the current FSM state instead of forcing a hard transition to Main Menu.
+[DECLARATION] Managers\UI\UIManager.cs: UIManager
+[DECLARATION] Managers\UI\UIManager.cs: mainMenuPanel
+[DECLARATION] Managers\UI\UIManager.cs: playingHUDPanel
+[DECLARATION] Managers\UI\UIManager.cs: gameOverPanel
+[DECLARATION] Managers\UI\UIManager.cs: victoryPanel
+[DECLARATION] Managers\UI\UIManager.cs: optionsPanel
+[DECLARATION] Managers\UI\UIManager.cs: pausePanel
+[DECLARATION] Managers\UI\UIManager.cs: continueButton
+[DECLARATION] Managers\UI\UIManager.cs: OnEnable
+[DECLARATION] Managers\UI\UIManager.cs: OnDisable
+[DECLARATION] Managers\UI\UIManager.cs: Start
+[DECLARATION] Managers\UI\UIManager.cs: HandleStateChanged
+[DECLARATION] Managers\UI\UIManager.cs: ShowMainMenu
+[DECLARATION] Managers\UI\UIManager.cs: ShowPlayingHUD
+[DECLARATION] Managers\UI\UIManager.cs: ShowPause
+[COMMENT] Managers\UI\UI_InventoryHUD.cs: UI_InventoryHUD.cs
+[COMMENT] Managers\UI\UI_InventoryHUD.cs: Project : TopDownShooter
+[COMMENT] Managers\UI\UI_InventoryHUD.cs: PURPOSE
+[COMMENT] Managers\UI\UI_InventoryHUD.cs: Presenter / listener that bridges PlayerInventory events to the three
+[COMMENT] Managers\UI\UI_InventoryHUD.cs: UI_InventorySlot visual components. It holds no game logic — it only
+[COMMENT] Managers\UI\UI_InventoryHUD.cs: routes incoming ItemDataSO references to the correct slot's UpdateSlot().
+[COMMENT] Managers\UI\UI_InventoryHUD.cs: ARCHITECTURE
+[COMMENT] Managers\UI\UI_InventoryHUD.cs: ─────────────
+[COMMENT] Managers\UI\UI_InventoryHUD.cs: Observer Pattern (two tiers):
+[COMMENT] Managers\UI\UI_InventoryHUD.cs: Tier 1 — GameManager.OnPlayerRegistered:
+[DECLARATION] Managers\UI\UI_InventoryHUD.cs: UI_InventoryHUD
+[DECLARATION] Managers\UI\UI_InventoryHUD.cs: _weaponSlot
+[DECLARATION] Managers\UI\UI_InventoryHUD.cs: _relicSlot
+[DECLARATION] Managers\UI\UI_InventoryHUD.cs: _consumableSlot
+[DECLARATION] Managers\UI\UI_InventoryHUD.cs: _boundInventory
+[DECLARATION] Managers\UI\UI_InventoryHUD.cs: OnEnable
+[DECLARATION] Managers\UI\UI_InventoryHUD.cs: Start
+[DECLARATION] Managers\UI\UI_InventoryHUD.cs: OnDisable
+[DECLARATION] Managers\UI\UI_InventoryHUD.cs: OnDestroy
+[DECLARATION] Managers\UI\UI_InventoryHUD.cs: OnPlayerRegistered
+[DECLARATION] Managers\UI\UI_InventoryHUD.cs: BindToPlayer
+[DECLARATION] Managers\UI\UI_InventoryHUD.cs: UnbindCurrentInventory
+[DECLARATION] Managers\UI\UI_InventoryHUD.cs: OnWeaponChanged
+[DECLARATION] Managers\UI\UI_InventoryHUD.cs: OnRelicChanged
+[DECLARATION] Managers\UI\UI_InventoryHUD.cs: OnConsumableChanged
+[COMMENT] Managers\UI\UI_InventorySlot.cs: UI_InventorySlot.cs
+[COMMENT] Managers\UI\UI_InventorySlot.cs: Project : TopDownShooter
+[COMMENT] Managers\UI\UI_InventorySlot.cs: PURPOSE
+[COMMENT] Managers\UI\UI_InventorySlot.cs: A self-contained visual component for a single inventory slot in the HUD.
+[COMMENT] Managers\UI\UI_InventorySlot.cs: Responsible ONLY for displaying or clearing an icon sprite inside its
+[COMMENT] Managers\UI\UI_InventorySlot.cs: Image component. It has no knowledge of the player, inventory system, or
+[COMMENT] Managers\UI\UI_InventorySlot.cs: game state — it simply reacts to the data pushed into it.
+[COMMENT] Managers\UI\UI_InventorySlot.cs: ARCHITECTURE (Single Responsibility)
+[COMMENT] Managers\UI\UI_InventorySlot.cs: ─────────────────────────────────────
+[COMMENT] Managers\UI\UI_InventorySlot.cs: • This is the "View" in a passive MVC pattern.
+[DECLARATION] Managers\UI\UI_InventorySlot.cs: UI_InventorySlot
+[DECLARATION] Managers\UI\UI_InventorySlot.cs: _iconImage
+[DECLARATION] Managers\UI\UI_InventorySlot.cs: Awake
+[DECLARATION] Managers\UI\UI_InventorySlot.cs: UpdateSlot
+[COMMENT] Managers\UI\UI_OptionsMenu.cs: / <summary>
+[COMMENT] Managers\UI\UI_OptionsMenu.cs: / Drives the volume sliders inside the Options panel.
+[COMMENT] Managers\UI\UI_OptionsMenu.cs: / Responsibilities:
+[COMMENT] Managers\UI\UI_OptionsMenu.cs: / - On Start(), reads the saved PlayerPrefs values to set each slider's
+[COMMENT] Managers\UI\UI_OptionsMenu.cs: /   visual position so it matches the last session's settings.
+[COMMENT] Managers\UI\UI_OptionsMenu.cs: / - Registers onValueChanged listeners that forward the new slider value
+[COMMENT] Managers\UI\UI_OptionsMenu.cs: /   to AudioManager.Instance.SetXxxVolume(), which handles the logarithmic
+[COMMENT] Managers\UI\UI_OptionsMenu.cs: /   conversion and PlayerPrefs persistence.
+[COMMENT] Managers\UI\UI_OptionsMenu.cs: / Setup:
+[COMMENT] Managers\UI\UI_OptionsMenu.cs: / 1. Attach this script to the Options Panel root GameObject (or a child).
+[DECLARATION] Managers\UI\UI_OptionsMenu.cs: UI_OptionsMenu
+[DECLARATION] Managers\UI\UI_OptionsMenu.cs: _musicSlider
+[DECLARATION] Managers\UI\UI_OptionsMenu.cs: _sfxSlider
+[DECLARATION] Managers\UI\UI_OptionsMenu.cs: Start
+[DECLARATION] Managers\UI\UI_OptionsMenu.cs: OnDestroy
+[DECLARATION] Managers\UI\UI_OptionsMenu.cs: OnMusicSliderChanged
+[DECLARATION] Managers\UI\UI_OptionsMenu.cs: OnSFXSliderChanged
+[PUBLIC_FIELD] Managers\UI\UI_ScreenFader.cs: public CanvasGroup fadeGroup;
+[COMMENT] Managers\UI\UI_ScreenFader.cs: / <summary>
+[COMMENT] Managers\UI\UI_ScreenFader.cs: / Singleton simple para manejar un panel negro de transición.
+[COMMENT] Managers\UI\UI_ScreenFader.cs: / </summary>
+[COMMENT] Managers\UI\UI_ScreenFader.cs: Nos aseguramos de que arranque transparente y sin bloquear clics
+[COMMENT] Managers\UI\UI_ScreenFader.cs: Bloqueamos clics si estamos oscureciendo la pantalla
+[DECLARATION] Managers\UI\UI_ScreenFader.cs: UI_ScreenFader
+[DECLARATION] Managers\UI\UI_ScreenFader.cs: set
+[DECLARATION] Managers\UI\UI_ScreenFader.cs: fadeGroup
+[DECLARATION] Managers\UI\UI_ScreenFader.cs: Awake
+[DECLARATION] Managers\UI\UI_ScreenFader.cs: FadeTo
+[DECLARATION] Managers\UI\UI_ScreenFader.cs: FadeRoutine
+[COMMENT] Player\InteractionDebugger.cs: InteractionDebugger.cs
+[COMMENT] Player\InteractionDebugger.cs: Project : TopDownShooter
+[COMMENT] Player\InteractionDebugger.cs: !! TEMPORARY DIAGNOSTIC SCRIPT — REMOVE BEFORE SHIPPING !!
+[COMMENT] Player\InteractionDebugger.cs: ───────────────────────────────────────────────────────────
+[COMMENT] Player\InteractionDebugger.cs: Attach this to the Player GameObject alongside PlayerInventory.
+[COMMENT] Player\InteractionDebugger.cs: Every <_logInterval> seconds it runs the same OverlapSphere that
+[COMMENT] Player\InteractionDebugger.cs: PlayerInventory.TryWorldInteract() uses and logs what it finds.
+[COMMENT] Player\InteractionDebugger.cs: HOW TO READ THE OUTPUT
+[COMMENT] Player\InteractionDebugger.cs: ──────────────────────
+[COMMENT] Player\InteractionDebugger.cs: Case 1 — "No interactables found in range"
+[COMMENT] Player\InteractionDebugger.cs: / Attach to the Player GameObject; disable or delete before shipping.
+[DECLARATION] Player\InteractionDebugger.cs: InteractionDebugger
+[DECLARATION] Player\InteractionDebugger.cs: _detectionRadius
+[DECLARATION] Player\InteractionDebugger.cs: _interactableLayerMask
+[DECLARATION] Player\InteractionDebugger.cs: _logInterval
+[DECLARATION] Player\InteractionDebugger.cs: _nextLogTime
+[DECLARATION] Player\InteractionDebugger.cs: Start
+[DECLARATION] Player\InteractionDebugger.cs: Update
+[DECLARATION] Player\InteractionDebugger.cs: RunDiagnosticScan
+[DECLARATION] Player\InteractionDebugger.cs: OnDrawGizmosSelected
+[COMMENT] Player\PlayerAnimator.cs: / <summary>
+[COMMENT] Player\PlayerAnimator.cs: / Reads the player's movement state and forwards it to the Animator.
+[COMMENT] Player\PlayerAnimator.cs: / Keeping animation logic here prevents accidental physics interference.
+[COMMENT] Player\PlayerAnimator.cs: / </summary>
+[COMMENT] Player\PlayerAnimator.cs: Si en el futuro agregas animaciones de correr o saltar, las conectas así:
+[COMMENT] Player\PlayerAnimator.cs: _animator.SetBool("IsSprinting", _controller.IsSprinting);
+[COMMENT] Player\PlayerAnimator.cs: _animator.SetBool("IsGrounded", _controller.IsGrounded);
+[DECLARATION] Player\PlayerAnimator.cs: PlayerAnimator
+[DECLARATION] Player\PlayerAnimator.cs: _animator
+[DECLARATION] Player\PlayerAnimator.cs: _controller
+[DECLARATION] Player\PlayerAnimator.cs: Awake
+[DECLARATION] Player\PlayerAnimator.cs: Update
+[COMMENT] Player\PlayerCombat.cs: PlayerCombat.cs
+[COMMENT] Player\PlayerCombat.cs: Author  : [Your Name]
+[COMMENT] Player\PlayerCombat.cs: Project : TopDownShooter
+[COMMENT] Player\PlayerCombat.cs: PURPOSE
+[COMMENT] Player\PlayerCombat.cs: Decoupled combat input handler for the player character.
+[COMMENT] Player\PlayerCombat.cs: Acts as the "Context" in the Strategy Pattern: it holds a reference to
+[COMMENT] Player\PlayerCombat.cs: the currently equipped IWeapon and delegates all attack logic to it.
+[COMMENT] Player\PlayerCombat.cs: PART 2 — INVENTORY INTEGRATION
+[COMMENT] Player\PlayerCombat.cs: ────────────────────────────────
+[COMMENT] Player\PlayerCombat.cs: The hardcoded "initialWeapon" field is gone. The player now starts
+[COMMENT] Player\PlayerCombat.cs: The currently equipped weapon strategy — IWeapon only; no concrete type.
+[COMMENT] Player\PlayerCombat.cs: Acquired once in Awake; null = no resource system present (free attacks).
+[COMMENT] Player\PlayerCombat.cs: The weapon reads what it needs; PlayerCombat stays data-agnostic.
+[COMMENT] Player\PlayerCombat.cs: WeaponResourceType.None — falls through; no cost, no gate.
+[DECLARATION] Player\PlayerCombat.cs: PlayerCombat
+[DECLARATION] Player\PlayerCombat.cs: canAttack
+[DECLARATION] Player\PlayerCombat.cs: _equippedWeapon
+[DECLARATION] Player\PlayerCombat.cs: _liveWeaponObject
+[DECLARATION] Player\PlayerCombat.cs: _currentWeaponData
+[DECLARATION] Player\PlayerCombat.cs: _animator
+[DECLARATION] Player\PlayerCombat.cs: CurrentWeapon
+[DECLARATION] Player\PlayerCombat.cs: CanAttack
+[DECLARATION] Player\PlayerCombat.cs: SetWeaponDungeonMultipliers
+[DECLARATION] Player\PlayerCombat.cs: Awake
+[DECLARATION] Player\PlayerCombat.cs: OnDestroy
+[DECLARATION] Player\PlayerCombat.cs: SubscribeToInventory
+[DECLARATION] Player\PlayerCombat.cs: HandleWeaponChanged
+[DECLARATION] Player\PlayerCombat.cs: TearDownCurrentWeapon
+[DECLARATION] Player\PlayerCombat.cs: OnAttack
+[COMMENT] Player\PlayerController3D.cs: PlayerController3D.cs
+[COMMENT] Player\PlayerController3D.cs: Author  : [Your Name]
+[COMMENT] Player\PlayerController3D.cs: Project : TopDownShooter – Protagonist: Lunaria (Mage)
+[COMMENT] Player\PlayerController3D.cs: Created : 2026
+[COMMENT] Player\PlayerController3D.cs: PURPOSE
+[COMMENT] Player\PlayerController3D.cs: Handles all first-person locomotion for the player character in absolute
+[COMMENT] Player\PlayerController3D.cs: world-space (camera-independent WASD), smooth mouse-aim rotation via a
+[COMMENT] Player\PlayerController3D.cs: ground-plane raycast, manual gravity, and basic jumping.
+[COMMENT] Player\PlayerController3D.cs: ARCHITECTURE NOTES
+[COMMENT] Player\PlayerController3D.cs: • Strictly follows Single Responsibility Principle – Update() is a clean
+[COMMENT] Player\PlayerController3D.cs: Camera.main uses a tag-lookup; cache it once to avoid O(n) searches.
+[COMMENT] Player\PlayerController3D.cs: / For Keyboard+Mouse this should be bound to &lt;Mouse&gt;/position
+[COMMENT] Player\PlayerController3D.cs: / IMPORTANT: The Look action binding MUST use &lt;Mouse&gt;/position
+[COMMENT] Player\PlayerController3D.cs: / (absolute), NOT &lt;Pointer&gt;/delta (relative movement). The
+[COMMENT] Player\PlayerController3D.cs: / Binds to &lt;Keyboard&gt;/space in the Input Asset ("Dash" action).
+[DECLARATION] Player\PlayerController3D.cs: injected
+[DECLARATION] Player\PlayerController3D.cs: PlayerController3D
+[DECLARATION] Player\PlayerController3D.cs: moveSpeed
+[DECLARATION] Player\PlayerController3D.cs: sprintMultiplier
+[DECLARATION] Player\PlayerController3D.cs: _dashCost
+[DECLARATION] Player\PlayerController3D.cs: _dashSpeed
+[DECLARATION] Player\PlayerController3D.cs: _dashDuration
+[DECLARATION] Player\PlayerController3D.cs: jumpForce
+[DECLARATION] Player\PlayerController3D.cs: gravity
+[DECLARATION] Player\PlayerController3D.cs: groundStickForce
+[DECLARATION] Player\PlayerController3D.cs: rotationSpeed
+[DECLARATION] Player\PlayerController3D.cs: aimPlaneHeight
+[DECLARATION] Player\PlayerController3D.cs: canMove
+[DECLARATION] Player\PlayerController3D.cs: canRotate
+[DECLARATION] Player\PlayerController3D.cs: _dashDustParticles
+[COMMENT] Player\PlayerDamageFeedback.cs: PlayerDamageFeedback.cs
+[COMMENT] Player\PlayerDamageFeedback.cs: Project : TopDownShooter
+[COMMENT] Player\PlayerDamageFeedback.cs: PURPOSE
+[COMMENT] Player\PlayerDamageFeedback.cs: Triggers a Cinemachine Impulse camera shake whenever the owning entity's
+[COMMENT] Player\PlayerDamageFeedback.cs: health decreases (takes damage). Purely reactive — no game logic, no UI.
+[COMMENT] Player\PlayerDamageFeedback.cs: ARCHITECTURE
+[COMMENT] Player\PlayerDamageFeedback.cs: ─────────────
+[COMMENT] Player\PlayerDamageFeedback.cs: • Single Responsibility: only fires camera impulse on damage.
+[COMMENT] Player\PlayerDamageFeedback.cs: All health math stays in HealthComponent; all visual effects stay in
+[COMMENT] Player\PlayerDamageFeedback.cs: DamageFlasher / PlayerHUD.
+[COMMENT] Player\PlayerDamageFeedback.cs: 1. Add a CinemachineImpulseSource component to the Player GameObject.
+[DECLARATION] Player\PlayerDamageFeedback.cs: PlayerDamageFeedback
+[DECLARATION] Player\PlayerDamageFeedback.cs: _healthComponent
+[DECLARATION] Player\PlayerDamageFeedback.cs: _impulseSource
+[DECLARATION] Player\PlayerDamageFeedback.cs: _previousHealth
+[DECLARATION] Player\PlayerDamageFeedback.cs: Awake
+[DECLARATION] Player\PlayerDamageFeedback.cs: OnEnable
+[DECLARATION] Player\PlayerDamageFeedback.cs: OnDisable
+[DECLARATION] Player\PlayerDamageFeedback.cs: HandleHealthChanged
+[COMMENT] Player\PlayerDeathHandler.cs: Agregamos referencia al controlador
+[COMMENT] Player\PlayerDeathHandler.cs: 1. Disparar la animación visual
+[COMMENT] Player\PlayerDeathHandler.cs: 2. Apagar el control físico inmediatamente para que no se mueva muerto
+[COMMENT] Player\PlayerDeathHandler.cs: 3. Iniciar la cuenta regresiva antes de llamar al GameManager
+[COMMENT] Player\PlayerDeathHandler.cs: Opcional: Como vi que tenés el script UI_ScreenFader armado,
+[COMMENT] Player\PlayerDeathHandler.cs: podés descomentar esta línea para que la pantalla se vaya
+[COMMENT] Player\PlayerDeathHandler.cs: a negro suavemente mientras transcurren los 3 segundos.
+[COMMENT] Player\PlayerDeathHandler.cs: if (UI_ScreenFader.Instance != null) UI_ScreenFader.Instance.FadeTo(1f, 3f);
+[COMMENT] Player\PlayerDeathHandler.cs: Esperar 3 segundos reales
+[COMMENT] Player\PlayerDeathHandler.cs: Ahora sí, llamar al Game Over (esto congelará el tiempo y mostrará la UI)
+[DECLARATION] Player\PlayerDeathHandler.cs: PlayerDeathHandler
+[DECLARATION] Player\PlayerDeathHandler.cs: _health
+[DECLARATION] Player\PlayerDeathHandler.cs: _animator
+[DECLARATION] Player\PlayerDeathHandler.cs: _controller
+[DECLARATION] Player\PlayerDeathHandler.cs: Awake
+[DECLARATION] Player\PlayerDeathHandler.cs: OnEnable
+[DECLARATION] Player\PlayerDeathHandler.cs: OnDisable
+[DECLARATION] Player\PlayerDeathHandler.cs: HandlePlayerDied
+[DECLARATION] Player\PlayerDeathHandler.cs: DeathSequenceRoutine
+[COMMENTED_CODE] Player\PlayerDeathHandler.cs: // if (UI_ScreenFader.Instance != null) UI_ScreenFader.Instance.FadeTo(1f, 3f);
+[COMMENT] Player\PlayerHUD.cs: PlayerHUD.cs
+[COMMENT] Player\PlayerHUD.cs: PURPOSE:
+[COMMENT] Player\PlayerHUD.cs: Listens to events from HealthComponent, PlayerResourceComponent, and
+[COMMENT] Player\PlayerHUD.cs: PlayerWallet, then updates the on-screen HUD.
+[COMMENT] Player\PlayerHUD.cs: ALL THREE resources (Health, Mana, Energy) are now displayed as rows of
+[COMMENT] Player\PlayerHUD.cs: fractional icons, exactly like the Zelda heart system:
+[COMMENT] Player\PlayerHUD.cs: Resource | Icons | Max value | Points per full icon | Points per quarter
+[COMMENT] Player\PlayerHUD.cs: Health   |   5   |    100    |         20           |         5
+[COMMENT] Player\PlayerHUD.cs: Mana     |   5   |    100    |         20           |         5
+[COMMENT] Player\PlayerHUD.cs: Energy   |   5   |    100    |         20           |         5
+[COMMENT] Player\PlayerHUD.cs: OBSERVER PATTERN — This script ONLY reads data; it never writes to the
+[DECLARATION] Player\PlayerHUD.cs: PlayerHUD
+[DECLARATION] Player\PlayerHUD.cs: playerHealth
+[DECLARATION] Player\PlayerHUD.cs: playerResources
+[DECLARATION] Player\PlayerHUD.cs: heartsContainer
+[DECLARATION] Player\PlayerHUD.cs: corazonesUI
+[DECLARATION] Player\PlayerHUD.cs: estadosCorazon
+[DECLARATION] Player\PlayerHUD.cs: manaContainer
+[DECLARATION] Player\PlayerHUD.cs: manaUI
+[DECLARATION] Player\PlayerHUD.cs: manaStates
+[DECLARATION] Player\PlayerHUD.cs: energyContainer
+[DECLARATION] Player\PlayerHUD.cs: energyUI
+[DECLARATION] Player\PlayerHUD.cs: energyStates
+[DECLARATION] Player\PlayerHUD.cs: _healPunchScale
+[DECLARATION] Player\PlayerHUD.cs: _punchDuration
+[DECLARATION] Player\PlayerHUD.cs: _flashDuration
+[COMMENT] Player\PlayerInventory.cs: PlayerInventory.cs
+[COMMENT] Player\PlayerInventory.cs: Project : TopDownShooter
+[COMMENT] Player\PlayerInventory.cs: PURPOSE
+[COMMENT] Player\PlayerInventory.cs: Manages the player's three fixed inventory slots: Weapon, Relic, Consumable.
+[COMMENT] Player\PlayerInventory.cs: Handles item pickup (E key) via Physics.OverlapSphere and item consumption
+[COMMENT] Player\PlayerInventory.cs: (Q key) with a stub that expands in Part 2.
+[COMMENT] Player\PlayerInventory.cs: ARCHITECTURE
+[COMMENT] Player\PlayerInventory.cs: ─────────────
+[COMMENT] Player\PlayerInventory.cs: • Slot state is private; external systems read it via events or read-only
+[COMMENT] Player\PlayerInventory.cs: properties. The HUD subscribes to events — it never polls slots directly.
+[COMMENT] Player\PlayerInventory.cs: the same GameObject. Add empty stubs in PlayerController3D if the Editor
+[COMMENT] Player\PlayerInventory.cs: / <returns><c>true</c> if a world interactable was found and called; <c>false</c> otherwise.</returns>
+[COMMENT] Player\PlayerInventory.cs: / <c>GetComponent&lt;HealthComponent&gt;().Heal(healAmount)</c>.
+[DECLARATION] Player\PlayerInventory.cs: PlayerInventory
+[DECLARATION] Player\PlayerInventory.cs: _pickupRadius
+[DECLARATION] Player\PlayerInventory.cs: _pickupLayerMask
+[DECLARATION] Player\PlayerInventory.cs: _interactableLayerMask
+[DECLARATION] Player\PlayerInventory.cs: _dropOffset
+[DECLARATION] Player\PlayerInventory.cs: _overlapBufferSize
+[DECLARATION] Player\PlayerInventory.cs: _currentWeapon
+[DECLARATION] Player\PlayerInventory.cs: _currentRelic
+[DECLARATION] Player\PlayerInventory.cs: _currentConsumable
+[DECLARATION] Player\PlayerInventory.cs: CurrentWeapon
+[DECLARATION] Player\PlayerInventory.cs: CurrentRelic
+[DECLARATION] Player\PlayerInventory.cs: CurrentConsumable
+[DECLARATION] Player\PlayerInventory.cs: _overlapBuffer
+[DECLARATION] Player\PlayerInventory.cs: _transform
+[DECLARATION] Player\PlayerInventory.cs: Awake
+[COMMENT] Player\PlayerRegistration.cs: PlayerRegistration.cs
+[COMMENT] Player\PlayerRegistration.cs: PURPOSE:
+[COMMENT] Player\PlayerRegistration.cs: A microscopic "glue" MonoBehaviour that bridges the Player
+[COMMENT] Player\PlayerRegistration.cs: GameObject and the GameManager's player registry.
+[COMMENT] Player\PlayerRegistration.cs: Attach it to the Player prefab root. In Awake() it announces
+[COMMENT] Player\PlayerRegistration.cs: the player's Transform to GameManager.RegisterPlayer(), which
+[COMMENT] Player\PlayerRegistration.cs: then fires the OnPlayerRegistered event — waking any EnemyBrain
+[COMMENT] Player\PlayerRegistration.cs: instances that were waiting in their WaitForPlayer coroutine.
+[COMMENT] Player\PlayerRegistration.cs: WHY A SEPARATE SCRIPT?
+[COMMENT] Player\PlayerRegistration.cs: Single Responsibility Principle: PlayerController3D handles
+[COMMENT] Player\PlayerRegistration.cs: input and movement; HealthComponent handles damage; this script
+[DECLARATION] Player\PlayerRegistration.cs: PlayerRegistration
+[DECLARATION] Player\PlayerRegistration.cs: Awake
+[DECLARATION] Player\PlayerRegistration.cs: OnDestroy
+[COMMENT] Player\PlayerResourceComponent.cs: PlayerResourceComponent.cs
+[COMMENT] Player\PlayerResourceComponent.cs: Project : TopDownShooter
+[COMMENT] Player\PlayerResourceComponent.cs: PURPOSE
+[COMMENT] Player\PlayerResourceComponent.cs: Owns and manages the player's two secondary resources: Mana and Energy.
+[COMMENT] Player\PlayerResourceComponent.cs: • Mana     — consumed by magical weapons (staves, grimoires).
+[COMMENT] Player\PlayerResourceComponent.cs: • Energy   — consumed by physical weapons (daggers) and by Dashing.
+[COMMENT] Player\PlayerResourceComponent.cs: Both regenerate passively every frame at configurable rates.
+[COMMENT] Player\PlayerResourceComponent.cs: ARCHITECTURE (Single Responsibility)
+[COMMENT] Player\PlayerResourceComponent.cs: ─────────────────────────────────────
+[COMMENT] Player\PlayerResourceComponent.cs: This component is the single source of truth for resource values.
+[COMMENT] Player\PlayerResourceComponent.cs: PRIVATE STATE  (float for smooth regen; exposed as int via properties)
+[COMMENT] Player\PlayerResourceComponent.cs: / 1.0 es el valor normal; cualquier valor mayor aumenta el coste efectivo.
+[COMMENT] Player\PlayerResourceComponent.cs: encapsulation — the fields are still private; these are read-only labels.
+[DECLARATION] Player\PlayerResourceComponent.cs: PlayerResourceComponent
+[DECLARATION] Player\PlayerResourceComponent.cs: _maxMana
+[DECLARATION] Player\PlayerResourceComponent.cs: _manaRegenPerSecond
+[DECLARATION] Player\PlayerResourceComponent.cs: _maxEnergy
+[DECLARATION] Player\PlayerResourceComponent.cs: _energyRegenPerSecond
+[DECLARATION] Player\PlayerResourceComponent.cs: _currentMana
+[DECLARATION] Player\PlayerResourceComponent.cs: _currentEnergy
+[DECLARATION] Player\PlayerResourceComponent.cs: _manaCostMultiplier
+[DECLARATION] Player\PlayerResourceComponent.cs: CurrentMana
+[DECLARATION] Player\PlayerResourceComponent.cs: MaxMana
+[DECLARATION] Player\PlayerResourceComponent.cs: CurrentEnergy
+[DECLARATION] Player\PlayerResourceComponent.cs: MaxEnergy
+[DECLARATION] Player\PlayerResourceComponent.cs: ManaCostMultiplier
+[DECLARATION] Player\PlayerResourceComponent.cs: SetManaCostMultiplier
+[DECLARATION] Player\PlayerResourceComponent.cs: Awake
+[COMMENT] Player\PlayerStatsComponent.cs: PlayerStatsComponent.cs
+[COMMENT] Player\PlayerStatsComponent.cs: Project : TopDownShooter
+[COMMENT] Player\PlayerStatsComponent.cs: PURPOSE
+[COMMENT] Player\PlayerStatsComponent.cs: Aggregates passive stat multipliers from two distinct sources:
+[COMMENT] Player\PlayerStatsComponent.cs: 1. RELIC (permanent while equipped)   — driven by PlayerInventory.OnRelicChanged.
+[COMMENT] Player\PlayerStatsComponent.cs: 2. CONSUMABLE (temporary, timed buff) — driven by ApplyTemporarySpeedBoost().
+[COMMENT] Player\PlayerStatsComponent.cs: Exposes the combined result as read-only properties consumed by other systems
+[COMMENT] Player\PlayerStatsComponent.cs: (e.g. PlayerController3D reads MoveSpeedMultiplier every frame).
+[COMMENT] Player\PlayerStatsComponent.cs: ARCHITECTURE
+[COMMENT] Player\PlayerStatsComponent.cs: ─────────────
+[COMMENT] Player\PlayerStatsComponent.cs: PUBLIC PROPERTIES  (computed; read-only from the outside)
+[DECLARATION] Player\PlayerStatsComponent.cs: PlayerStatsComponent
+[DECLARATION] Player\PlayerStatsComponent.cs: MoveSpeedMultiplier
+[DECLARATION] Player\PlayerStatsComponent.cs: _inventory
+[DECLARATION] Player\PlayerStatsComponent.cs: _relicSpeedModifier
+[DECLARATION] Player\PlayerStatsComponent.cs: _consumableSpeedModifier
+[DECLARATION] Player\PlayerStatsComponent.cs: _activeBuffCoroutine
+[DECLARATION] Player\PlayerStatsComponent.cs: _dungeonSpeedModifier
+[DECLARATION] Player\PlayerStatsComponent.cs: _speedAuraParticles
+[DECLARATION] Player\PlayerStatsComponent.cs: Awake
+[DECLARATION] Player\PlayerStatsComponent.cs: OnEnable
+[DECLARATION] Player\PlayerStatsComponent.cs: OnDisable
+[DECLARATION] Player\PlayerStatsComponent.cs: HandleRelicChanged
+[DECLARATION] Player\PlayerStatsComponent.cs: ApplyTemporarySpeedBoost
+[DECLARATION] Player\PlayerStatsComponent.cs: SetDungeonSpeedModifier
+[DECLARATION] Player\PlayerStatsComponent.cs: SpeedBuffRoutine
+[COMMENT] Player\PlayerWallet.cs: / <summary>
+[COMMENT] Player\PlayerWallet.cs: / Manages the player's currency.
+[COMMENT] Player\PlayerWallet.cs: / Notifies listeners via OnCoinsChanged when the balance updates.
+[COMMENT] Player\PlayerWallet.cs: / </summary>
+[COMMENT] Player\PlayerWallet.cs: / <summary>Current coin balance.</summary>
+[COMMENT] Player\PlayerWallet.cs: / <summary>Fired whenever the coin balance changes.</summary>
+[COMMENT] Player\PlayerWallet.cs: / <summary>
+[COMMENT] Player\PlayerWallet.cs: / Adds a positive amount of coins to the wallet.
+[COMMENT] Player\PlayerWallet.cs: / </summary>
+[DECLARATION] Player\PlayerWallet.cs: PlayerWallet
+[DECLARATION] Player\PlayerWallet.cs: Coins
+[DECLARATION] Player\PlayerWallet.cs: set
+[DECLARATION] Player\PlayerWallet.cs: AddCoins
+[DECLARATION] UI\MainMenuController.cs: MainMenuController
+[DECLARATION] UI\MainMenuController.cs: _continueButton
+[DECLARATION] UI\MainMenuController.cs: Start
+[DECLARATION] UI\MainMenuController.cs: OnPlayClicked
+[DECLARATION] UI\MainMenuController.cs: OnContinueClicked
+[DECLARATION] UI\MainMenuController.cs: OnBackClicked
+[DECLARATION] UI\MainMenuController.cs: OnQuitClicked
+[COMMENT] VFX\ItemGlowEffect.cs: ItemGlowEffect.cs
+[COMMENT] VFX\ItemGlowEffect.cs: Project : TopDownShooter – VFX
+[COMMENT] VFX\ItemGlowEffect.cs: PROPÓSITO
+[COMMENT] VFX\ItemGlowEffect.cs: Hace que los ítems del mundo (reliquias, armas, consumibles) emitan
+[COMMENT] VFX\ItemGlowEffect.cs: un resplandor pulsante que los hace visualmente destacar en el suelo.
+[COMMENT] VFX\ItemGlowEffect.cs: FUNCIONAMIENTO
+[COMMENT] VFX\ItemGlowEffect.cs: • Awake() busca o agrega un componente Light en el mismo GameObject.
+[COMMENT] VFX\ItemGlowEffect.cs: • Update() pulsa la intensidad usando Mathf.Sin para una oscilación
+[COMMENT] VFX\ItemGlowEffect.cs: suave y continua, sin picos abruptos.
+[COMMENT] VFX\ItemGlowEffect.cs: COMPATIBILIDAD
+[COMMENT] VFX\ItemGlowEffect.cs: Referencia a la luz; puede ser encontrada en Awake o agregada en código.
+[DECLARATION] VFX\ItemGlowEffect.cs: ItemGlowEffect
+[DECLARATION] VFX\ItemGlowEffect.cs: _glowColor
+[DECLARATION] VFX\ItemGlowEffect.cs: _minIntensity
+[DECLARATION] VFX\ItemGlowEffect.cs: _maxIntensity
+[DECLARATION] VFX\ItemGlowEffect.cs: _pulseSpeed
+[DECLARATION] VFX\ItemGlowEffect.cs: _lightRange
+[DECLARATION] VFX\ItemGlowEffect.cs: _light
+[DECLARATION] VFX\ItemGlowEffect.cs: _phaseOffset
+[DECLARATION] VFX\ItemGlowEffect.cs: Awake
+[DECLARATION] VFX\ItemGlowEffect.cs: Update
+[DECLARATION] VFX\ItemGlowEffect.cs: ConfigureLight
+[DECLARATION] VFX\ItemGlowEffect.cs: PulseIntensity
+[DECLARATION] VFX\ItemGlowEffect.cs: OnValidate
+[COMMENT] VFX\MeleeSlashEffect.cs: MeleeSlashEffect.cs
+[COMMENT] VFX\MeleeSlashEffect.cs: Project : TopDownShooter – VFX
+[COMMENT] VFX\MeleeSlashEffect.cs: PROPÓSITO
+[COMMENT] VFX\MeleeSlashEffect.cs: Efecto visual de slash para ataques cuerpo a cuerpo.
+[COMMENT] VFX\MeleeSlashEffect.cs: Escala el sprite de pequeño a grande y desvanece su alpha
+[COMMENT] VFX\MeleeSlashEffect.cs: simultáneamente usando una coroutine, luego desactiva el
+[COMMENT] VFX\MeleeSlashEffect.cs: GameObject al completarse para facilitar el re-uso con un pool.
+[COMMENT] VFX\MeleeSlashEffect.cs: CICLO DE VIDA
+[COMMENT] VFX\MeleeSlashEffect.cs: 1. MeleeWeapon.ExecuteAttack() → Instancia este prefab en la
+[COMMENT] VFX\MeleeSlashEffect.cs: posición y rotación del arma.
+[COMMENT] VFX\MeleeSlashEffect.cs: Referencia cacheada al SpriteRenderer; resuelta en Awake para
+[DECLARATION] VFX\MeleeSlashEffect.cs: MeleeSlashEffect
+[DECLARATION] VFX\MeleeSlashEffect.cs: _duration
+[DECLARATION] VFX\MeleeSlashEffect.cs: _targetScale
+[DECLARATION] VFX\MeleeSlashEffect.cs: _scaleCurve
+[DECLARATION] VFX\MeleeSlashEffect.cs: _alphaCurve
+[DECLARATION] VFX\MeleeSlashEffect.cs: _rotationOffset
+[DECLARATION] VFX\MeleeSlashEffect.cs: _spriteRenderer
+[DECLARATION] VFX\MeleeSlashEffect.cs: _transform
+[DECLARATION] VFX\MeleeSlashEffect.cs: _activeCoroutine
+[DECLARATION] VFX\MeleeSlashEffect.cs: Awake
+[DECLARATION] VFX\MeleeSlashEffect.cs: OnEnable
+[DECLARATION] VFX\MeleeSlashEffect.cs: OnDisable
+[DECLARATION] VFX\MeleeSlashEffect.cs: PlayEffect
+[COMMENT] World\LockedBossDoor.cs: LockedBossDoor.cs
+[COMMENT] World\LockedBossDoor.cs: PURPOSE:
+[COMMENT] World\LockedBossDoor.cs: Acts as a physical world lock for Boss Room doors. Implements the
+[COMMENT] World\LockedBossDoor.cs: IWorldInteractable interface to intercept player interaction events.
+[COMMENT] World\LockedBossDoor.cs: Checks the player's inventory for the correct ConsumableDataSO key before
+[COMMENT] World\LockedBossDoor.cs: commanding the DoorController to open.
+[COMMENT] World\LockedBossDoor.cs: Also implements IDoorLock so that DoorController.OpenDoor() can query
+[COMMENT] World\LockedBossDoor.cs: the lock state and refuse to open until the key is used. This prevents
+[COMMENT] World\LockedBossDoor.cs: RoomController.ClearRoom() from bypassing the key requirement.
+[COMMENT] World\LockedBossDoor.cs: amber HDR
+[DECLARATION] World\LockedBossDoor.cs: LockedBossDoor
+[DECLARATION] World\LockedBossDoor.cs: _requiredKey
+[DECLARATION] World\LockedBossDoor.cs: _doorController
+[DECLARATION] World\LockedBossDoor.cs: _approachGlowColor
+[DECLARATION] World\LockedBossDoor.cs: _denyFlashColor
+[DECLARATION] World\LockedBossDoor.cs: _flashDuration
+[DECLARATION] World\LockedBossDoor.cs: IsLocked
+[DECLARATION] World\LockedBossDoor.cs: IsUnlocked
+[DECLARATION] World\LockedBossDoor.cs: set
+[DECLARATION] World\LockedBossDoor.cs: _renderers
+[DECLARATION] World\LockedBossDoor.cs: _propBlock
+[DECLARATION] World\LockedBossDoor.cs: _flashCoroutine
+[DECLARATION] World\LockedBossDoor.cs: Awake
+[DECLARATION] World\LockedBossDoor.cs: OnPlayerApproach
+[DECLARATION] World\LockedBossDoor.cs: OnPlayerLeave
+[COMMENT] World\VictoryDoor.cs: VictoryDoor.cs
+[COMMENT] World\VictoryDoor.cs: Project : TopDownShooter
+[COMMENT] World\VictoryDoor.cs: PURPOSE
+[COMMENT] World\VictoryDoor.cs: A world interactable object that triggers the Victory condition when the
+[COMMENT] World\VictoryDoor.cs: player interacts with it while holding the required Key item.
+[COMMENT] World\VictoryDoor.cs: ARCHITECTURE  (Single Responsibility)
+[COMMENT] World\VictoryDoor.cs: ─────────────
+[COMMENT] World\VictoryDoor.cs: • This script owns the "check key + trigger win" logic — nothing else.
+[COMMENT] World\VictoryDoor.cs: • It reads the player's inventory via the IWorldInteractable contract,
+[COMMENT] World\VictoryDoor.cs: keeping it fully decoupled from the Player prefab hierarchy.
+[COMMENT] World\VictoryDoor.cs: 3. Add a Collider (Trigger or regular) to the same GameObject.
+[DECLARATION] World\VictoryDoor.cs: VictoryDoor
+[DECLARATION] World\VictoryDoor.cs: _requiredKey
+[DECLARATION] World\VictoryDoor.cs: IsUnlocked
+[DECLARATION] World\VictoryDoor.cs: set
+[DECLARATION] World\VictoryDoor.cs: Interact
+[DECLARATION] World\VictoryDoor.cs: ResetColliderSize
+[DECLARATION] World\VictoryDoor.cs: OnDrawGizmos
