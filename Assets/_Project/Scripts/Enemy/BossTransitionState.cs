@@ -1,18 +1,3 @@
-// =============================================================================
-//  BossTransitionState.cs
-//  Project : TopDownShooter – Enemy AI
-//
-//  PURPOSE
-//  -------
-//  A brief cinematic "breather" state the boss enters when its health
-//  crosses the Phase 2 threshold.
-//
-//  BEHAVIOUR
-//  ──────────
-//  Enter  → Stop agent. Make boss invulnerable. Fire "PhaseTransition" anim.
-//  Tick   → Count down a timer. On expiry → transition to BossPhase2State.
-//  Exit   → Remove invulnerability so the boss can take damage again.
-// =============================================================================
 
 using UnityEngine;
 

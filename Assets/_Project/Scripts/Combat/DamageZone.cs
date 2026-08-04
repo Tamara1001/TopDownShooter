@@ -1,24 +1,3 @@
-// ==============================================================
-// DamageZone.cs
-// --------------------------------------------------------------
-// PURPOSE:
-//   A static hazard module for continuous-damage traps such as
-//   spikes, fire pits, or acid pools. Any entity with a Collider
-//   and a component implementing IDamageable that enters/stays
-//   in this trigger zone will receive periodic damage.
-//
-// HOW IT WORKS (Decoupling via Interface):
-//   This script never references PlayerController, EnemyAI, or
-//   any concrete type. It only asks: "Does whatever just entered
-//   my trigger implement IDamageable?" If yes, it calls
-//   TakeDamage(). It does not care WHAT is being hurt.
-//
-// SETUP REQUIREMENTS (see Editor Guide for full walkthrough):
-//   - This GameObject MUST have a Collider with "Is Trigger" = true.
-//   - This GameObject MUST have a Rigidbody (can be kinematic) OR
-//     the hitting entity must have a Rigidbody. Unity requires at
-//     least one Rigidbody for trigger callbacks to fire.
-// ==============================================================
 
 using System.Collections.Generic;
 using UnityEngine;

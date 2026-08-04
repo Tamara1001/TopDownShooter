@@ -1,12 +1,4 @@
-// =============================================================================
-//  EnemyStatsModifier.cs
-//  Project : TopDownShooter – Dungeon Master System
-//
-//  PROPÓSITO
-//  ---------
-//  Un "Mega-Modificador" impulsado por datos para alterar múltiples
-//  estadísticas de los enemigos al mismo tiempo al entrar en una sala.
-// =============================================================================
+
 
 using System.Collections.Generic;
 using UnityEngine;

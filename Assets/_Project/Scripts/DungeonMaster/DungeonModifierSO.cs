@@ -1,27 +1,4 @@
-// =============================================================================
-//  DungeonModifierSO.cs
-//  Project : TopDownShooter – Dungeon Master System
-//
-//  PROPÓSITO
-//  ---------
-//  ScriptableObject abstracto que sirve como contrato base para todos los
-//  modificadores del sistema D20 "Dungeon Master".
-//
-//  PATRÓN DE DISEÑO: Strategy + Template Method
-//  ─────────────────────────────────────────────
-//  • Cada modificador concreto (ej. SpeedBoostModifier, DoubleDamageModifier)
-//    hereda de esta clase e implementa ApplyModifier / RevertModifier.
-//  • El DungeonMasterDirector actúa como Context: sólo conoce esta interfaz,
-//    nunca los tipos concretos. Así agregar un modificador nuevo = una sola
-//    clase nueva, sin tocar el Director ni la HUD.
-//
-//  CÓMO CREAR UN MODIFICADOR NUEVO
-//  ─────────────────────────────────
-//  1. Crear una clase concreta que herede DungeonModifierSO.
-//  2. Agregar [CreateAssetMenu] con el menú que corresponda.
-//  3. Implementar ApplyModifier y RevertModifier.
-//  4. Crear el asset en el Project y arrastrarlo al pool del Director.
-// =============================================================================
+
 
 using System.Collections.Generic;
 using UnityEngine;

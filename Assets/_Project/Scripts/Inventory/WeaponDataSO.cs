@@ -1,25 +1,5 @@
-// =============================================================================
-//  WeaponDataSO.cs
-//  Project : TopDownShooter
-//
-//  PURPOSE
-//  -------
-//  Concrete ScriptableObject for WEAPON item archetypes.
-//  Extends ItemDataSO with weapon-specific stats and the logic prefab reference
-//  that PlayerCombat instantiates when this weapon is picked up.
-//
-//  PART 2 — LIVE:
-//  WeaponLogicPrefab is the key link between DATA (this SO) and LOGIC (the
-//  IWeapon MonoBehaviour). PlayerCombat instantiates it as a child, then calls
-//  IWeaponConfigurable.Configure(this) so the logic reads its stats from here.
-//
-//  PART 4 — RESOURCE COST:
-//  Added WeaponResourceType enum and resource cost so PlayerCombat can gate
-//  attack execution through PlayerResourceComponent before firing.
-//
-//  OOP RULE: The SO owns stats. The logic prefab owns behaviour.
-//  They only meet at the moment of instantiation — zero tight coupling.
-// =============================================================================
+
+
 
 using UnityEngine;
 

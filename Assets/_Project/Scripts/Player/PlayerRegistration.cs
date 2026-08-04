@@ -1,36 +1,3 @@
-// ==============================================================
-// PlayerRegistration.cs
-// --------------------------------------------------------------
-// PURPOSE:
-//   A microscopic "glue" MonoBehaviour that bridges the Player
-//   GameObject and the GameManager's player registry.
-//
-//   Attach it to the Player prefab root. In Awake() it announces
-//   the player's Transform to GameManager.RegisterPlayer(), which
-//   then fires the OnPlayerRegistered event — waking any EnemyBrain
-//   instances that were waiting in their WaitForPlayer coroutine.
-//
-// WHY A SEPARATE SCRIPT?
-//   Single Responsibility Principle: PlayerController3D handles
-//   input and movement; HealthComponent handles damage; this script
-//   handles exactly ONE concern — publishing the player's existence.
-//   No other script needs to be modified to support respawning.
-//
-// RESPAWN SUPPORT:
-//   Because RegisterPlayer() is called in Awake(), it runs every
-//   time the Player prefab is instantiated — whether on initial
-//   load, after a respawn, or when returned from an object pool.
-//   GameManager.OnPlayerRegistered fires each time, so enemies,
-//   minimap cameras, and any other subscriber auto-update.
-//
-// DEATH / REMOVAL:
-//   OnDestroy calls GameManager.UnregisterPlayer() so the reference
-//   is cleared when the player is permanently removed (e.g., during
-//   a "Game Over" before the next respawn or scene reload). This
-//   prevents enemies from chasing a dangling Transform.
-//   If your game uses pooling instead of Destroy, call
-//   UnregisterPlayer() from the pool's release callback instead.
-// ==============================================================
 
 using UnityEngine;
 

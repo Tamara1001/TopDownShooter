@@ -1,30 +1,4 @@
-// =============================================================================
-//  PlayerDamageFeedback.cs
-//  Project : TopDownShooter
-//
-//  PURPOSE
-//  -------
-//  Triggers a Cinemachine Impulse camera shake whenever the owning entity's
-//  health decreases (takes damage). Purely reactive — no game logic, no UI.
-//
-//  ARCHITECTURE
-//  ─────────────
-//  • Single Responsibility: only fires camera impulse on damage.
-//    All health math stays in HealthComponent; all visual effects stay in
-//    DamageFlasher / PlayerHUD.
-//  • Observer Pattern: subscribes to HealthComponent.OnHealthChanged.
-//  • RequireComponent guarantees both dependencies exist on the same
-//    GameObject — no manual wiring required beyond attaching the script.
-//  • Null-safe sentinel pattern for _previousHealth (-1 = uninitialised).
-//
-//  HOW TO USE
-//  ──────────
-//  1. Add a CinemachineImpulseSource component to the Player GameObject.
-//  2. Attach PlayerDamageFeedback to the same GameObject.
-//  3. Configure the impulse profile (shape, duration, force) on the
-//     CinemachineImpulseSource in the Inspector.
-//  4. Ensure the Virtual Camera has a CinemachineImpulseListener extension.
-// =============================================================================
+
 
 using Unity.Cinemachine;
 using UnityEngine;

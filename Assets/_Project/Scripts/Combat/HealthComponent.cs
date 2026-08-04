@@ -1,26 +1,3 @@
-// ==============================================================
-// HealthComponent.cs
-// --------------------------------------------------------------
-// PURPOSE:
-//   A reusable, self-contained health state manager that can be
-//   attached to ANY entity (Player, Enemy, Destructible Prop).
-//   It implements IDamageable and communicates all health changes
-//   outward via C# events (Observer Pattern), keeping it
-//   completely decoupled from UI, animations, and AI systems.
-//
-// STRICT RULES — This script MUST NOT:
-//   - Update any UI element directly.
-//   - Destroy the GameObject it lives on.
-//   - Trigger any animations.
-//   All those concerns belong to LISTENERS of its events.
-//
-// HOW TO USE:
-//   1. Attach this component to any entity that should have health.
-//   2. Subscribe external systems to OnHealthChanged and OnDied.
-//      Example (in a HealthBar UI script):
-//        healthComponent.OnHealthChanged += UpdateBar;
-//        healthComponent.OnDied          += ShowDeathScreen;
-// ==============================================================
 
 using System;
 using UnityEngine;

@@ -1,29 +1,3 @@
-// =============================================================================
-//  BossPhase2State.cs
-//  Project : TopDownShooter – Enemy AI
-//
-//  PURPOSE
-//  -------
-//  Distinct Phase 2 combat pattern for the boss fight.
-//
-//  BEHAVIOUR
-//  ──────────
-//  Enter  → Resume agent. Move to the room's anchor point (e.g., centre).
-//  Tick   → While travelling: keep updating destination.
-//           Once arrived:     switch to ranged bullet-hell mode.
-//             • Face the player.
-//             • Fire weapon index 1 (ranged) at a rapid cooldown.
-//  Exit   → Stop the agent.
-//
-//  DESIGN NOTES
-//  ─────────────
-//  • Uses BossBrain.Phase2AnchorPoint for its rally position — set in
-//    the Inspector on the BossBrain component.
-//  • "Arrived" check uses NavMeshAgent.remainingDistance with the
-//    stoppingDistance tolerance to avoid floating-point jitter.
-//  • Weapon index 1 corresponds to the second element of _bossWeapons.
-//    If no second weapon is assigned, calls are silently skipped.
-// =============================================================================
 
 using UnityEngine;
 

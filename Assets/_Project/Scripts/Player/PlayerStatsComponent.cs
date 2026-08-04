@@ -1,31 +1,3 @@
-// =============================================================================
-//  PlayerStatsComponent.cs
-//  Project : TopDownShooter
-//
-//  PURPOSE
-//  -------
-//  Aggregates passive stat multipliers from two distinct sources:
-//    1. RELIC (permanent while equipped)   — driven by PlayerInventory.OnRelicChanged.
-//    2. CONSUMABLE (temporary, timed buff) — driven by ApplyTemporarySpeedBoost().
-//  Exposes the combined result as read-only properties consumed by other systems
-//  (e.g. PlayerController3D reads MoveSpeedMultiplier every frame).
-//
-//  ARCHITECTURE
-//  ─────────────
-//  • Observer Pattern: subscribes to PlayerInventory.OnRelicChanged.
-//  • Coroutine Pattern: temporary buffs are tracked via a single Coroutine handle
-//    that is stopped and replaced if a new buff arrives before the old one expires,
-//    preventing indefinite stacking from rapid consumable use.
-//  • PlayerController3D only reads a float — it has zero knowledge of relics or
-//    consumables. The separation of concerns is fully contained here.
-//
-//  OOP RULES ENFORCED
-//  ───────────────────
-//  • All mutable state is private.
-//  • MoveSpeedMultiplier is a computed read-only property (no setter).
-//  • OnEnable / OnDisable subscription pattern prevents memory leaks.
-//  • RequireComponent enforces the dependency contract at the Unity level.
-// =============================================================================
 
 using System.Collections;
 using UnityEngine;

@@ -1,25 +1,3 @@
-// =============================================================================
-//  IWorldInteractable.cs
-//  Project : TopDownShooter
-//
-//  PURPOSE
-//  -------
-//  Marker interface that any world object (doors, switches, NPCs) must implement
-//  to receive an interaction call from the player's E-key press.
-//
-//  ARCHITECTURE
-//  ─────────────
-//  Follows the Interface Segregation Principle. PlayerInventory only knows about
-//  this contract; it never depends on concrete interactable types (VictoryDoor,
-//  ShopKeeper, etc.), keeping both sides fully decoupled.
-//
-//  USAGE
-//  ─────
-//  1. Implement this interface on any MonoBehaviour that lives in the world.
-//  2. Ensure its GameObject has a Collider on the _interactableLayerMask layer.
-//  3. PlayerInventory.OnInteract will detect the collider, retrieve the
-//     IWorldInteractable component, and call Interact(this).
-// =============================================================================
 
 using TopDownShooter.Player;
 

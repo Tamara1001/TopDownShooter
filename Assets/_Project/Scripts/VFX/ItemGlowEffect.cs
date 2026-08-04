@@ -1,33 +1,5 @@
-// =============================================================================
-//  ItemGlowEffect.cs
-//  Project : TopDownShooter – VFX
-//
-//  PROPÓSITO
-//  ---------
-//  Hace que los ítems del mundo (reliquias, armas, consumibles) emitan
-//  un resplandor pulsante que los hace visualmente destacar en el suelo.
-//
-//  FUNCIONAMIENTO
-//  ---------------
-//  • Awake() busca o agrega un componente Light en el mismo GameObject.
-//  • Update() pulsa la intensidad usando Mathf.Sin para una oscilación
-//    suave y continua, sin picos abruptos.
-//
-//  COMPATIBILIDAD
-//  ---------------
-//  Este script usa UnityEngine.Light (luz 3D puntual) que funciona en
-//  cualquier pipeline de render de Unity (URP, HDRP, Built-in).
-//  Para proyectos 2D con URP puede reemplazarse el tipo del campo
-//  _light por UnityEngine.Rendering.Universal.Light2D y ajustar las
-//  propiedades (pointLightInnerRadius, etc.) según sea necesario.
-//
-//  PREFABS QUE DEBEN TENER ESTE SCRIPT
-//  ─────────────────────────────────────
-//  • Prefab_Relic_[cualquier nombre]     → Reliquias del suelo
-//  • Prefab_Weapon_[cualquier nombre]    → Armas dropeadas
-//  • Prefab_Consumable_[cualquier nombre] → Pociones, llaves, etc.
-//  En general: cualquier ItemPickup cuya visibilidad es importante.
-// =============================================================================
+
+
 
 using UnityEngine;
 

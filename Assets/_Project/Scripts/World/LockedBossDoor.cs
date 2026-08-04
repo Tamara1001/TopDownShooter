@@ -1,16 +1,5 @@
-// =============================================================================
-// LockedBossDoor.cs
-// -----------------------------------------------------------------------------
-// PURPOSE:
-//   Acts as a physical world lock for Boss Room doors. Implements the
-//   IWorldInteractable interface to intercept player interaction events.
-//   Checks the player's inventory for the correct ConsumableDataSO key before
-//   commanding the DoorController to open.
-//
-//   Also implements IDoorLock so that DoorController.OpenDoor() can query
-//   the lock state and refuse to open until the key is used. This prevents
-//   RoomController.ClearRoom() from bypassing the key requirement.
-// =============================================================================
+
+
 
 using System.Collections;
 using UnityEngine;

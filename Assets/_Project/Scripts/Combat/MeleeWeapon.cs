@@ -1,38 +1,3 @@
-// ==============================================================
-// MeleeWeapon.cs
-// --------------------------------------------------------------
-// PURPOSE:
-//   Concrete Strategy implementation of IWeapon for close-range
-//   melee attacks. When the AttackState calls ExecuteAttack(),
-//   this component performs a cone-shaped Physics.OverlapSphere
-//   query — zero per-frame allocations after warmup — and applies
-//   damage to every IDamageable hit inside the arc.
-//
-// STRATEGY PATTERN ROLE: Concrete Strategy
-//   • IWeapon             = Abstract Strategy   (attack contract)
-//   • IWeaponConfigurable = Configuration hook   (stat injection)
-//   • MeleeWeapon         = Concrete Strategy    (this file)
-//   • EnemyBrain / PlayerCombat = Context        (calls ExecuteAttack())
-//
-// PART 2 — IWeaponConfigurable:
-//   Configure(WeaponDataSO) is called once by the Context immediately
-//   after this component is activated/instantiated. It overwrites the
-//   Inspector-default _damage with the SO's BaseDamage, so a single
-//   prefab can serve multiple weapon archetypes with different power levels.
-//
-// PERFORMANCE CONTRACT:
-//   • Physics.OverlapSphereNonAlloc() writes into a pre-allocated
-//     _hitBuffer array — NOT OverlapSphere() which allocates a new
-//     Collider[] on every call.
-//   • Vector3.Dot replaces a cosine / angle check: one multiply-add
-//     vs a full Mathf.Acos computation.
-//   • No new() allocations inside ExecuteAttack().
-//
-// DECOUPLING GUARANTEE:
-//   • MeleeWeapon knows nothing about FSM states, NavMeshAgent,
-//     or enemy health. It only receives an ExecuteAttack() signal
-//     and resolves its own spatial logic.
-// ==============================================================
 
 using System.Collections.Generic;
 using UnityEngine;

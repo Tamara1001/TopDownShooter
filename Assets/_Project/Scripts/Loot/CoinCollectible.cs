@@ -1,22 +1,3 @@
-// ==============================================================
-// CoinCollectible.cs
-// --------------------------------------------------------------
-// PURPOSE:
-//   Concrete ICollectible strategy for coin pickups.
-//   Implements the "what happens" when a coin is collected:
-//   it adds _coinValue coins to the player's PlayerWallet.
-//
-//   This script replaces CoinPickup.cs. The key architectural
-//   improvements are:
-//     - Coin value is now configurable per-prefab in the Inspector.
-//     - Collision detection is fully delegated to AutoPickupTrigger.
-//     - Destruction is fully delegated to AutoPickupTrigger.
-//     - This class is a pure Strategy: it only applies its effect.
-//
-// SETUP:
-//   Add this component to the same GameObject as AutoPickupTrigger
-//   (or any of its children). Configure _coinValue in the Inspector.
-// ==============================================================
 
 using UnityEngine;
 using TopDownShooter.Player;

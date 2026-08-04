@@ -1,29 +1,4 @@
-// =============================================================================
-//  RoomSocket.cs
-//  Project : TopDownShooter – Procedural Dungeon System
-//
-//  PURPOSE
-//  -------
-//  Represents a single doorway attachment point on a room prefab.
-//  Each room prefab has up to 4 sockets (one per cardinal wall).
-//  The dungeon generator queries available sockets to determine which
-//  directions a room can connect to, and calls Connect() to finalise
-//  the link — disabling the solid wall and instantiating a door.
-//
-//  PLACEMENT GUIDE
-//  ─────────────────
-//  1. Create an empty child GameObject at the centre of a wall opening.
-//  2. Attach this script and set _direction to the wall's outward facing.
-//  3. Drag the solid-wall mesh into _solidWall.
-//  4. The generator or RoomController will call Connect() at runtime.
-//
-//  DESIGN NOTES
-//  ─────────────
-//  • Connect() is idempotent — calling it twice on the same socket is a
-//    safe no-op that logs a warning rather than spawning duplicate doors.
-//  • _solidWall is null-checked for graceful degradation if a designer
-//    forgets the assignment.
-// =============================================================================
+
 
 using UnityEngine;
 

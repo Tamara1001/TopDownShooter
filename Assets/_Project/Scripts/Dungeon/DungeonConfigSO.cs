@@ -1,28 +1,3 @@
-// =============================================================================
-//  DungeonConfigSO.cs
-//  Project : TopDownShooter – Procedural Dungeon System
-//
-//  PURPOSE
-//  -------
-//  Top-level configuration asset consumed by the dungeon generator.
-//  Contains all tunable parameters for a single dungeon "recipe":
-//  how long the main path is, how many branches to allow, and which
-//  room archetypes are in the pool.
-//
-//  USAGE
-//  ─────
-//  1. Right-click in the Project window → Create → Dungeon → Dungeon Config.
-//  2. Adjust _mainPathLength, _maxBranches, and populate _availableRooms.
-//  3. Assign this asset to the DungeonGenerator's config slot.
-//
-//  DESIGN NOTES
-//  ─────────────
-//  • AvailableRooms is exposed as IReadOnlyList<RoomDataSO> to prevent
-//    callers from modifying the pool at runtime (mutating SO arrays in the
-//    Editor persists across sessions).
-//  • Validation in OnValidate() catches misconfigurations during authoring,
-//    not at runtime.
-// =============================================================================
 
 using System.Collections.Generic;
 using UnityEngine;

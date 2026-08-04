@@ -1,26 +1,5 @@
-// =============================================================================
-//  ConsumableDataSO.cs
-//  Project : TopDownShooter
-//
-//  PURPOSE
-//  -------
-//  Concrete ScriptableObject for CONSUMABLE item archetypes.
-//  Consumables are single-use items activated via the Q key (OnConsume input).
-//  Examples: health potions, speed boosts, temporary shields.
-//
-//  CURRENT SCOPE (Part 3 — Win/Loss Conditions):
-//  Added IsQuestItem flag so KeyItems cannot be consumed via the Q key
-//  (PlayerInventory guards the consume path).
-//  Original effect fields from Part 1 remain unchanged.
-//
-//  FUTURE HOOKS (Part 2):
-//  ► ConsumeCurrentItem : PlayerInventory reads HealAmount and EffectDuration
-//                         and routes the effect to the appropriate system
-//                         (HealthComponent, PlayerStats, VFX manager).
-//  ► ConsumableEffect enum : Replace scalar fields with a typed enum +
-//                            value pair to support arbitrary effect types
-//                            without new subclasses.
-// =============================================================================
+
+
 
 using UnityEngine;
 

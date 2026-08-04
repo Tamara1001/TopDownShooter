@@ -1,30 +1,5 @@
-// =============================================================================
-//  MeleeSlashEffect.cs
-//  Project : TopDownShooter – VFX
-//
-//  PROPÓSITO
-//  ---------
-//  Efecto visual de slash para ataques cuerpo a cuerpo.
-//  Escala el sprite de pequeño a grande y desvanece su alpha
-//  simultáneamente usando una coroutine, luego desactiva el
-//  GameObject al completarse para facilitar el re-uso con un pool.
-//
-//  CICLO DE VIDA
-//  -------------
-//  1. MeleeWeapon.ExecuteAttack() → Instancia este prefab en la
-//     posición y rotación del arma.
-//  2. OnEnable() arranca la coroutine PlayEffect().
-//  3. PlayEffect() anima escala + alpha durante 0.15 s.
-//  4. Al final, el GameObject se desactiva (pool-friendly).
-//
-//  SETUP DEL PREFAB
-//  ─────────────────
-//  • Raíz con este script + SpriteRenderer con el sprite de slash.
-//  • El material del SpriteRenderer DEBE usar un shader compatible
-//    con la modificación del color (p.ej. URP/2D Lit o Sprites/Default).
-//  • Escala inicial en el prefab: (0.1, 0.1, 1) — se anima hasta la
-//    escala objetivo configurada en _targetScale.
-// =============================================================================
+
+
 
 using System.Collections;
 using UnityEngine;

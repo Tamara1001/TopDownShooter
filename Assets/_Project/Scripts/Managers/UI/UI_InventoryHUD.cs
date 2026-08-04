@@ -1,37 +1,3 @@
-// =============================================================================
-//  UI_InventoryHUD.cs
-//  Project : TopDownShooter
-//
-//  PURPOSE
-//  -------
-//  Presenter / listener that bridges PlayerInventory events to the three
-//  UI_InventorySlot visual components. It holds no game logic — it only
-//  routes incoming ItemDataSO references to the correct slot's UpdateSlot().
-//
-//  ARCHITECTURE
-//  ─────────────
-//  Observer Pattern (two tiers):
-//    Tier 1 — GameManager.OnPlayerRegistered:
-//      Fired whenever a new player Transform is registered. This allows the
-//      HUD to bind correctly whether the player exists before or after the UI
-//      initialises, and handles respawn / scene-reload scenarios.
-//
-//    Tier 2 — PlayerInventory.OnWeaponChanged / OnRelicChanged / OnConsumableChanged:
-//      Fine-grained slot events. Subscribed in BindToPlayer() and safely
-//      unsubscribed before re-binding or on destroy.
-//
-//  LIFECYCLE
-//  ─────────
-//    OnEnable  → subscribe to GameManager.OnPlayerRegistered
-//    Start     → attempt immediate bind if player is already registered
-//    OnDisable → unsubscribe from GameManager.OnPlayerRegistered
-//    OnDestroy → unsubscribe from any bound PlayerInventory (prevents callbacks
-//                on a destroyed UI object)
-//
-//  ATTACH TO
-//  ─────────
-//  The parent container GameObject that holds the three slot child objects.
-// =============================================================================
 
 using UnityEngine;
 using TopDownShooter.Inventory;

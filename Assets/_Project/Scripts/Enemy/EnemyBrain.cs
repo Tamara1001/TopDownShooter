@@ -1,42 +1,4 @@
-// ==============================================================
-// EnemyBrain.cs
-// --------------------------------------------------------------
-// PURPOSE:
-//   The central "brain" MonoBehaviour for every enemy in the game.
-//   It orchestrates a modular, class-based Finite State Machine
-//   (FSM) and wires together all sub-systems:
-//     • NavMeshAgent  — pathfinding / movement
-//     • HealthComponent — damage & death events
-//     • Animator        — animation triggers
-//     • EnemyStatsSO    — data-driven configuration
-//
-// ARCHITECTURE (Composition over Inheritance):
-//   Instead of one giant switch/case block, each FSM state is its
-//   own self-contained C# class derived from a common abstract base
-//   (EnemyStateBase). This means:
-//     • Adding a NEW state (e.g., DashState) = adding ONE new class.
-//     • EnemyBrain only stores a reference to the CURRENT state and
-//       calls Enter/Tick/Exit on it — it never hard-codes behaviour.
-//
-// EXTENSIBILITY:
-//   To add a custom state for a new enemy type (e.g., MummyBrain):
-//     1. Create MummyDashState : EnemyStateBase (or : ChaseState).
-//     2. In MummyBrain (which derives from EnemyBrain), override
-//        BuildStates() and insert MummyDashState into the table.
-//     3. Nothing in this file needs to change.
-//
-// OOP RULES ENFORCED:
-//   • No public mutable state; all fields are private/protected.
-//   • EnemyBrain does NOT deal damage or know about colliders.
-//     Attack logic lives entirely inside PerformAttack(), expanded
-//     in Part 2 via an IWeapon strategy (dependency injection).
-//   • Player is resolved via GameManager first; tag and coroutine
-//     are fallback tiers so spawn order never causes breakage.
-//
-// FIX LOG (Part 3):
-//   [FIX-1] AttackState cooldown exploit closed — timestamp replaces countdown.
-//   [FIX-4] Player resolution decoupled from scene load order via GameManager.
-// ==============================================================
+
 
 using System.Collections;
 using System.Collections.Generic;
@@ -44,12 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using TopDownShooter.Combat; // IWeapon — Strategy Pattern contract
 
-// ==============================================================
-// FSM INFRASTRUCTURE
-// The abstract base and concrete state classes are defined here
-// in the same file for Part 1 clarity. In Part 2 they can be
-// split into separate files under an Enemy/States/ folder.
-// ==============================================================
+
 
 #region ── FSM Base ────────────────────────────────────────────
 

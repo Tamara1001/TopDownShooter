@@ -1,22 +1,3 @@
-// =============================================================================
-//  DungeonMasterHUD.cs
-//  Project : TopDownShooter – Dungeon Master System
-//
-//  PROPÓSITO
-//  ---------
-//  Se encarga exclusivamente de la representación visual del sistema D20 en la
-//  pantalla. Escucha los eventos estáticos del DungeonMasterDirector (Patrón
-//  Observer), lo que garantiza que la lógica del juego y la UI estén totalmente
-//  desacopladas.
-//
-//  COMPORTAMIENTO
-//  --------------
-//  1. Al recibir OnDiceRolled, inicia una corrutina que simula el giro de un
-//     dado D20 cambiando números rápidamente antes de mostrar el resultado final.
-//  2. Al recibir OnModifierApplied, muestra el panel del modificador con el
-//     nombre del efecto, manteniéndolo visible durante el combate.
-//  3. Al recibir OnModifierCleared, oculta el panel del modificador.
-// =============================================================================
 
 using System.Collections;
 using UnityEngine;

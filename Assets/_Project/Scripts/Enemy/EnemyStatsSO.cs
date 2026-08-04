@@ -1,25 +1,3 @@
-// ==============================================================
-// EnemyStatsSO.cs
-// --------------------------------------------------------------
-// PURPOSE:
-//   A ScriptableObject that acts as a pure DATA CONTAINER for a
-//   single enemy archetype (e.g., Zombie, Mummy, Boss).
-//
-//   Following the "Separate Data from Logic" principle, this asset
-//   holds nothing but configuration values. Multiple enemy
-//   prefabs can share the same SO, or each can have its own
-//   tuned copy — without changing a single line of code.
-//
-// USAGE:
-//   1. Right-click in the Project window.
-//   2. Create ▶ TopDownShooter ▶ Enemy Stats
-//   3. Assign the created asset to an EnemyBrain component.
-//
-// OOP NOTES:
-//   - All fields are [SerializeField] private → full encapsulation.
-//   - Public getters expose read-only access; no public setters.
-//   - Validation via OnValidate() prevents bad data at edit time.
-// ==============================================================
 
 using UnityEngine;
 

@@ -1,22 +1,3 @@
-// ==============================================================
-// HealthCollectible.cs
-// --------------------------------------------------------------
-// PURPOSE:
-//   Concrete ICollectible strategy for health pickups.
-//   Implements the "what happens" when a health pickup is collected:
-//   it restores _healAmount HP to the player's HealthComponent.
-//
-//   This script replaces HealthPickup.cs. The key architectural
-//   improvements are:
-//     - Heal amount is now configurable per-prefab in the Inspector.
-//     - Collision detection is fully delegated to AutoPickupTrigger.
-//     - Destruction is fully delegated to AutoPickupTrigger.
-//     - This class is a pure Strategy: it only applies its effect.
-//
-// SETUP:
-//   Add this component to the same GameObject as AutoPickupTrigger
-//   (or any of its children). Configure _healAmount in the Inspector.
-// ==============================================================
 
 using UnityEngine;
 

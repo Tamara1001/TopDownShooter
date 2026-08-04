@@ -1,22 +1,3 @@
-// ==============================================================
-// IDamageable.cs
-// --------------------------------------------------------------
-// PURPOSE:
-//   Defines the universal contract for any entity in the game
-//   that can receive damage. By depending on this interface
-//   instead of concrete classes, damage dealers (projectiles,
-//   traps, melee attacks) are completely decoupled from damage
-//   receivers (players, enemies, destructible props).
-//
-// USAGE:
-//   Any MonoBehaviour that can be damaged must implement this
-//   interface. The HealthComponent script provides the canonical
-//   implementation.
-//
-// ARCHITECTURE NOTE (Dependency Inversion Principle):
-//   High-level damage-dealing modules depend on this abstraction,
-//   not on concrete types like PlayerController or EnemyAI.
-// ==============================================================
 
 /// <summary>
 /// Universal contract for any entity that can receive damage.

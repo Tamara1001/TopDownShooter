@@ -1,10 +1,3 @@
-// =============================================================================
-// BossHUD.cs
-// -----------------------------------------------------------------------------
-// PURPOSE:
-//   Manages the visual presentation of the Boss's health and name.
-//   Fades in smoothly when a boss is encountered and fades out on death.
-// =============================================================================
 
 using System.Collections;
 using UnityEngine;

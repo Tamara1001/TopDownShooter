@@ -1,31 +1,3 @@
-// =============================================================================
-//  ItemDataSO.cs
-//  Project : TopDownShooter
-//
-//  PURPOSE
-//  -------
-//  Abstract base ScriptableObject for ALL item archetypes in the game.
-//  Stores only pure, serialised DATA — no runtime state, no MonoBehaviour
-//  lifecycle. Any item that can be picked up, held, or dropped must derive
-//  from this class.
-//
-//  DATA vs LOGIC SEPARATION:
-//  • ItemDataSO  = the "blueprint" (what the item IS)
-//  • ItemPickup  = the world object the player walks over (the physics body)
-//  • PlayerInventory = the runtime slot state (what the player HOLDS)
-//
-//  EXTENSIBILITY:
-//  • Adding a new item category = subclassing this once (e.g. ArmourDataSO).
-//  • No code in ItemPickup or PlayerInventory changes when a new category
-//    is added, because they all share this common base.
-//
-//  OOP RULES ENFORCED:
-//  • All fields are [SerializeField] private — no public state.
-//  • Public getters expose read-only access to concrete subclasses and
-//    runtime systems (PlayerInventory, HUD, etc.).
-//  • This class is abstract — it cannot be instantiated directly in the
-//    Project window, preventing misconfigured "generic" items.
-// =============================================================================
 
 using UnityEngine;
 

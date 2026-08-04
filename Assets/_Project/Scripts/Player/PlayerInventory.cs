@@ -1,48 +1,4 @@
-// =============================================================================
-//  PlayerInventory.cs
-//  Project : TopDownShooter
-//
-//  PURPOSE
-//  -------
-//  Manages the player's three fixed inventory slots: Weapon, Relic, Consumable.
-//  Handles item pickup (E key) via Physics.OverlapSphere and item consumption
-//  (Q key) with a stub that expands in Part 2.
-//
-//  ARCHITECTURE
-//  ─────────────
-//  • Slot state is private; external systems read it via events or read-only
-//    properties. The HUD subscribes to events — it never polls slots directly.
-//  • Picking up follows an atomic swap pattern:
-//      1. Find nearest ItemPickup in radius.
-//      2. Read its ItemDataSO and determine the slot.
-//      3. Drop existing item (spawn dropPrefab) if slot is occupied.
-//      4. Assign new item data and call DestroyPickup().
-//  • This script never knows about damage, stats, or UI rendering.
-//    Those concerns belong to listeners of OnWeaponChanged / OnRelicChanged /
-//    OnConsumableChanged.
-//
-//  INPUT SYSTEM INTEGRATION
-//  ─────────────────────────
-//  PlayerInput (Send Messages behaviour) on the same GameObject broadcasts:
-//    • OnInteract(InputValue)  ← "Interact" action (E key)
-//    • OnConsume(InputValue)   ← "Consume"  action (Q key)
-//  These method names MUST match the action names in CharacterActions.inputactions
-//  exactly (Input System prepends "On" automatically).
-//
-//  STUBS IN PlayerController3D / PlayerCombat
-//  ─────────────────────────────────────────────
-//  PlayerInput broadcasts OnInteract and OnConsume to ALL MonoBehaviours on
-//  the same GameObject. Add empty stubs in PlayerController3D if the Editor
-//  logs "Method not found" warnings — this keeps SRP intact.
-//
-//  OOP RULES ENFORCED
-//  ───────────────────
-//  • All slot fields are private — no public mutable state.
-//  • Public read-only properties expose slot data for HUD / FSM queries.
-//  • Events (C# Action<T>) notify observers without coupling to them.
-//  • No string comparisons for type detection — pattern matching on ItemDataSO
-//    subclasses is compile-time safe and zero-allocation.
-// =============================================================================
+
 
 using System;
 using UnityEngine;

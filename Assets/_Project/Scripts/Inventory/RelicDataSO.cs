@@ -1,25 +1,5 @@
-// =============================================================================
-//  RelicDataSO.cs
-//  Project : TopDownShooter
-//
-//  PURPOSE
-//  -------
-//  Concrete ScriptableObject for RELIC item archetypes.
-//  Relics are passive items that grant persistent stat modifiers to the player
-//  while equipped in the Relic slot (e.g. +20% speed, damage aura, shield).
-//
-//  CURRENT SCOPE (Part 1 — Data Layer):
-//  Defines the menu path and relic-specific extension fields.
-//  The modifier fields below are stubs ready for the PlayerStats system
-//  in Part 2.
-//
-//  FUTURE HOOKS (Part 2):
-//  ► PlayerStats : When RelicDataSO is assigned, PlayerInventory fires
-//                  OnRelicEquipped(RelicDataSO). A PlayerStats component
-//                  subscribes and applies the modifiers below.
-//  ► VFX         : RelicDataSO can carry a particle effect prefab for the
-//                  persistent aura shown while equipped.
-// =============================================================================
+
+
 
 using UnityEngine;
 

@@ -1,37 +1,3 @@
-// ==============================================================
-// RangedWeapon.cs
-// --------------------------------------------------------------
-// PURPOSE:
-//   Concrete Strategy implementation of IWeapon for ranged attacks.
-//   Owns and manages a UnityEngine.Pool.ObjectPool<Projectile>,
-//   mirroring the architecture of MagicWand.cs used by the player.
-//
-// STRATEGY PATTERN ROLE: Concrete Strategy
-//   • IWeapon       = Abstract Strategy  (contract)
-//   • RangedWeapon  = Concrete Strategy  (this file)
-//   • EnemyBrain    = Context            (calls ExecuteAttack())
-//
-// OBJECT POOL LIFECYCLE (mirrors MagicWand.cs):
-//   Pool.Get()  →  OnGetProjectile()   → [projectile in flight]
-//                                              ↓  (on collision / lifetime)
-//                                       Projectile.ReturnToPool()
-//                                              ↓
-//                                       Pool.Release()
-//                                              ↓
-//                                       OnReleaseProjectile()
-//
-// STRAIGHT-LINE TRAVEL CONTRACT:
-//   The projectile's rotation is set to match the firePoint at the
-//   moment of firing. Projectile.MoveForward() translates along
-//   local +Z (Space.Self), so the baked rotation steers it — no
-//   separate velocity vector, no homing logic, no Rigidbody forces.
-//
-// PERFORMANCE CONTRACT:
-//   • Instantiate() is called ONLY inside CreateProjectile(), which
-//     the pool invokes only when the inactive pool is exhausted.
-//   • All per-shot work is: one Pool.Get() call + two transform
-//     writes. Zero allocations per attack.
-// ==============================================================
 
 using UnityEngine;
 using UnityEngine.Pool;

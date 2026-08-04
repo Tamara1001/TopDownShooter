@@ -49,15 +49,9 @@ namespace TopDownShooter.Player
 
         private IEnumerator DeathSequenceRoutine()
         {
-            // Opcional: Como vi que tenés el script UI_ScreenFader armado, 
-            // podés descomentar esta línea para que la pantalla se vaya 
-            // a negro suavemente mientras transcurren los 3 segundos.
-            // if (UI_ScreenFader.Instance != null) UI_ScreenFader.Instance.FadeTo(1f, 3f);
-
-            // Esperar 3 segundos reales
+            // Esperar 3 segundos reales antes de llamar al Game Over
             yield return new WaitForSeconds(3f);
 
-            // Ahora sí, llamar al Game Over (esto congelará el tiempo y mostrará la UI)
             GameManager.Instance.ChangeState(GameManager.GameState.GameOver);
         }
     }

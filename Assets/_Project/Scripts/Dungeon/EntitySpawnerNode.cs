@@ -1,28 +1,4 @@
-// =============================================================================
-//  EntitySpawnerNode.cs
-//  Project : TopDownShooter – Procedural Dungeon System
-//
-//  PURPOSE
-//  -------
-//  Lightweight marker component placed on empty GameObjects inside a room
-//  prefab to indicate where entities should spawn at runtime.
-//  The RoomController collects all nodes via GetComponentsInChildren and
-//  passes them to the WaveManager / LootSpawner when the room activates.
-//
-//  HOW TO USE
-//  ──────────
-//  1. Inside a room prefab, create empty child GameObjects at each desired
-//     spawn location.
-//  2. Attach this script and set the _type (Enemy, Environment, or Loot).
-//  3. The RoomController will auto-discover them in Awake().
-//
-//  DESIGN NOTES
-//  ─────────────
-//  • SpawnerType is nested inside this class because it is only meaningful
-//    in the context of entity spawning — it doesn't belong in DungeonEnums.
-//  • The component carries no runtime logic.  It is a pure data node.
-//    The spawning system that reads these nodes lives elsewhere (SRP).
-// =============================================================================
+
 
 using UnityEngine;
 

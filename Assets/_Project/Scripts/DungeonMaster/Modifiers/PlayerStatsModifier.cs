@@ -1,13 +1,3 @@
-// =============================================================================
-//  PlayerStatsModifier.cs
-//  Project : TopDownShooter – Dungeon Master System
-//
-//  PROPÓSITO
-//  ---------
-//  Un "Mega-Modificador" impulsado por datos que permite a los diseñadores
-//  crear cualquier tipo de buff o debuff para el jugador combinando variables.
-//  Reemplaza la necesidad de tener scripts individuales para cada efecto.
-// =============================================================================
 
 using System.Collections.Generic;
 using UnityEngine;

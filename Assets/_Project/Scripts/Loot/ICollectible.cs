@@ -1,22 +1,3 @@
-// ==============================================================
-// ICollectible.cs
-// --------------------------------------------------------------
-// PURPOSE:
-//   Defines the contract for any pickup object that can be
-//   collected by the player. This interface is the cornerstone
-//   of the Auto-Loot Strategy Pattern architecture.
-//
-//   Separating the "what happens on collect" logic (Strategy)
-//   from the "who triggers the collect" logic (AutoPickupTrigger)
-//   eliminates code duplication and enables unlimited new pickup
-//   types without touching the trigger system.
-//
-// USAGE:
-//   Implement this interface on any MonoBehaviour that represents
-//   a pickup effect (e.g., CoinCollectible, HealthCollectible).
-//   Place it on the same GameObject (or a child) alongside an
-//   AutoPickupTrigger component.
-// ==============================================================
 
 using UnityEngine;
 

@@ -1,25 +1,3 @@
-// ==============================================================
-// AutoPickupTrigger.cs
-// --------------------------------------------------------------
-// PURPOSE:
-//   Acts as the single, centralised "sensor" for the Auto-Loot
-//   system. It is the ONLY place responsible for:
-//     1. Detecting when the player enters the pickup trigger.
-//     2. Delegating the effect to an ICollectible implementor
-//        (Strategy Pattern — the "what" is decoupled from the "when").
-//     3. Destroying the parent GameObject after collection.
-//
-//   This script MUST NOT contain any game-logic for health,
-//   coins, or any other pickup type. It only calls Collect()
-//   and Destroy(). All concrete behaviour lives in scripts
-//   that implement ICollectible.
-//
-// SETUP:
-//   Attach this component to the root pickup GameObject alongside
-//   a Collider set to "Is Trigger". Then add a concrete collectible
-//   component (e.g., CoinCollectible) to the same GameObject or
-//   any child. AutoPickupTrigger will locate it automatically.
-// ==============================================================
 
 using UnityEngine;
 

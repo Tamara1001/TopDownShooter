@@ -1,33 +1,3 @@
-// =============================================================================
-//  PlayerResourceComponent.cs
-//  Project : TopDownShooter
-//
-//  PURPOSE
-//  -------
-//  Owns and manages the player's two secondary resources: Mana and Energy.
-//  • Mana     — consumed by magical weapons (staves, grimoires).
-//  • Energy   — consumed by physical weapons (daggers) and by Dashing.
-//  Both regenerate passively every frame at configurable rates.
-//
-//  ARCHITECTURE (Single Responsibility)
-//  ─────────────────────────────────────
-//  This component is the single source of truth for resource values.
-//  It does NOT know about:
-//    - Weapons or combat logic  (those TryConsumeMana / TryConsumeEnergy)
-//    - Movement or dash logic   (those TryConsumeEnergy)
-//    - UI rendering              (UI subscribes to the normalized events)
-//  Its only job: track floats, regen over time, expose a clean API, fire events.
-//
-//  FLOAT INTERNALS, INT SURFACE
-//  ─────────────────────────────
-//  Resources are stored as float internally so fractional regen accumulates
-//  smoothly across frames. The public properties expose them as int, matching
-//  the integer cost contracts used by weapons and abilities.
-//
-//  ATTACH TO
-//  ─────────
-//  The Player root GameObject (alongside HealthComponent, PlayerInventory, etc.)
-// =============================================================================
 
 using System;
 using UnityEngine;

@@ -1,23 +1,3 @@
-// =============================================================================
-//  BossBrain.cs
-//  Project : TopDownShooter – Enemy AI
-//
-//  PURPOSE
-//  -------
-//  Extends EnemyBrain with a multi-phase boss fight architecture.
-//  • Supports a full weapon arsenal (multiple IWeapons).
-//  • Monitors its own health via HealthComponent.OnHealthChanged.
-//  • Forces a forced state transition to BossTransitionState when health
-//    drops to or below the Phase 2 threshold.
-//  • Exposes ExecuteBossWeapon(int index) for Phase 2 bullet-hell patterns.
-//
-//  DESIGN NOTES
-//  ─────────────
-//  • Inherits all FSM machinery from EnemyBrain — no duplication.
-//  • Overrides Awake() to call base.Awake() first, then layer boss setup.
-//  • Overrides BuildStates() to append boss-specific states to the
-//    standard Idle / Chase / Attack set.
-// =============================================================================
 
 using UnityEngine;
 using TopDownShooter.Combat;

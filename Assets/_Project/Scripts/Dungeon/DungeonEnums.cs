@@ -1,18 +1,3 @@
-// =============================================================================
-//  DungeonEnums.cs
-//  Project : TopDownShooter – Procedural Dungeon System
-//
-//  PURPOSE
-//  -------
-//  Central home for all enum types used by the dungeon generation pipeline.
-//  Grouped here because they are small, tightly coupled, and always imported
-//  together — one file is easier to find and maintain than four single-enum files.
-//
-//  ENUMS
-//  ─────
-//  • RoomType        : Classifies a room's gameplay purpose (Start, Combat, etc.)
-//  • SocketDirection  : Cardinal direction of a doorway within a room prefab.
-// =============================================================================
 
 namespace TopDownShooter.Dungeon
 {

@@ -1,30 +1,4 @@
-// =============================================================================
-//  RoomController.cs
-//  Project : TopDownShooter – Procedural Dungeon System
-//
-//  PURPOSE
-//  -------
-//  Root MonoBehaviour attached to the root of every room prefab.
-//  Acts as the central hub for the room's anatomy: sockets (doors) and
-//  entity spawner nodes.  Auto-discovers all child components in Awake()
-//  so designers never need to manually drag-and-drop references.
-//
-//  CURRENT STATE: SHELL
-//  ─────────────────────
-//  This version only collects child components and exposes them.
-//  Future iterations will add:
-//    ► Room activation / player-enter detection (trigger colliders)
-//    ► Door locking during combat encounters
-//    ► Wave spawning delegation (hand spawner nodes to WaveManager)
-//    ► Cleared/Locked/Active state machine
-//
-//  DESIGN NOTES
-//  ─────────────
-//  • GetComponentsInChildren is called once in Awake(), not per-frame.
-//  • Lists are exposed as IReadOnlyList so external systems can iterate
-//    but cannot add/remove elements.
-//  • Validation logs help designers catch prefab setup errors immediately.
-// =============================================================================
+
 
 using System.Collections.Generic;
 using UnityEngine;

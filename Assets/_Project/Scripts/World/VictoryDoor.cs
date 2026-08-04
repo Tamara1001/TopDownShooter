@@ -1,27 +1,5 @@
-// =============================================================================
-//  VictoryDoor.cs
-//  Project : TopDownShooter
-//
-//  PURPOSE
-//  -------
-//  A world interactable object that triggers the Victory condition when the
-//  player interacts with it while holding the required Key item.
-//
-//  ARCHITECTURE  (Single Responsibility)
-//  ─────────────
-//  • This script owns the "check key + trigger win" logic — nothing else.
-//  • It reads the player's inventory via the IWorldInteractable contract,
-//    keeping it fully decoupled from the Player prefab hierarchy.
-//  • The GameManager owns all downstream consequences of Victory (UI, timeScale).
-//
-//  SETUP CHECKLIST
-//  ───────────────
-//  1. Attach this script to a door-shaped GameObject in the scene.
-//  2. Assign the matching ConsumableDataSO (Key) to _requiredKey in Inspector.
-//  3. Add a Collider (Trigger or regular) to the same GameObject.
-//  4. Set the GameObject's layer to the layer configured as _interactableLayerMask
-//     in the Player's PlayerInventory component.
-// =============================================================================
+
+
 
 using UnityEngine;
 using TopDownShooter.Inventory;

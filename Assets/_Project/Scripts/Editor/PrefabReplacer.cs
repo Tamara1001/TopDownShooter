@@ -1,20 +1,3 @@
-// =============================================================================
-//  PrefabReplacer.cs
-//  Project : TopDownShooter – Editor Tools
-//
-//  PROPÓSITO
-//  ---------
-//  Herramienta de Editor que permite reemplazar múltiples GameObjects 
-//  seleccionados en la escena por un nuevo Prefab especificado.
-//
-//  USO
-//  ---
-//  1. Selecciona en la Jerarquía los objetos que deseas reemplazar.
-//  2. Ve a Tools -> Replace Selected Prefabs en el menú superior.
-//  3. Asigna el "New Prefab" en la ventana del wizard.
-//  4. Haz clic en "Replace". 
-//  (Todo el proceso puede deshacerse con un solo Ctrl+Z).
-// =============================================================================
 
 #if UNITY_EDITOR
 using UnityEngine;

@@ -1,26 +1,4 @@
-// =============================================================================
-//  RoomDataSO.cs
-//  Project : TopDownShooter – Procedural Dungeon System
-//
-//  PURPOSE
-//  -------
-//  Immutable data container (ScriptableObject) describing a single room
-//  archetype: what type it is, which prefab to instantiate, and how likely
-//  it is to be selected during generation.
-//
-//  USAGE
-//  ─────
-//  1. Right-click in the Project window → Create → Dungeon → Room Data.
-//  2. Assign the room Type, drag the prefab, and set the Weight.
-//  3. Add the asset to a DungeonConfigSO's _availableRooms array.
-//
-//  DESIGN NOTES
-//  ─────────────
-//  • Properties are read-only to prevent accidental SO mutation at runtime.
-//    (SO mutations in the Editor persist across play sessions — a subtle bug.)
-//  • _weight uses 1-based weighting: a room with weight 3 is three times as
-//    likely to be picked as a room with weight 1.
-// =============================================================================
+
 
 using System.Collections.Generic;
 using UnityEngine;

@@ -1,40 +1,4 @@
-// =============================================================================
-//  DungeonMasterDirector.cs
-//  Project : TopDownShooter – Dungeon Master System
-//
-//  PROPÓSITO
-//  ---------
-//  Manager Singleton que orquesta el sistema de dados D20 "Dungeon Master".
-//  Es el único punto de entrada para iniciar un roll y para limpiar el
-//  modificador activo. La HUD y otros sistemas escuchan sus eventos estáticos
-//  sin necesitar una referencia directa a esta instancia.
-//
-//  FLUJO DE EJECUCIÓN
-//  ──────────────────
-//  1. RoomController detecta al jugador entrando en una sala Combat/Boss.
-//  2. Llama a DungeonMasterDirector.Instance.TriggerRoomRoll(room, player).
-//  3. El Director tira el D20, determina el tier y elige un modificador random.
-//  4. Dispara OnDiceRolled (int) → la HUD anima el dado.
-//  5. Aplica el modificador y dispara OnModifierApplied (string) → la HUD
-//     muestra el nombre del modificador.
-//  6. Cuando la sala se despeja, RoomController llama ClearActiveModifier().
-//  7. El Director llama RevertModifier y limpia el cache.
-//
-//  TIERS DEL D20
-//  ─────────────
-//  • 1          → Critical Failure  (pool: criticalFailures)
-//  • 2 – 6      → Bad Roll          (pool: badRolls)
-//  • 7 – 14     → Normal            (sin modificador)
-//  • 15 – 19    → Good Roll         (pool: goodRolls)
-//  • 20         → Critical Success  (pool: criticalSuccesses)
-//
-//  DESACOPLAMIENTO
-//  ────────────────
-//  • Los eventos son estáticos → la HUD se suscribe sin referencia directa.
-//  • El Director NO conoce tipos concretos de modificador; sólo DungeonModifierSO.
-//  • RoomController NO conoce DungeonModifierSO; sólo llama a los dos métodos
-//    públicos del Director.
-// =============================================================================
+
 
 using System;
 using System.Collections.Generic;

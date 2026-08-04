@@ -1,36 +1,4 @@
-// =============================================================================
-//  PlayerController3D.cs
-//  Author  : [Your Name]
-//  Project : TopDownShooter – Protagonist: Lunaria (Mage)
-//  Created : 2026
-//
-//  PURPOSE
-//  -------
-//  Handles all first-person locomotion for the player character in absolute
-//  world-space (camera-independent WASD), smooth mouse-aim rotation via a
-//  ground-plane raycast, manual gravity, and basic jumping.
-//
-//  ARCHITECTURE NOTES
-//  ------------------
-//  • Strictly follows Single Responsibility Principle – Update() is a clean
-//    dispatcher that calls focused private methods only.
-//  • All tunable values are [SerializeField] private – zero public state.
-//  • Component references are cached once in Awake() and never polled again.
-//  • Designed as a leaf node ready to be managed by an external FSM:
-//      - Expose a public bool IsGrounded property for state queries.
-//      - Movement & rotation can be individually enabled/disabled via the
-//        CanMove / CanRotate flags (useful during spell-cast lock-out, etc.).
-//  • Input is received via Unity New Input System "Send Messages" behaviour
-//    on the PlayerInput component:  OnMove, OnJump, OnLook.
-//
-//  FUTURE INTEGRATION HOOKS (comments marked ► FSM / ► SO / ► ICombat)
-//  -----------------------------------------------------------------------
-//  ► FSM   : Finite State Machine can read IsGrounded, IsMoving, IsSprinting, IsDashing.
-//  ► SO    : Replace [SerializeField] speed/jump/gravity fields with a
-//            reference to a PlayerStatsSO ScriptableObject asset.
-//  ► ICombat : The OnAttack callback (stubbed at bottom) calls into an
-//              ICombatHandler interface injected at runtime.
-// =============================================================================
+
 
 using System;
 using UnityEngine;

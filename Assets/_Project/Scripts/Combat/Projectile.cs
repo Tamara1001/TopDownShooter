@@ -1,35 +1,3 @@
-// =============================================================================
-//  Projectile.cs
-//  Author  : [Your Name]
-//  Project : TopDownShooter – Protagonist: Lunaria (Mage)
-//  Created : 2026
-//
-//  PURPOSE
-//  -------
-//  Drives a single magic projectile that travels in a straight line along its
-//  local forward axis (world direction inherited from the player's rotation at
-//  the moment of firing). Returns itself to the Object Pool on collision or
-//  when its lifetime expires – never uses Destroy().
-//
-//  ARCHITECTURE NOTES
-//  ------------------
-//  • Movement is transform-based (no Rigidbody physics), so no gravity or
-//    drag is applied. The Rigidbody on the prefab must be set to Kinematic.
-//  • The pool reference is injected by MagicWand via SetPool() after Get().
-//    This avoids any static coupling or singleton dependency in Projectile.cs.
-//  • OnTriggerEnter is used for collision – the Collider on the prefab must
-//    have "Is Trigger" = true.
-//  • Layer filtering: we check that we did NOT hit the "Player" layer to
-//    prevent self-collision on the frame of spawning.
-//
-//  POOLING LIFECYCLE
-//  ─────────────────
-//    Pool.Get()   →  OnGetFromPool()  →  [in flight]  →  ReturnToPool()
-//                                                              ↓
-//                                                       Pool.Release()
-//                                                              ↓
-//                                                       OnReturnToPool()
-// =============================================================================
 
 using System;
 using UnityEngine;

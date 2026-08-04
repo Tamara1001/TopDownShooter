@@ -38,18 +38,28 @@ public class AudioManager : MonoBehaviour
     public struct SFXEntry
     {
         [Tooltip("Unique string ID used to play this effect (e.g. 'sfx_laser', 'sfx_coin').")]
-        public string id;
+        [SerializeField] private string _id;
         [Tooltip("The AudioClip to play for this entry.")]
-        public AudioClip clip;
+        [SerializeField] private AudioClip _clip;
+
+        /// <summary>Identificador único de este efecto de sonido.</summary>
+        public string Id => _id;
+        /// <summary>Clip de audio asociado a este identificador.</summary>
+        public AudioClip Clip => _clip;
     }
 
     [Serializable]
     public struct BGMEntry
     {
         [Tooltip("Unique string ID for this background music track (e.g. 'bgm_dungeon', 'bgm_boss').")]
-        public string id;
+        [SerializeField] private string _id;
         [Tooltip("The AudioClip for this BGM entry.")]
-        public AudioClip clip;
+        [SerializeField] private AudioClip _clip;
+
+        /// <summary>Identificador único de esta pista de música de fondo.</summary>
+        public string Id => _id;
+        /// <summary>Clip de audio asociado a este identificador.</summary>
+        public AudioClip Clip => _clip;
     }
 
     // -------------------------------------------------------------------------
@@ -306,13 +316,13 @@ public class AudioManager : MonoBehaviour
         _sfxDict = new Dictionary<string, AudioClip>(_sfxLibrary.Count);
         foreach (SFXEntry entry in _sfxLibrary)
         {
-            if (!string.IsNullOrEmpty(entry.id)) _sfxDict[entry.id] = entry.clip;
+            if (!string.IsNullOrEmpty(entry.Id)) _sfxDict[entry.Id] = entry.Clip;
         }
 
         _bgmDict = new Dictionary<string, AudioClip>(_bgmLibrary.Count);
         foreach (BGMEntry entry in _bgmLibrary)
         {
-            if (!string.IsNullOrEmpty(entry.id)) _bgmDict[entry.id] = entry.clip;
+            if (!string.IsNullOrEmpty(entry.Id)) _bgmDict[entry.Id] = entry.Clip;
         }
     }
 

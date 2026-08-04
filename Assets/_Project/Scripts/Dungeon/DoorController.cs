@@ -1,31 +1,3 @@
-// =============================================================================
-//  DoorController.cs
-//  Project : TopDownShooter – Procedural Dungeon System
-//
-//  PURPOSE
-//  -------
-//  Handles the physical collision toggle and smooth vertical translation of
-//  door prefabs. Replaces the previous alpha-fade approach with an opaque
-//  "sink into the floor" animation that is fully compatible with URP Opaque
-//  materials and eliminates all transparent-sorting artifacts.
-//  Used by RoomController to lock players in during combat encounters and
-//  release them when cleared.
-//
-//  ARCHITECTURE
-//  ─────────────
-//  • Discovers all child Transforms that own a Renderer (visual parts only).
-//  • Caches each visual part's original (closed) localPosition in Awake().
-//  • Open position = closedLocalPosition + Vector3.down * _sinkDistance.
-//  • A single coroutine interpolates between the two positions using
-//    smoothstep easing for a polished feel at no extra cost.
-//  • Public API (OpenDoor / CloseDoor) is identical to the previous version —
-//    no other scripts require changes.
-//  • Supports an IDoorLock veto: if a sibling component on this GameObject
-//    implements IDoorLock and reports IsLocked == true, OpenDoor() is a no-op.
-//    This prevents RoomController.ClearRoom() from bypassing LockedBossDoor.
-//  • isTrigger colliders are never toggled, preserving IWorldInteractable
-//    detection and RoomController.OnTriggerEnter activation.
-// =============================================================================
 
 using System.Collections;
 using System.Collections.Generic;

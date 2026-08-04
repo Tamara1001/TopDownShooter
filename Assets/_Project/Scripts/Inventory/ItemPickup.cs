@@ -1,34 +1,5 @@
-// =============================================================================
-//  ItemPickup.cs
-//  Project : TopDownShooter
-//
-//  PURPOSE
-//  -------
-//  Represents a physical item lying on the ground, waiting to be picked up.
-//  This component is the "world body" of an item — it connects the trigger
-//  collider volume to its associated ItemDataSO data blueprint.
-//
-//  RESPONSIBILITIES (Single Responsibility Principle):
-//  • Store a reference to the ItemDataSO that describes this item.
-//  • Expose GetItemData() so PlayerInventory can read what it is.
-//  • Expose DestroyPickup() to cleanly remove the world object after pickup.
-//  • Optionally: play a hover animation / highlight glow (visual only).
-//
-//  THIS SCRIPT MUST NOT:
-//  • Know anything about the player's inventory slots.
-//  • Apply any stat modifiers or trigger any game logic.
-//  • Detect its own pickup (that is PlayerInventory's job, via OverlapSphere).
-//
-//  REQUIRED SETUP (per prefab):
-//  • SphereCollider with "Is Trigger = true" for proximity detection.
-//  • A visible mesh/renderer for the item model.
-//  • Assign the matching ItemDataSO to the _itemData field.
-//
-//  POOLING NOTE (Part 2):
-//  Replace Destroy(gameObject) in DestroyPickup() with a pool.Release() call
-//  if the item system is pooled. The API contract (void DestroyPickup()) stays
-//  identical — PlayerInventory does not need to change.
-// =============================================================================
+
+
 
 using UnityEngine;
 

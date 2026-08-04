@@ -9,25 +9,25 @@ public class UI_ScreenFader : MonoBehaviour
     public static UI_ScreenFader Instance { get; private set; }
 
     [Tooltip("El CanvasGroup asociado a la imagen negra que tapa la pantalla")]
-    public CanvasGroup fadeGroup;
+    [SerializeField] private CanvasGroup _fadeGroup;
 
     private void Awake()
     {
         Instance = this;
         // Nos aseguramos de que arranque transparente y sin bloquear clics
-        if (fadeGroup != null)
+        if (_fadeGroup != null)
         {
-            fadeGroup.alpha = 0f;
-            fadeGroup.blocksRaycasts = false;
+            _fadeGroup.alpha = 0f;
+            _fadeGroup.blocksRaycasts = false;
         }
     }
 
     public void FadeTo(float targetAlpha, float duration)
     {
-        if (fadeGroup == null) return;
+        if (_fadeGroup == null) return;
 
         // Bloqueamos clics si estamos oscureciendo la pantalla
-        fadeGroup.blocksRaycasts = targetAlpha > 0f;
+        _fadeGroup.blocksRaycasts = targetAlpha > 0f;
 
         StopAllCoroutines();
         StartCoroutine(FadeRoutine(targetAlpha, duration));
@@ -35,16 +35,16 @@ public class UI_ScreenFader : MonoBehaviour
 
     private IEnumerator FadeRoutine(float targetAlpha, float duration)
     {
-        float startAlpha = fadeGroup.alpha;
+        float startAlpha = _fadeGroup.alpha;
         float time = 0f;
 
         while (time < duration)
         {
             time += Time.deltaTime;
-            fadeGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, time / duration);
+            _fadeGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, time / duration);
             yield return null;
         }
 
-        fadeGroup.alpha = targetAlpha;
+        _fadeGroup.alpha = targetAlpha;
     }
 }

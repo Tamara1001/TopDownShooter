@@ -1,25 +1,4 @@
-// =============================================================================
-//  PlayerHUD.cs
-// =============================================================================
-//  PURPOSE:
-//    Listens to events from HealthComponent, PlayerResourceComponent, and
-//    PlayerWallet, then updates the on-screen HUD.
-//
-//    ALL THREE resources (Health, Mana, Energy) are now displayed as rows of
-//    fractional icons, exactly like the Zelda heart system:
-//
-//      Resource | Icons | Max value | Points per full icon | Points per quarter
-//      ---------|-------|-----------|----------------------|-------------------
-//      Health   |   5   |    100    |         20           |         5
-//      Mana     |   5   |    100    |         20           |         5
-//      Energy   |   5   |    100    |         20           |         5
-//
-//    A single centralized helper method (UpdateFractionalIcons) owns all the
-//    math so there is ZERO duplication between the three resources.
-//
-//  OBSERVER PATTERN — This script ONLY reads data; it never writes to the
-//  source components. All updates are driven by events.
-// =============================================================================
+
 
 using System;
 using System.Collections;

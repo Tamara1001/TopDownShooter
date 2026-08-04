@@ -1,18 +1,3 @@
-// =============================================================================
-// SpreadRangedWeapon.cs
-// -----------------------------------------------------------------------------
-// PURPOSE:
-//   Concrete Strategy implementation of IWeapon for a "Bullet Hell" ranged attack.
-//   Fires multiple Projectile instances simultaneously in a radial spread arc
-//   or a full 360-degree nova.
-//
-// POOLING WORKAROUND:
-//   Since ObjectPool.Get() does not accept arbitrary arguments to pass down to
-//   OnGetProjectile(), this script calculates the rotation for each bullet in
-//   the loop, caches it in _currentSpawnRotation, and then calls Get(). 
-//   OnGetProjectile() reads that cached field to instantly snap the projectile
-//   to the correct trajectory angle.
-// =============================================================================
 
 using UnityEngine;
 using UnityEngine.Pool;
