@@ -1,0 +1,111 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Mac",
+  "BasePlatform": "Mac",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "1507514792",
+    "Type": "User",
+    "GUID": "{0D6C6CFD-44FA-4F92-A0CB-03F0C8A9AD42}",
+    "Language": "SFX",
+    "Hash": "{2C31B740-11DE-D1F6-9A27-28AACF6B9AA2}",
+    "ObjectPath": "\\SoundBanks\\Default Work Unit\\SoundBank_TopDown_UI_Menus",
+    "ShortName": "SoundBank_TopDown_UI_Menus",
+    "Path": "SoundBank_TopDown_UI_Menus.bnk",
+    "Media": [
+     {
+      "Id": "78721821",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Mouse_Press_Button.wav",
+      "CachePath": "B7/{B7A7028A-07C8-16CC-855C-64273D8346C0}.wem"
+     },
+     {
+      "Id": "395815094",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Theme_MainMenu.wav",
+      "CachePath": "27/{27E9EC49-43FA-0CBD-4591-91EABB420630}.wem"
+     },
+     {
+      "Id": "647295593",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_MainMenu_ClickJugar.wav",
+      "CachePath": "56/{56B73802-A073-50B3-F32C-E604A4CCDD6C}.wem"
+     },
+     {
+      "Id": "1041082166",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Mouse_OverButton.wav",
+      "CachePath": "0E/{0E032E10-3683-4057-027B-19D9E1109B1B}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "1830902963",
+      "Name": "Button_Clicked",
+      "ObjectPath": "\\Events\\Default Work Unit\\UI\\Button_Clicked",
+      "GUID": "{E87EE858-6ABF-4B7E-91E6-F7271990FCC1}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.8461459",
+      "DurationMax": "1.8461459",
+      "MediaRefs": [
+       {
+        "Id": "78721821"
+       }
+      ]
+     },
+     {
+      "Id": "1701177942",
+      "Name": "Button_Hover",
+      "ObjectPath": "\\Events\\Default Work Unit\\UI\\Button_Hover",
+      "GUID": "{AF175955-8759-4E83-9B33-AD17ECB51ABE}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.8461459",
+      "DurationMax": "1.8461459",
+      "MediaRefs": [
+       {
+        "Id": "1041082166"
+       }
+      ]
+     },
+     {
+      "Id": "1394085446",
+      "Name": "Button_Play",
+      "ObjectPath": "\\Events\\Default Work Unit\\UI\\Button_Play",
+      "GUID": "{382F04BF-DFCB-4AB0-9A55-F1B5BD9A4B67}",
+      "DurationType": "OneShot",
+      "DurationMin": "2.6105833",
+      "DurationMax": "2.6105833",
+      "MediaRefs": [
+       {
+        "Id": "647295593"
+       }
+      ]
+     },
+     {
+      "Id": "4055567060",
+      "Name": "Menu_Music",
+      "ObjectPath": "\\Events\\Default Work Unit\\Music\\Menu_Music",
+      "GUID": "{C27F8E27-9236-4E1B-B8E9-B0934067233B}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "395815094"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{316535CB-A7AE-BFA7-CD28-6DC2E86AE9D5}"
+ }
+}

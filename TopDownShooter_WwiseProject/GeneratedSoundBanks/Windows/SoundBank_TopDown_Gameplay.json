@@ -1,0 +1,451 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "1114115615",
+    "Type": "User",
+    "GUID": "{C1F0BE72-4AB8-4901-8EDF-ED0DF46BE683}",
+    "Language": "SFX",
+    "Hash": "{6A8D5420-D36D-87B7-04F4-CB0FEF408F07}",
+    "ObjectPath": "\\SoundBanks\\Default Work Unit\\SoundBank_TopDown_Gameplay",
+    "ShortName": "SoundBank_TopDown_Gameplay",
+    "Path": "SoundBank_TopDown_Gameplay.bnk",
+    "Media": [
+     {
+      "Id": "167821020",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Lunaria_Death.wav",
+      "CachePath": "F2/{F236C750-00B3-8EB2-240D-9A4AD5F84DC1}.wem"
+     },
+     {
+      "Id": "179726779",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Misc_Box_Destruction.wav",
+      "CachePath": "D0/{D0344390-F278-FE73-37ED-2376C9BF921B}.wem"
+     },
+     {
+      "Id": "251641908",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Enemies_Pasto_Attack.wav",
+      "CachePath": "4D/{4DC2C2CC-58C3-8785-FA2D-C1FFC6BA7FDA}.wem"
+     },
+     {
+      "Id": "259461477",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Enemies_Trompo_Attack.wav",
+      "CachePath": "58/{58D2853B-5B8A-F185-B37E-62EBD6996B7D}.wem"
+     },
+     {
+      "Id": "299438341",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Theme_Level_2.wav",
+      "CachePath": "CD/{CD68281A-0495-D871-9E95-9C7BB64B10FD}.wem"
+     },
+     {
+      "Id": "390039621",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Misc_Loot_Object.wav",
+      "CachePath": "BF/{BF16B877-E97F-F4A3-7383-8148E7BEF956}.wem"
+     },
+     {
+      "Id": "400155388",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Theme_Level_1.wav",
+      "CachePath": "96/{960CCCA8-2112-7941-7997-826F542F34AC}.wem"
+     },
+     {
+      "Id": "407030362",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Enemies_Pasto_Death.wav",
+      "CachePath": "0B/{0BBDF8E0-67B4-721B-597D-84A8A84C0194}.wem"
+     },
+     {
+      "Id": "426065512",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Enemies_Trompo_Death.wav",
+      "CachePath": "8C/{8C761922-6D6F-E681-5358-0E45480DF51F}.wem"
+     },
+     {
+      "Id": "441055649",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Misc_Loot_Health.wav",
+      "CachePath": "CC/{CC5E4834-4E56-0C39-3D9D-1CB5F65F7869}.wem"
+     },
+     {
+      "Id": "474543623",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Misc_Loot_Money.wav",
+      "CachePath": "69/{693F11BE-679A-74FC-1176-16393A000302}.wem"
+     },
+     {
+      "Id": "481789373",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Enemies_Pasto_TakeDamage.wav",
+      "CachePath": "79/{79C2802E-4F00-C716-D831-4BA6BDBFF468}.wem"
+     },
+     {
+      "Id": "486607028",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Midir_Attack.wav",
+      "CachePath": "63/{636F511B-7BFA-C9BB-9FDB-BD2EFF51CBD3}.wem"
+     },
+     {
+      "Id": "535809264",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Ace_Attack.wav",
+      "CachePath": "F9/{F94CB5BE-D0AA-E282-282F-A9B91F8A0FB6}.wem"
+     },
+     {
+      "Id": "635260150",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Lunaria_Attack.wav",
+      "CachePath": "89/{890A1239-7B0E-2E33-B123-7746EB21D3FD}.wem"
+     },
+     {
+      "Id": "674541265",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Enemies_Trompo_Hurt.wav",
+      "CachePath": "D2/{D2571A98-06EB-B5D3-38C3-47D224C93BDB}.wem"
+     },
+     {
+      "Id": "739517955",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Theme_Boss_1_Full_Song.wav",
+      "CachePath": "BC/{BCA53F8C-99F0-FEFD-C87E-C181FF0C7384}.wem"
+     },
+     {
+      "Id": "894355525",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Enemies_SlimeVerde_Death.wav",
+      "CachePath": "61/{615E416A-AF47-3E91-5390-FECCD5211A80}.wem"
+     },
+     {
+      "Id": "1036077706",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Enemies_SlimeVerde_Hurt.wav",
+      "CachePath": "8E/{8EA7F20E-7AE1-2A92-6ADA-420F0C770F08}.wem"
+     },
+     {
+      "Id": "1057076462",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_Misc_Loot_Potion.wav",
+      "CachePath": "13/{13765A41-0B5F-90C5-116C-7FF81272F8E0}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "2166191340",
+      "Name": "Boss_Theme",
+      "ObjectPath": "\\Events\\Default Work Unit\\Music\\Boss_Theme",
+      "GUID": "{BBE85263-D871-49C8-9D12-C04286CF1175}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "739517955"
+       }
+      ]
+     },
+     {
+      "Id": "610178761",
+      "Name": "Box_Destruction",
+      "ObjectPath": "\\Events\\Default Work Unit\\SFX\\Box_Destruction",
+      "GUID": "{4E373100-3F37-481C-AD18-147AAD745E00}",
+      "DurationType": "OneShot",
+      "DurationMin": "2.5625",
+      "DurationMax": "2.5625",
+      "MediaRefs": [
+       {
+        "Id": "179726779"
+       }
+      ]
+     },
+     {
+      "Id": "1476537150",
+      "Name": "Enemy_1_Attack",
+      "ObjectPath": "\\Events\\Default Work Unit\\Enemy\\Enemy_1_Attack",
+      "GUID": "{6DF9A60E-44F4-42B3-AF8A-01649C1E8374}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.9086458",
+      "DurationMax": "0.9086458",
+      "MediaRefs": [
+       {
+        "Id": "251641908"
+       }
+      ]
+     },
+     {
+      "Id": "1623256164",
+      "Name": "Enemy_1_Death",
+      "ObjectPath": "\\Events\\Default Work Unit\\Enemy\\Enemy_1_Death",
+      "GUID": "{F32CBF91-CAEF-4642-BECD-268477D4129B}",
+      "DurationType": "OneShot",
+      "DurationMin": "2.072125",
+      "DurationMax": "2.072125",
+      "MediaRefs": [
+       {
+        "Id": "407030362"
+       }
+      ]
+     },
+     {
+      "Id": "1832299857",
+      "Name": "Enemy_1_Hurt",
+      "ObjectPath": "\\Events\\Default Work Unit\\Enemy\\Enemy_1_Hurt",
+      "GUID": "{8AAE2525-FDA7-4212-B5E0-40E3491778DC}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.1346712",
+      "DurationMax": "0.1346712",
+      "MediaRefs": [
+       {
+        "Id": "481789373"
+       }
+      ]
+     },
+     {
+      "Id": "514384443",
+      "Name": "Enemy_2_Attack",
+      "ObjectPath": "\\Events\\Default Work Unit\\Enemy\\Enemy_2_Attack",
+      "GUID": "{A43474C1-D218-4085-A84F-7F88810D530E}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.492",
+      "DurationMax": "1.492",
+      "MediaRefs": [
+       {
+        "Id": "259461477"
+       }
+      ]
+     },
+     {
+      "Id": "877981099",
+      "Name": "Enemy_2_Death",
+      "ObjectPath": "\\Events\\Default Work Unit\\Enemy\\Enemy_2_Death",
+      "GUID": "{73FE963A-14A4-40F0-8284-2ACF2367FF0E}",
+      "DurationType": "OneShot",
+      "DurationMin": "2.3693333",
+      "DurationMax": "2.66",
+      "MediaRefs": [
+       {
+        "Id": "426065512"
+       },
+       {
+        "Id": "894355525"
+       }
+      ]
+     },
+     {
+      "Id": "1781786948",
+      "Name": "Enemy_2_Hurt",
+      "ObjectPath": "\\Events\\Default Work Unit\\Enemy\\Enemy_2_Hurt",
+      "GUID": "{EA567F04-8F5D-427B-8345-E764634A3E96}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.444",
+      "DurationMax": "1.8461459",
+      "MediaRefs": [
+       {
+        "Id": "674541265"
+       },
+       {
+        "Id": "1036077706"
+       }
+      ]
+     },
+     {
+      "Id": "2298755096",
+      "Name": "Loot_Health",
+      "ObjectPath": "\\Events\\Default Work Unit\\SFX\\Loot_Health",
+      "GUID": "{FA6DCA1F-6C2D-4EB8-918D-C849F411837D}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.8461459",
+      "DurationMax": "1.8461459",
+      "MediaRefs": [
+       {
+        "Id": "441055649"
+       }
+      ]
+     },
+     {
+      "Id": "646549102",
+      "Name": "Loot_Money",
+      "ObjectPath": "\\Events\\Default Work Unit\\SFX\\Loot_Money",
+      "GUID": "{C3FB42EA-9679-484E-92C2-C96EE1BFA768}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.8461459",
+      "DurationMax": "1.8461459",
+      "MediaRefs": [
+       {
+        "Id": "474543623"
+       }
+      ]
+     },
+     {
+      "Id": "2259005123",
+      "Name": "Loot_Object",
+      "ObjectPath": "\\Events\\Default Work Unit\\SFX\\Loot_Object",
+      "GUID": "{96A12547-ACC9-469B-A095-46BC27872285}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.4634167",
+      "DurationMax": "1.4634167",
+      "MediaRefs": [
+       {
+        "Id": "390039621"
+       }
+      ]
+     },
+     {
+      "Id": "1827792103",
+      "Name": "Loot_Potion",
+      "ObjectPath": "\\Events\\Default Work Unit\\SFX\\Loot_Potion",
+      "GUID": "{428C9FE1-6089-4DB2-90A4-03C1BF78F612}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.4634167",
+      "DurationMax": "1.4634167",
+      "MediaRefs": [
+       {
+        "Id": "1057076462"
+       }
+      ]
+     },
+     {
+      "Id": "3105051176",
+      "Name": "Player_Attack_Axe",
+      "ObjectPath": "\\Events\\Default Work Unit\\Player\\Player_Attack_Axe",
+      "GUID": "{CBA76CF6-CC1F-4755-83E4-33BAB7A7A3BB}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.62",
+      "DurationMax": "1.62",
+      "MediaRefs": [
+       {
+        "Id": "486607028"
+       }
+      ]
+     },
+     {
+      "Id": "3172158790",
+      "Name": "Player_Attack_Dagger",
+      "ObjectPath": "\\Events\\Default Work Unit\\Player\\Player_Attack_Dagger",
+      "GUID": "{1F0845CD-0B2E-4069-A3DA-6DED2D93AC58}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.6298125",
+      "DurationMax": "0.6298125",
+      "MediaRefs": [
+       {
+        "Id": "535809264"
+       }
+      ]
+     },
+     {
+      "Id": "2906993614",
+      "Name": "Player_Attack_Staff",
+      "ObjectPath": "\\Events\\Default Work Unit\\Player\\Player_Attack_Staff",
+      "GUID": "{91211C76-B1F6-4F2C-ADC2-BA2CFD710560}",
+      "DurationType": "OneShot",
+      "DurationMin": "2.6923125",
+      "DurationMax": "2.6923125",
+      "MediaRefs": [
+       {
+        "Id": "635260150"
+       }
+      ]
+     },
+     {
+      "Id": "2394582229",
+      "Name": "Player_Dash",
+      "ObjectPath": "\\Events\\Default Work Unit\\Player\\Player_Dash",
+      "GUID": "{4E4DB1CA-05EF-4568-87F5-8B892DAC5A2F}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.6298125",
+      "DurationMax": "0.6298125",
+      "MediaRefs": [
+       {
+        "Id": "535809264"
+       }
+      ]
+     },
+     {
+      "Id": "3083087645",
+      "Name": "Player_Death",
+      "ObjectPath": "\\Events\\Default Work Unit\\Player\\Player_Death",
+      "GUID": "{C60D5406-DB2A-491D-B31F-067DE555DCEB}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.156",
+      "DurationMax": "1.156",
+      "MediaRefs": [
+       {
+        "Id": "167821020"
+       }
+      ]
+     },
+     {
+      "Id": "1805655660",
+      "Name": "Theme_1",
+      "ObjectPath": "\\Events\\Default Work Unit\\Music\\Theme_1",
+      "GUID": "{F6308084-5F8B-4169-85E4-E6B3BC23AA66}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "400155388"
+       }
+      ]
+     },
+     {
+      "Id": "1805655663",
+      "Name": "Theme_2",
+      "ObjectPath": "\\Events\\Default Work Unit\\Music\\Theme_2",
+      "GUID": "{F855BD8D-D06B-45F7-B9A2-09B216661715}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "299438341"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{B10BFB55-42B8-4158-429F-60BC8713BD7F}"
+ }
+}

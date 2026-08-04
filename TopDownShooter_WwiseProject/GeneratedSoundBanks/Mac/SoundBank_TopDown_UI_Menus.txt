@@ -1,0 +1,12 @@
+Event	ID	Name			Wwise Object Path	Notes
+	1394085446	Button_Play			\Default Work Unit\UI\Button_Play	
+	1701177942	Button_Hover			\Default Work Unit\UI\Button_Hover	
+	1830902963	Button_Clicked			\Default Work Unit\UI\Button_Clicked	
+	4055567060	Menu_Music			\Default Work Unit\Music\Menu_Music	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	78721821	SFX_Mouse_Press_Button	.cache\B7\{B7A7028A-07C8-16CC-855C-64273D8346C0}.wem		\Containers\Default Work Unit\SFX\SFX_Mouse_Press_Button		354556
+	395815094	Theme_MainMenu	.cache\27\{27E9EC49-43FA-0CBD-4591-91EABB420630}.wem		\Containers\Default Work Unit\Music\Theme_MainMenu		14156668
+	647295593	SFX_MainMenu_ClickJugar	.cache\56\{56B73802-A073-50B3-F32C-E604A4CCDD6C}.wem		\Containers\Default Work Unit\SFX\SFX_MainMenu_ClickJugar		501328
+	1041082166	SFX_Mouse_OverButton	.cache\0E\{0E032E10-3683-4057-027B-19D9E1109B1B}.wem		\Containers\Default Work Unit\SFX\SFX_Mouse_OverButton		354556
+

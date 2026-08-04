@@ -3,31 +3,10 @@
 	<Containers>
 		<WorkUnit Name="Default Work Unit" ID="{E56E7D2D-519D-4CC3-AA57-4503746F14CA}" PersistMode="Standalone">
 			<ChildrenList>
-				<Sound Name="AudioCleaner_hidoi na hito no kokoro toka nai ka_20260802_224656" ID="{42B5E884-E31D-43FF-900E-36719A4E569E}" ShortID="174162336">
-					<PropertyList>
-						<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
-					</PropertyList>
-					<ReferenceList>
-						<Reference Name="Conversion">
-							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{958CF1A1-38EC-405D-994F-F3DB5B95AEB2}"/>
-						</Reference>
-						<Reference Name="OutputBus">
-							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{448687C4-5A6A-4C39-AE03-4F67E80945E2}"/>
-						</Reference>
-					</ReferenceList>
-					<ChildrenList>
-						<AudioFileSource Name="AudioCleaner_hidoi na hito no kokoro toka nai ka_20260802_224656" ID="{2005E1BC-F6C0-4798-951B-A0801C1E8B71}">
-							<Language>SFX</Language>
-							<AudioFile>AudioCleaner_hidoi na hito no kokoro toka nai ka_20260802_224656.wav</AudioFile>
-							<MediaIDList>
-								<MediaID ID="556445142"/>
-							</MediaIDList>
-						</AudioFileSource>
-					</ChildrenList>
-					<ActiveSourceList>
-						<ActiveSource Name="AudioCleaner_hidoi na hito no kokoro toka nai ka_20260802_224656" ID="{2005E1BC-F6C0-4798-951B-A0801C1E8B71}" Platform="Linked"/>
-					</ActiveSourceList>
-				</Sound>
+				<WorkUnit Name="Enemy" ID="{B4650A59-7AE8-4621-8CA0-0692199A25DE}" PersistMode="Reference"/>
+				<WorkUnit Name="Music" ID="{6F9DDBA6-BDD2-48CB-8AD2-02B1415923B1}" PersistMode="Reference"/>
+				<WorkUnit Name="Player" ID="{EF1F7638-EBCB-4768-99A2-82F5D7436E96}" PersistMode="Reference"/>
+				<WorkUnit Name="SFX" ID="{D69372EF-83D0-4218-BCD7-487EE39FB935}" PersistMode="Reference"/>
 			</ChildrenList>
 		</WorkUnit>
 	</Containers>

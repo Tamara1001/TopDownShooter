@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{B4650A59-7AE8-4621-8CA0-0692199A25DE}" SchemaVersion="133" RootDocumentID="{E56E7D2D-519D-4CC3-AA57-4503746F14CA}" ParentDocumentID="{E56E7D2D-519D-4CC3-AA57-4503746F14CA}">
+	<Containers>
+		<WorkUnit Name="Enemy" ID="{B4650A59-7AE8-4621-8CA0-0692199A25DE}" OwnerID="{E56E7D2D-519D-4CC3-AA57-4503746F14CA}" PersistMode="Nested">
+			<ChildrenList>
+				<Sound Name="SFX_Enemies_Pasto_TakeDamage" ID="{7941F324-CBCC-4AEA-BA3D-53DABA0D0D04}" ShortID="773739248">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{958CF1A1-38EC-405D-994F-F3DB5B95AEB2}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{448687C4-5A6A-4C39-AE03-4F67E80945E2}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="SFX_Enemies_Pasto_TakeDamage" ID="{03F87927-B300-4D5E-8D3A-B8085E32CDDD}">
+							<Language>SFX</Language>
+							<AudioFile>SFX_Enemies_Pasto_TakeDamage.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="481789373"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="SFX_Enemies_Pasto_TakeDamage" ID="{03F87927-B300-4D5E-8D3A-B8085E32CDDD}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="SFX_Enemies_Pasto_Death" ID="{EF6A792D-8924-4D78-8316-06A5CD9A2214}" ShortID="928983364">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{958CF1A1-38EC-405D-994F-F3DB5B95AEB2}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{448687C4-5A6A-4C39-AE03-4F67E80945E2}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="SFX_Enemies_Pasto_Death" ID="{C75E3490-F25D-452D-A54F-7D61221531C5}">
+							<Language>SFX</Language>
+							<AudioFile>SFX_Enemies_Pasto_Death.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="407030362"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="SFX_Enemies_Pasto_Death" ID="{C75E3490-F25D-452D-A54F-7D61221531C5}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="SFX_Enemies_Pasto_TakeDamage_01" ID="{023559FB-DD10-4F91-AEE0-A291FCA1D622}" ShortID="519265222">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{958CF1A1-38EC-405D-994F-F3DB5B95AEB2}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{448687C4-5A6A-4C39-AE03-4F67E80945E2}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="SFX_Enemies_Pasto_TakeDamage" ID="{A0E9EBC8-1481-458E-B73C-54686B29279E}">
+							<Language>SFX</Language>
+							<AudioFile>SFX_Enemies_Pasto_TakeDamage.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="481789373"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="SFX_Enemies_Pasto_TakeDamage" ID="{A0E9EBC8-1481-458E-B73C-54686B29279E}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="SFX_Enemies_SlimeVerde_Death" ID="{543D77A1-856E-482B-9D19-312F5B53F4B6}" ShortID="899363213">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{958CF1A1-38EC-405D-994F-F3DB5B95AEB2}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{448687C4-5A6A-4C39-AE03-4F67E80945E2}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="SFX_Enemies_SlimeVerde_Death" ID="{660E6B35-4086-44A2-AF4F-7A619D5085F9}">
+							<Language>SFX</Language>
+							<AudioFile>SFX_Enemies_SlimeVerde_Death.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="894355525"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="SFX_Enemies_SlimeVerde_Death" ID="{660E6B35-4086-44A2-AF4F-7A619D5085F9}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="SFX_Enemies_Trompo_Attack" ID="{4140F9D2-29C2-469C-AED7-08085D00FC8B}" ShortID="50349115">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{958CF1A1-38EC-405D-994F-F3DB5B95AEB2}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{448687C4-5A6A-4C39-AE03-4F67E80945E2}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="SFX_Enemies_Trompo_Attack" ID="{BA47778F-F293-43FA-875D-E9FA01A76441}">
+							<Language>SFX</Language>
+							<AudioFile>SFX_Enemies_Trompo_Attack.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="259461477"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="SFX_Enemies_Trompo_Attack" ID="{BA47778F-F293-43FA-875D-E9FA01A76441}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="SFX_Enemies_Trompo_Death" ID="{C8FE1418-A90F-496D-BB49-8353885622A7}" ShortID="65512954">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{958CF1A1-38EC-405D-994F-F3DB5B95AEB2}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{448687C4-5A6A-4C39-AE03-4F67E80945E2}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="SFX_Enemies_Trompo_Death" ID="{221C4C56-47D7-4A46-B080-BBD1CBDFEAFB}">
+							<Language>SFX</Language>
+							<AudioFile>SFX_Enemies_Trompo_Death.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="426065512"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="SFX_Enemies_Trompo_Death" ID="{221C4C56-47D7-4A46-B080-BBD1CBDFEAFB}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="SFX_Enemies_Trompo_Hurt" ID="{8D620F6D-BE75-4100-A7C1-EE846924A852}" ShortID="519275424">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{958CF1A1-38EC-405D-994F-F3DB5B95AEB2}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{448687C4-5A6A-4C39-AE03-4F67E80945E2}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="SFX_Enemies_Trompo_Hurt" ID="{63B1F241-3724-4CCD-9CB0-B601BDDEA419}">
+							<Language>SFX</Language>
+							<AudioFile>SFX_Enemies_Trompo_Hurt.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="674541265"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="SFX_Enemies_Trompo_Hurt" ID="{63B1F241-3724-4CCD-9CB0-B601BDDEA419}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+			</ChildrenList>
+		</WorkUnit>
+	</Containers>
+</WwiseDocument>

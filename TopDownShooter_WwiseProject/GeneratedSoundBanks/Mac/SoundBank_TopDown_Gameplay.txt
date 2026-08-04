@@ -1,0 +1,43 @@
+Event	ID	Name			Wwise Object Path	Notes
+	514384443	Enemy_2_Attack			\Default Work Unit\Enemy\Enemy_2_Attack	
+	610178761	Box_Destruction			\Default Work Unit\SFX\Box_Destruction	
+	646549102	Loot_Money			\Default Work Unit\SFX\Loot_Money	
+	877981099	Enemy_2_Death			\Default Work Unit\Enemy\Enemy_2_Death	
+	1476537150	Enemy_1_Attack			\Default Work Unit\Enemy\Enemy_1_Attack	
+	1623256164	Enemy_1_Death			\Default Work Unit\Enemy\Enemy_1_Death	
+	1781786948	Enemy_2_Hurt			\Default Work Unit\Enemy\Enemy_2_Hurt	
+	1805655660	Theme_1			\Default Work Unit\Music\Theme_1	
+	1805655663	Theme_2			\Default Work Unit\Music\Theme_2	
+	1827792103	Loot_Potion			\Default Work Unit\SFX\Loot_Potion	
+	1832299857	Enemy_1_Hurt			\Default Work Unit\Enemy\Enemy_1_Hurt	
+	2166191340	Boss_Theme			\Default Work Unit\Music\Boss_Theme	
+	2259005123	Loot_Object			\Default Work Unit\SFX\Loot_Object	
+	2298755096	Loot_Health			\Default Work Unit\SFX\Loot_Health	
+	2394582229	Player_Dash			\Default Work Unit\Player\Player_Dash	
+	2906993614	Player_Attack_Staff			\Default Work Unit\Player\Player_Attack_Staff	
+	3083087645	Player_Death			\Default Work Unit\Player\Player_Death	
+	3105051176	Player_Attack_Axe			\Default Work Unit\Player\Player_Attack_Axe	
+	3172158790	Player_Attack_Dagger			\Default Work Unit\Player\Player_Attack_Dagger	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	167821020	SFX_Lunaria_Death	.cache\F2\{F236C750-00B3-8EB2-240D-9A4AD5F84DC1}.wem		\Containers\Default Work Unit\Player\SFX_Lunaria_Death		222048
+	179726779	SFX_Misc_Box_Destruction	.cache\D0\{D0344390-F278-FE73-37ED-2376C9BF921B}.wem		\Containers\Default Work Unit\SFX\SFX_Misc_Box_Destruction		492096
+	251641908	SFX_Enemies_Pasto_Attack	.cache\4D\{4DC2C2CC-58C3-8785-FA2D-C1FFC6BA7FDA}.wem		\Containers\Default Work Unit\Enemy\SFX_Enemies_Pasto_Attack		174556
+	259461477	SFX_Enemies_Trompo_Attack	.cache\58\{58D2853B-5B8A-F185-B37E-62EBD6996B7D}.wem		\Containers\Default Work Unit\Enemy\SFX_Enemies_Trompo_Attack		286560
+	299438341	Theme_Level_2	.cache\CD\{CD68281A-0495-D871-9E95-9C7BB64B10FD}.wem		\Containers\Default Work Unit\Music\Theme_Level_2		8697440
+	390039621	SFX_Misc_Loot_Object	.cache\BF\{BF16B877-E97F-F4A3-7383-8148E7BEF956}.wem		\Containers\Default Work Unit\SFX\SFX_Misc_Loot_Object		281072
+	400155388	Theme_Level_1	.cache\96\{960CCCA8-2112-7941-7997-826F542F34AC}.wem		\Containers\Default Work Unit\Music\Theme_Level_1		11596388
+	407030362	SFX_Enemies_Pasto_Death	.cache\0B\{0BBDF8E0-67B4-721B-597D-84A8A84C0194}.wem		\Containers\Default Work Unit\Enemy\SFX_Enemies_Pasto_Death		397944
+	426065512	SFX_Enemies_Trompo_Death	.cache\8C\{8C761922-6D6F-E681-5358-0E45480DF51F}.wem		\Containers\Default Work Unit\Enemy\SFX_Enemies_Trompo_Death\SFX_Enemies_Trompo_Death		455008
+	441055649	SFX_Misc_Loot_Health	.cache\CC\{CC5E4834-4E56-0C39-3D9D-1CB5F65F7869}.wem		\Containers\Default Work Unit\SFX\SFX_Misc_Loot_Health		354556
+	474543623	SFX_Misc_Loot_Money	.cache\69\{693F11BE-679A-74FC-1176-16393A000302}.wem		\Containers\Default Work Unit\SFX\SFX_Misc_Loot_Money		354556
+	481789373	SFX_Enemies_Pasto_TakeDamage_01	.cache\79\{79C2802E-4F00-C716-D831-4BA6BDBFF468}.wem		\Containers\Default Work Unit\Enemy\SFX_Enemies_Pasto_Hurt\SFX_Enemies_Pasto_TakeDamage_01		23852
+	486607028	SFX_Midir_Attack	.cache\63\{636F511B-7BFA-C9BB-9FDB-BD2EFF51CBD3}.wem		\Containers\Default Work Unit\Player\SFX_Midir_Attack		311136
+	535809264	SFX_Ace_Attack	.cache\F9\{F94CB5BE-D0AA-E282-282F-A9B91F8A0FB6}.wem		\Containers\Default Work Unit\Player\SFX_Ace_Attack		121020
+	635260150	SFX_Lunaria_Attack	.cache\89\{890A1239-7B0E-2E33-B123-7746EB21D3FD}.wem		\Containers\Default Work Unit\Player\SFX_Lunaria_Attack		517020
+	674541265	SFX_Enemies_Trompo_Hurt	.cache\D2\{D2571A98-06EB-B5D3-38C3-47D224C93BDB}.wem		\Containers\Default Work Unit\Enemy\SFX_Enemies_Trompo_Hurt\SFX_Enemies_Trompo_Hurt		85344
+	739517955	Theme_Boss_1_Full_Song	.cache\BC\{BCA53F8C-99F0-FEFD-C87E-C181FF0C7384}.wem		\Containers\Default Work Unit\Music\Theme_Boss_1_Full_Song		9086560
+	894355525	SFX_Enemies_SlimeVerde_Death	.cache\61\{615E416A-AF47-3E91-5390-FECCD5211A80}.wem		\Containers\Default Work Unit\Enemy\SFX_Enemies_Trompo_Death\SFX_Enemies_SlimeVerde_Death		469320
+	1036077706	SFX_Enemies_SlimeVerde_Hurt	.cache\8E\{8EA7F20E-7AE1-2A92-6ADA-420F0C770F08}.wem		\Containers\Default Work Unit\Enemy\SFX_Enemies_Trompo_Hurt\SFX_Enemies_SlimeVerde_Hurt		354556
+	1057076462	SFX_Misc_Loot_Potion	.cache\13\{13765A41-0B5F-90C5-116C-7FF81272F8E0}.wem		\Containers\Default Work Unit\SFX\SFX_Misc_Loot_Potion		281072
+

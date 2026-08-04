@@ -1,6 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<WwiseDocument Type="WorkUnit" ID="{EF1F7638-EBCB-4768-99A2-82F5D7436E96}" SchemaVersion="133">
+<WwiseDocument Type="WorkUnit" ID="{EF1F7638-EBCB-4768-99A2-82F5D7436E96}" SchemaVersion="133" RootDocumentID="{E56E7D2D-519D-4CC3-AA57-4503746F14CA}" ParentDocumentID="{E56E7D2D-519D-4CC3-AA57-4503746F14CA}">
 	<Containers>
-		<WorkUnit Name="Player" ID="{EF1F7638-EBCB-4768-99A2-82F5D7436E96}" PersistMode="Standalone"/>
+		<WorkUnit Name="Player" ID="{EF1F7638-EBCB-4768-99A2-82F5D7436E96}" OwnerID="{E56E7D2D-519D-4CC3-AA57-4503746F14CA}" PersistMode="Nested">
+			<ChildrenList>
+				<Sound Name="SFX_Lunaria_Dash" ID="{E67BA295-CD13-4153-8B24-5B8158246337}" ShortID="610231902">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{958CF1A1-38EC-405D-994F-F3DB5B95AEB2}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{448687C4-5A6A-4C39-AE03-4F67E80945E2}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="SFX_Lunaria_Dash" ID="{9B67C51F-694F-41E7-9B0F-1167BC7054A8}">
+							<Language>SFX</Language>
+							<AudioFile>SFX_Lunaria_Dash.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="875540875"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="SFX_Lunaria_Dash" ID="{9B67C51F-694F-41E7-9B0F-1167BC7054A8}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="SFX_Lunaria_Death" ID="{E68D39AE-2F63-4EE0-B23F-82BBC4E15B02}" ShortID="762988136">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{958CF1A1-38EC-405D-994F-F3DB5B95AEB2}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{448687C4-5A6A-4C39-AE03-4F67E80945E2}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="SFX_Lunaria_Death" ID="{DD8FBD3E-6D8D-422C-A358-4FEF4687B887}">
+							<Language>SFX</Language>
+							<AudioFile>SFX_Lunaria_Death.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="167821020"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="SFX_Lunaria_Death" ID="{DD8FBD3E-6D8D-422C-A358-4FEF4687B887}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="SFX_Midir_Attack" ID="{85FD632F-BD42-417E-BB7E-CF1AE6B5B607}" ShortID="498071820">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{958CF1A1-38EC-405D-994F-F3DB5B95AEB2}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{448687C4-5A6A-4C39-AE03-4F67E80945E2}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="SFX_Midir_Attack" ID="{F505C8C3-B8C6-45EF-9FEB-B497D1C97E34}">
+							<Language>SFX</Language>
+							<AudioFile>SFX_Midir_Attack.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="486607028"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="SFX_Midir_Attack" ID="{F505C8C3-B8C6-45EF-9FEB-B497D1C97E34}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="SFX_Lunaria_Attack" ID="{5DB045E1-7747-45B2-9B2E-983FEA5FC8B8}" ShortID="894868580">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{958CF1A1-38EC-405D-994F-F3DB5B95AEB2}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{448687C4-5A6A-4C39-AE03-4F67E80945E2}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="SFX_Lunaria_Attack" ID="{38396A9E-D158-4DE0-B257-EBFEDED62179}">
+							<Language>SFX</Language>
+							<AudioFile>SFX_Lunaria_Attack.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="635260150"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="SFX_Lunaria_Attack" ID="{38396A9E-D158-4DE0-B257-EBFEDED62179}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+			</ChildrenList>
+		</WorkUnit>
 	</Containers>
 </WwiseDocument>

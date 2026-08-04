@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{064EDF27-6794-42C8-A495-94964A8412BA}" SchemaVersion="133">
 	<Events>
-		<WorkUnit Name="Default Work Unit" ID="{064EDF27-6794-42C8-A495-94964A8412BA}" PersistMode="Standalone">
-			<ChildrenList>
-				<Event Name="Play_AudioCleaner_hidoi_na_hito_no_kokoro_toka_nai_ka_20260802_224656" ID="{A0FCD2DD-6661-40D1-91D4-642B1FC534EE}">
-					<ChildrenList>
-						<Action Name="" ID="{C0A21D46-E481-483B-BC57-88AA65D43DC1}" ShortID="702146901">
-							<ReferenceList>
-								<Reference Name="Target">
-									<ObjectRef Name="AudioCleaner_hidoi na hito no kokoro toka nai ka_20260802_224656" ID="{42B5E884-E31D-43FF-900E-36719A4E569E}" WorkUnitID="{E56E7D2D-519D-4CC3-AA57-4503746F14CA}"/>
-								</Reference>
-							</ReferenceList>
-						</Action>
-					</ChildrenList>
-				</Event>
-			</ChildrenList>
-		</WorkUnit>
+		<WorkUnit Name="Default Work Unit" ID="{064EDF27-6794-42C8-A495-94964A8412BA}" PersistMode="Standalone"/>
 	</Events>
 </WwiseDocument>

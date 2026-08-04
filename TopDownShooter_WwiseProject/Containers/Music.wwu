@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{6F9DDBA6-BDD2-48CB-8AD2-02B1415923B1}" SchemaVersion="133" RootDocumentID="{E56E7D2D-519D-4CC3-AA57-4503746F14CA}" ParentDocumentID="{E56E7D2D-519D-4CC3-AA57-4503746F14CA}">
+	<Containers>
+		<WorkUnit Name="Music" ID="{6F9DDBA6-BDD2-48CB-8AD2-02B1415923B1}" OwnerID="{E56E7D2D-519D-4CC3-AA57-4503746F14CA}" PersistMode="Nested">
+			<ChildrenList>
+				<Sound Name="Theme_Level_2" ID="{592CB91B-BC54-4930-AC9A-A6E132075D59}" ShortID="172259937">
+					<PropertyList>
+						<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{958CF1A1-38EC-405D-994F-F3DB5B95AEB2}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{448687C4-5A6A-4C39-AE03-4F67E80945E2}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="Theme_Level_2" ID="{9F2463FD-4B63-40CD-8074-8E209909C649}">
+							<Language>SFX</Language>
+							<AudioFile>Theme_Level_2.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="299438341"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="Theme_Level_2" ID="{9F2463FD-4B63-40CD-8074-8E209909C649}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="Theme_Level_1" ID="{5E38C686-AD91-43F7-88D4-083ACC99AEC5}" ShortID="697297983">
+					<PropertyList>
+						<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{958CF1A1-38EC-405D-994F-F3DB5B95AEB2}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{448687C4-5A6A-4C39-AE03-4F67E80945E2}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="Theme_Level_1" ID="{40E8B7C3-48A7-4EA8-83A9-AFFFE2827940}">
+							<Language>SFX</Language>
+							<AudioFile>Theme_Level_1.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="400155388"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="Theme_Level_1" ID="{40E8B7C3-48A7-4EA8-83A9-AFFFE2827940}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="Theme_MainMenu" ID="{3A509B62-1EBA-45D6-9755-DAEF810CC17C}" ShortID="59474668">
+					<PropertyList>
+						<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{958CF1A1-38EC-405D-994F-F3DB5B95AEB2}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{448687C4-5A6A-4C39-AE03-4F67E80945E2}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="Theme_MainMenu" ID="{36B34A8F-6D37-43C6-9DAD-DDB51FDE698E}">
+							<Language>SFX</Language>
+							<AudioFile>Theme_MainMenu.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="395815094"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="Theme_MainMenu" ID="{36B34A8F-6D37-43C6-9DAD-DDB51FDE698E}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="Theme_Boss_1_Full_Song" ID="{E26C70CA-B5D8-44D8-8259-8FCDC06C510B}" ShortID="1049560678">
+					<PropertyList>
+						<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{958CF1A1-38EC-405D-994F-F3DB5B95AEB2}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{448687C4-5A6A-4C39-AE03-4F67E80945E2}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="Theme_Boss_1_Full_Song" ID="{5F0E9D37-7497-4613-8896-D982CD97D756}">
+							<Language>SFX</Language>
+							<AudioFile>Theme_Boss_1_Full_Song.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="739517955"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="Theme_Boss_1_Full_Song" ID="{5F0E9D37-7497-4613-8896-D982CD97D756}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+			</ChildrenList>
+		</WorkUnit>
+	</Containers>
+</WwiseDocument>
