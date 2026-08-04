@@ -97,11 +97,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 216a9ff8e10f24c4ba878333e8b2a639, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IdleConsumable
-  floatAmplitude: 0.25
-  floatSpeed: 2
-  rotationSpeed: {x: 0, y: 100, z: 0}
-  squashAmount: 0.1
-  squashSpeed: 4
+  _floatAmplitude: 0.25
+  _floatSpeed: 2
+  _rotationSpeed: {x: 0, y: 100, z: 0}
+  _squashAmount: 0.1
+  _squashSpeed: 4
 --- !u!1001 &6742182972321622622
 PrefabInstance:
   m_ObjectHideFlags: 0

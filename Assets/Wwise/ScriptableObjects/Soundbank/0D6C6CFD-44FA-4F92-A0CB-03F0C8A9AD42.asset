@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6eee0e6beadcd1644a40f662b6233b3f, type: 3}
-  m_Name: C1F0BE72-4AB8-4901-8EDF-ED0DF46BE683
+  m_Name: 0D6C6CFD-44FA-4F92-A0CB-03F0C8A9AD42
   m_EditorClassIdentifier: AK.Wwise.Unity.API.WwiseTypes::WwiseBankReference
-  objectName: SoundBank_TopDown_Gameplay
-  id: 1114115615
-  guid: C1F0BE72-4AB8-4901-8EDF-ED0DF46BE683
+  objectName: SoundBank_TopDown_UI_Menus
+  id: 1507514792
+  guid: 0D6C6CFD-44FA-4F92-A0CB-03F0C8A9AD42
