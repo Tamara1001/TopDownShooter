@@ -1,0 +1,6 @@
+Event	ID	Name			Wwise Object Path	Notes
+	2165242676	Play_AudioCleaner_hidoi_na_hito_no_kokoro_toka_nai_ka_20260802_224656			\Default Work Unit\Play_AudioCleaner_hidoi_na_hito_no_kokoro_toka_nai_ka_20260802_224656	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	556445142	AudioCleaner_hidoi na hito no kokoro toka nai ka_20260802_224656	.cache\88\{88128541-57F3-1F95-1F5C-08B2B9E29C5C}.wem		\Containers\Default Work Unit\AudioCleaner_hidoi na hito no kokoro toka nai ka_20260802_224656		1151072
+

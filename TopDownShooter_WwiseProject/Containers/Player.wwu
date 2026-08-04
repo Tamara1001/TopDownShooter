@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{EF1F7638-EBCB-4768-99A2-82F5D7436E96}" SchemaVersion="133">
+	<Containers>
+		<WorkUnit Name="Player" ID="{EF1F7638-EBCB-4768-99A2-82F5D7436E96}" PersistMode="Standalone"/>
+	</Containers>
+</WwiseDocument>

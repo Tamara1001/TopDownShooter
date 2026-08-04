@@ -1,0 +1,36 @@
+{
+ "ProjectInfo": {
+  "Project": {
+   "Name": "TopDownShooter_WwiseProject",
+   "GUID": "{4D463171-F56C-42EF-A8EF-1491F672927A}",
+   "Generator": "2025.1.9.9197"
+  },
+  "CacheRoot": "../.cache",
+  "Platforms": [
+   {
+    "Name": "Mac",
+    "GUID": "{5F385F07-BDC2-460A-A5DB-777573D60EE4}",
+    "BasePlatform": "Mac",
+    "BasePlatformGUID": "{9C6217D5-DD11-4795-87C1-6CE02853C540}",
+    "Path": "Mac"
+   },
+   {
+    "Name": "Windows",
+    "GUID": "{801A2ACE-C9C9-41FB-B29F-6F6F5BA51987}",
+    "BasePlatform": "Windows",
+    "BasePlatformGUID": "{6E0CB257-C6C8-4C5C-8366-2740DFC441EB}",
+    "Path": "Windows"
+   }
+  ],
+  "Languages": [
+   {
+    "Name": "English(US)",
+    "Id": "684519430",
+    "GUID": "{4A031A89-ACE3-46CC-B41E-3D1006D02A9C}",
+    "Default": "true",
+    "UseAsStandIn": "true"
+   }
+  ],
+  "FileHash": "{C44A29BD-634A-A12E-127C-C8CB1C9FA58B}"
+ }
+}
