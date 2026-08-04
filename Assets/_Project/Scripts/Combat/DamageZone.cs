@@ -3,28 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// A continuous-damage hazard zone. Applies periodic damage to any
-/// entity that implements <see cref="IDamageable"/> while it remains
-/// inside this trigger collider.
+/// Una zona de peligro de daño continuo. Aplica daño periódico a cualquier
+/// entidad que implemente <see cref="IDamageable"/> mientras permanezca
+/// dentro de este colisionador trigger.
 /// </summary>
 [RequireComponent(typeof(Collider))]
 public class DamageZone : MonoBehaviour
 {
     // ----------------------------------------------------------
     // INSPECTOR FIELDS
-    // All fields are private — [SerializeField] gives Inspector
-    // access without exposing public setters to other scripts.
+    // Todos los campos son privados — [SerializeField] da acceso al Inspector
+    // sin exponer setters públicos a otros scripts.
     // ----------------------------------------------------------
 
     [Header("Damage Settings")]
 
-    [Tooltip("Damage applied to the entity on each damage tick.")]
+    [Tooltip("Daño aplicado a la entidad en cada tick de daño.")]
     [SerializeField] private int damageAmount = 10;
 
-    [Tooltip(
-        "Seconds between each damage application. " +
-        "Lower values = faster damage ticks. " +
-        "E.g. 0.5 = damage every half-second.")]
+    [Tooltip("Segundos entre cada aplicación de daño. Valores más bajos = ticks de daño más rápidos. Por ejemplo, 0.5 = daño cada medio segundo.")]
     [SerializeField] private float damageTickRate = 1f;
 
     // ----------------------------------------------------------
@@ -32,16 +29,16 @@ public class DamageZone : MonoBehaviour
     // ----------------------------------------------------------
 
     /// <summary>
-    /// Tracks the per-collider cooldown timers so each entity in the
-    /// zone is damaged independently on its own tick interval.
+    /// Realiza un seguimiento de los temporizadores de enfriamiento por colisionador para que cada entidad en la
+    /// zona sea dañada de forma independiente en su propio intervalo de tick.
     ///
-    /// KEY   = the Collider currently overlapping this trigger.
-    /// VALUE = the Time.time at which that collider is next eligible
-    ///         to receive a damage tick.
+    /// KEY   = el Collider que se superpone actualmente con este trigger.
+    /// VALUE = el Time.time en el cual ese colisionador es elegible por primera vez
+    ///         para recibir un tick de daño.
     ///
-    /// Using a Dictionary here instead of a single float allows
-    /// multiple entities to be in the zone simultaneously with
-    /// independent, non-interfering cooldown timers.
+    /// El uso de un Dictionary aquí en lugar de un único float permite que
+    /// múltiples entidades estén en la zona simultáneamente con
+    /// temporizadores de enfriamiento independientes que no interfieren entre sí.
     /// </summary>
     private readonly Dictionary<Collider, float> nextDamageTimeMap
         = new Dictionary<Collider, float>();
@@ -49,26 +46,26 @@ public class DamageZone : MonoBehaviour
     // ----------------------------------------------------------
     // UNITY LIFECYCLE — TRIGGER EVENTS
     //
-    // PERFORMANCE NOTE:
-    //   IDamageable is fetched ONCE in OnTriggerEnter and cached
-    //   in the Dictionary. OnTriggerStay reads from the cache,
-    //   meaning zero GetComponent calls happen during the update loop.
+    // NOTA DE RENDIMIENTO:
+    //   IDamageable se obtiene UNA VEZ en OnTriggerEnter y se almacena en caché
+    //   en el Dictionary. OnTriggerStay lee de la caché,
+    //   lo que significa que ocurren cero llamadas a GetComponent durante el bucle de actualización.
     // ----------------------------------------------------------
 
     /// <summary>
-    /// Called by Unity when a Collider enters this trigger volume.
-    /// Registers the collider in the damage-time map so it is
-    /// eligible for ticking in OnTriggerStay.
+    /// Llamado por Unity cuando un Collider entra en este volumen trigger.
+    /// Registra el colisionador en el mapa de tiempo de daño para que sea
+    /// elegible para el ticking en OnTriggerStay.
     /// </summary>
-    /// <param name="other">The Collider that entered the trigger.</param>
+    /// <param name="other">El Collider que entró en el trigger.</param>
     private void OnTriggerEnter(Collider other)
     {
-        // Only track colliders that belong to a damageable entity.
-        // GetComponent is called here (on enter) — NOT in Stay.
+        // Solo realizar seguimiento de los colisionadores que pertenecen a una entidad dañable.
+        // GetComponent se llama aquí (al entrar) — NO en Stay.
         if (other.TryGetComponent<IDamageable>(out _))
         {
-            // Register with an initial next-damage time of NOW so
-            // the first tick fires immediately on the first Stay frame.
+            // Registrar con un tiempo inicial de próximo daño de AHORA para que
+            // el primer tick se dispare inmediatamente en el primer frame de Stay.
             if (!nextDamageTimeMap.ContainsKey(other))
             {
                 nextDamageTimeMap[other] = Time.time;
@@ -77,41 +74,41 @@ public class DamageZone : MonoBehaviour
     }
 
     /// <summary>
-    /// Called by Unity every FixedUpdate frame while a Collider remains
-    /// inside this trigger volume. Applies damage on the configured
-    /// tick interval using a per-collider cooldown stored in the map.
+    /// Llamado por Unity en cada frame de FixedUpdate mientras un Collider permanezca
+    /// dentro de este volumen trigger. Aplica daño en el intervalo de tick configurado
+    /// utilizando un enfriamiento por colisionador almacenado en el mapa.
     /// </summary>
-    /// <param name="other">The Collider currently overlapping.</param>
+    /// <param name="other">El Collider superpuesto actualmente.</param>
     private void OnTriggerStay(Collider other)
     {
-        // Early-out: if this collider was never registered (i.e., it
-        // doesn't implement IDamageable), do nothing — no GetComponent.
+        // Salida temprana: si este colisionador nunca fue registrado (es decir,
+        // no implementa IDamageable), no hacer nada — sin llamar a GetComponent.
         if (!nextDamageTimeMap.TryGetValue(other, out float nextDamageTime))
             return;
 
-        // Check if the cooldown for this specific entity has elapsed.
+        // Verificar si el enfriamiento para esta entidad específica ha transcurrido.
         if (Time.time < nextDamageTime) return;
 
-        // Cooldown has elapsed — attempt to get the interface and deal damage.
-        // TryGetComponent is safe here; it avoids a null-check antipattern.
+        // El enfriamiento ha transcurrido — intentar obtener la interfaz y aplicar daño.
+        // TryGetComponent es seguro aquí; evita un antipatrón de verificación de nulos.
         if (other.TryGetComponent<IDamageable>(out IDamageable damageable))
         {
             damageable.TakeDamage(damageAmount);
 
-            // Schedule the NEXT tick for this collider.
+            // Programar el SIGUIENTE tick para este colisionador.
             nextDamageTimeMap[other] = Time.time + damageTickRate;
         }
     }
 
     /// <summary>
-    /// Called by Unity when a Collider exits this trigger volume.
-    /// Cleans up the map entry so we don't accumulate stale references.
+    /// Llamado por Unity cuando un Collider sale de este volumen trigger.
+    /// Limpia la entrada del mapa para que no acumulemos referencias obsoletas.
     /// </summary>
-    /// <param name="other">The Collider that exited the trigger.</param>
+    /// <param name="other">El Collider que salió del trigger.</param>
     private void OnTriggerExit(Collider other)
     {
-        // Always attempt removal — Dictionary.Remove is a no-op if the
-        // key doesn't exist, so this is safe for non-damageable colliders.
+        // Intentar siempre la eliminación — Dictionary.Remove es una operación nula si la
+        // clave no existe, por lo que esto es seguro para colisionadores no dañables.
         nextDamageTimeMap.Remove(other);
     }
 
@@ -121,15 +118,15 @@ public class DamageZone : MonoBehaviour
 
 #if UNITY_EDITOR
     /// <summary>
-    /// Draws a yellow wire cube in the Scene view to visualise
-    /// the hazard zone extent. Requires a BoxCollider to be readable.
-    /// Falls back gracefully if no BoxCollider is present.
+    /// Dibuja un cubo de alambre amarillo en la vista de Scene para visualizar
+    /// el alcance de la zona de peligro. Requiere un BoxCollider para ser legible.
+    /// Regresa de forma segura a una alternativa si no hay BoxCollider presente.
     /// </summary>
     private void OnDrawGizmos()
     {
-        Gizmos.color = new Color(1f, 0.4f, 0f, 0.35f); // orange, semi-transparent
+        Gizmos.color = new Color(1f, 0.4f, 0f, 0.35f); // naranja, semi-transparente
 
-        // Try to mirror the BoxCollider's shape for an accurate preview.
+        // Intentar reflejar la forma de BoxCollider para una vista previa precisa.
         if (TryGetComponent<BoxCollider>(out BoxCollider box))
         {
             Gizmos.matrix = transform.localToWorldMatrix;
@@ -140,7 +137,7 @@ public class DamageZone : MonoBehaviour
         }
         else
         {
-            // Generic sphere fallback for non-box colliders.
+            // Alternativa de esfera genérica para colisionadores que no sean de tipo caja.
             Gizmos.DrawSphere(transform.position, 0.5f);
         }
     }

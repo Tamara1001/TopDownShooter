@@ -3,8 +3,8 @@ using UnityEngine;
 namespace TopDownShooter.Player
 {
     /// <summary>
-    /// Reads the player's movement state and forwards it to the Animator.
-    /// Keeping animation logic here prevents accidental physics interference.
+    /// Lee el estado de movimiento del jugador y lo envía al Animator.
+    /// Mantener la lógica de animación aquí evita interferencias accidentales de físicas.
     /// </summary>
     [RequireComponent(typeof(PlayerController3D))]
     public class PlayerAnimator : MonoBehaviour

@@ -9,99 +9,89 @@ using TopDownShooter.Interaction;
 namespace TopDownShooter.Player
 {
     /// <summary>
-    /// Fixed three-slot inventory for the player character.
-    /// Handles pickup (E), drop-on-swap, and consumable use (Q).
-    /// Attach this MonoBehaviour to the Player GameObject alongside
-    /// <see cref="PlayerController3D"/> and <see cref="Combat.PlayerCombat"/>.
+    /// Inventario fijo de tres ranuras para el personaje del jugador.
+    /// Maneja la recogida (E), soltar al intercambiar, y uso de consumibles (Q).
+    /// Adjunte este MonoBehaviour al GameObject del Jugador junto con
+    /// <see cref="PlayerController3D"/> y <see cref="Combat.PlayerCombat"/>.
     /// </summary>
     public sealed class PlayerInventory : MonoBehaviour
     {
         // ─────────────────────────────────────────────────────────────────────
-        //  INSPECTOR FIELDS
+        //  CAMPOS DEL INSPECTOR
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Pickup Detection")]
-        [Tooltip("World-space radius of the OverlapSphere used to detect nearby " +
-                 "ItemPickup objects when the player presses Interact (E). " +
-                 "Should be slightly larger than the items' SphereCollider radii.")]
+        [Tooltip("Radio en espacio de mundo de la OverlapSphere utilizada para detectar objetos ItemPickup cercanos cuando el jugador presiona Interactuar (E). Debe ser ligeramente mayor que los radios de los SphereCollider de los objetos.")]
         [SerializeField] private float _pickupRadius = 1.5f;
 
-        [Tooltip("LayerMask for the layer(s) that contain ItemPickup colliders. " +
-                 "Assign the 'Pickup' layer for best performance — the overlap " +
-                 "sphere skips all other layers entirely.")]
+        [Tooltip("LayerMask para la(s) capa(s) que contienen colisionadores ItemPickup. Asigne la capa 'Pickup' para un mejor rendimiento — la esfera de superposición omite por completo todas las demás capas.")]
         [SerializeField] private LayerMask _pickupLayerMask;
 
         [Header("World Interaction")]
-        [Tooltip("LayerMask for world objects implementing IWorldInteractable " +
-                 "(e.g. VictoryDoor). Assign the 'Interactable' layer. " +
-                 "Checked BEFORE the pickup sphere, so doors take priority over " +
-                 "floor items.")]
+        [Tooltip("LayerMask para objetos del mundo que implementan IWorldInteractable (por ejemplo, VictoryDoor). Asigne la capa 'Interactable'. Se comprueba ANTES de la esfera de recogida, para que las puertas tengan prioridad sobre los objetos del suelo.")]
         [SerializeField] private LayerMask _interactableLayerMask;
 
         [Header("Drop Offset")]
-        [Tooltip("Local-space offset from the player's position where dropped " +
-                 "items are instantiated. Prevents items from spawning inside " +
-                 "the player's collider. (0, 0, 0.8) = just in front of player.")]
+        [Tooltip("Desplazamiento en espacio local desde la posición del jugador donde se instancian los objetos soltados. Evita que los objetos aparezcan dentro del colisionador del jugador. (0, 0, 0.8) = justo en frente del jugador.")]
         [SerializeField] private Vector3 _dropOffset = new Vector3(0f, 0f, 0.8f);
 
         [Header("Buffer Settings")]
-        [Tooltip("Maximum number of colliders the OverlapSphere records per call. " +
-                 "Increase only if many items can overlap simultaneously.")]
+        [Tooltip("Número máximo de colisionadores que registra la OverlapSphere por llamada. Auméntelo solo si muchos objetos pueden superponerse simultáneamente.")]
         [SerializeField] private int _overlapBufferSize = 8;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  INVENTORY SLOT STATE  (private — never exposed as mutable)
+        //  ESTADO DE LAS RANURAS DE INVENTARIO  (privado — nunca expuesto como mutable)
         // ─────────────────────────────────────────────────────────────────────
 
-        // Each slot holds the DATA blueprint (SO) of the currently equipped item.
-        // Null means the slot is empty.
+        // Cada ranura contiene la plantilla DATA (SO) del objeto equipado actualmente.
+        // Nulo significa que la ranura está vacía.
         private WeaponDataSO      _currentWeapon;
         private RelicDataSO       _currentRelic;
         private ConsumableDataSO  _currentConsumable;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  EVENTS  (Observer Pattern — HUD and other systems subscribe here)
+        //  EVENTOS  (Patrón Observador — el HUD y otros sistemas se suscriben aquí)
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Fired whenever the Weapon slot changes (pickup or clear).
-        /// Argument is the new <see cref="WeaponDataSO"/>, or <c>null</c> if emptied.
+        /// Se activa cada vez que cambia la ranura de Arma (recogida o vaciado).
+        /// El argumento es el nuevo <see cref="WeaponDataSO"/>, o <c>null</c> si se vacía.
         /// </summary>
         public event Action<WeaponDataSO>     OnWeaponChanged;
 
         /// <summary>
-        /// Fired whenever the Relic slot changes (pickup or clear).
-        /// Argument is the new <see cref="RelicDataSO"/>, or <c>null</c> if emptied.
+        /// Se activa cada vez que cambia la ranura de Reliquia (recogida o vaciado).
+        /// El argumento es el nuevo <see cref="RelicDataSO"/>, o <c>null</c> si se vacía.
         /// </summary>
         public event Action<RelicDataSO>      OnRelicChanged;
 
         /// <summary>
-        /// Fired whenever the Consumable slot changes (pickup, use, or clear).
-        /// Argument is the new <see cref="ConsumableDataSO"/>, or <c>null</c> if emptied.
+        /// Se activa cada vez que cambia la ranura de Consumible (recogida, uso o vaciado).
+        /// El argumento es el nuevo <see cref="ConsumableDataSO"/>, o <c>null</c> si se vacía.
         /// </summary>
         public event Action<ConsumableDataSO> OnConsumableChanged;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PUBLIC READ-ONLY PROPERTIES
+        //  PROPIEDADES PÚBLICAS DE SÓLO LECTURA
         // ─────────────────────────────────────────────────────────────────────
 
-        /// <summary>Currently equipped weapon data. Null if slot is empty.</summary>
+        /// <summary>Datos del arma equipada actualmente. Nulo si la ranura está vacía.</summary>
         public WeaponDataSO     CurrentWeapon     => _currentWeapon;
 
-        /// <summary>Currently equipped relic data. Null if slot is empty.</summary>
+        /// <summary>Datos de la reliquia equipada actualmente. Nulo si la ranura está vacía.</summary>
         public RelicDataSO      CurrentRelic      => _currentRelic;
 
-        /// <summary>Currently equipped consumable data. Null if slot is empty.</summary>
+        /// <summary>Datos del consumible equipado actualmente. Nulo si la ranura está vacía.</summary>
         public ConsumableDataSO CurrentConsumable => _currentConsumable;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PRIVATE RUNTIME STATE
+        //  ESTADO DE EJECUCIÓN PRIVADO
         // ─────────────────────────────────────────────────────────────────────
 
-        // Pre-allocated overlap buffer — zero allocations during pickup.
+        // Buffer de superposición preasignado — cero asignaciones durante la recogida.
         private Collider[] _overlapBuffer;
 
-        // Cached transform for position queries inside tight loops.
+        // Transform guardado en caché para consultas de posición dentro de bucles estrechos.
         private Transform _transform;
 
         // ─────────────────────────────────────────────────────────────────────
@@ -117,37 +107,37 @@ namespace TopDownShooter.Player
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  INPUT SYSTEM CALLBACKS  (Send Messages — called by PlayerInput)
+        //  DEVOLUCIONES DE LLAMADA DEL SISTEMA DE ENTRADAS  (Send Messages — llamadas por PlayerInput)
         //
-        //  NAMING CONTRACT:
-        //  Method name = "On" + exact Action name in CharacterActions.inputactions
-        //  These are called via reflection — any typo silently breaks the binding.
+        //  CONTRATO DE NOMENCLATURA:
+        //  Nombre del método = "On" + nombre exacto de la Acción en CharacterActions.inputactions
+        //  Estos se llaman mediante reflexión — cualquier error tipográfico rompe silenciosamente la vinculación.
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Receives the "Interact" action (E key) from PlayerInput.
-        /// Priority order:
-        ///   1. Checks for an <see cref="IWorldInteractable"/> (doors, switches) via
-        ///      <see cref="_interactableLayerMask"/> — these take precedence over items.
-        ///   2. Falls back to <see cref="TryPickupNearestItem"/> for floor pickups.
+        /// Recibe la acción "Interact" (tecla E) de PlayerInput.
+        /// Orden de prioridad:
+        ///   1. Busca un <see cref="IWorldInteractable"/> (puertas, interruptores) a través de
+        ///      <see cref="_interactableLayerMask"/> — estos tienen prioridad sobre los objetos.
+        ///   2. Vuelve a <see cref="TryPickupNearestItem"/> para recogidas en el suelo.
         /// </summary>
         public void OnInteract(InputValue value)
         {
-            // Only respond to the press event, not the release.
+            // Solo responder al evento de presión, no al de liberación.
             if (!value.isPressed) return;
 
-            // ── Priority 1: World Interactables (doors, switches, NPCs) ─────────
+            // ── Prioridad 1: Objetos interactuables del mundo (puertas, interruptores, NPCs) ──
             if (TryWorldInteract()) return;
 
-            // ── Priority 2: Item Pickup fallback ─────────────────────────────────
+            // ── Prioridad 2: Comportamiento alternativo de recogida de objetos ──────────────
             TryPickupNearestItem();
         }
 
         /// <summary>
-        /// Receives the "Consume" action (Q key) from PlayerInput.
-        /// Uses the currently held consumable if one is equipped.
-        /// Quest items (<see cref="ConsumableDataSO.IsQuestItem"/> == true) are
-        /// intentionally blocked — they must be used via the E-key interact flow.
+        /// Recibe la acción "Consume" (tecla Q) de PlayerInput.
+        /// Utiliza el consumible equipado actualmente si hay uno.
+        /// Los objetos de misión (<see cref="ConsumableDataSO.IsQuestItem"/> == true) están
+        /// bloqueados intencionalmente — deben usarse mediante el flujo de interacción de la tecla E.
         /// </summary>
         public void OnConsume(InputValue value)
         {
@@ -155,16 +145,16 @@ namespace TopDownShooter.Player
 
             if (_currentConsumable == null)
             {
-                Debug.Log("[PlayerInventory] OnConsume: Consumable slot is empty.");
+                Debug.Log("[PlayerInventory] OnConsume: La ranura de consumibles está vacía.");
                 return;
             }
 
-            // Guard: quest items (e.g. Keys) cannot be consumed via Q.
+            // Guardia: los objetos de misión (por ejemplo, llaves) no se pueden consumir con Q.
             if (_currentConsumable.IsQuestItem)
             {
-                Debug.Log($"[PlayerInventory] Cannot consume quest items. " +
-                          $"'{_currentConsumable.DisplayName}' must be used " +
-                          "by interacting (E) with the appropriate world object.");
+                Debug.Log($"[PlayerInventory] No se pueden consumir objetos de misión. " +
+                          $"'{_currentConsumable.DisplayName}' debe usarse " +
+                          "interactuando (E) con el objeto del mundo apropiado.");
                 return;
             }
 
@@ -172,15 +162,15 @@ namespace TopDownShooter.Player
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  WORLD INTERACTION
+        //  INTERACCIÓN CON EL MUNDO
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Performs an OverlapSphere using <see cref="_interactableLayerMask"/> and
-        /// calls <see cref="IWorldInteractable.Interact"/> on the first matching
-        /// component found.
+        /// Realiza un OverlapSphere usando <see cref="_interactableLayerMask"/> y
+        /// llama a <see cref="IWorldInteractable.Interact"/> en el primer componente coincidente
+        /// que se encuentre.
         /// </summary>
-        /// <returns><c>true</c> if a world interactable was found and called; <c>false</c> otherwise.</returns>
+        /// <returns><c>true</c> si se encontró y llamó a un interactuable del mundo; <c>false</c> en caso contrario.</returns>
         private bool TryWorldInteract()
         {
             int hitCount = Physics.OverlapSphereNonAlloc(
@@ -198,11 +188,11 @@ namespace TopDownShooter.Player
                 if (_overlapBuffer[i].TryGetComponent<IWorldInteractable>(out IWorldInteractable found))
                 {
                     interactable = found;
-                    break; // Use the first valid one found.
+                    break; // Usar el primero válido que se encuentre.
                 }
             }
 
-            // Clear buffer references to prevent GC from retaining dead objects.
+            // Limpiar referencias del buffer para evitar que el GC retenga objetos muertos.
             for (int i = 0; i < hitCount; i++)
                 _overlapBuffer[i] = null;
 
@@ -213,20 +203,20 @@ namespace TopDownShooter.Player
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PICKUP LOGIC
+        //  LÓGICA DE RECOGIDA
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Finds the nearest <see cref="ItemPickup"/> within <see cref="_pickupRadius"/>,
-        /// reads its <see cref="ItemDataSO"/>, drops any existing item in the matching
-        /// slot, and assigns the new one.
+        /// Encuentra el <see cref="ItemPickup"/> más cercano dentro de <see cref="_pickupRadius"/>,
+        /// lee su <see cref="ItemDataSO"/>, suelta cualquier objeto existente en la ranura correspondiente
+        /// y asigna el nuevo.
         ///
-        /// ALGORITHM:
-        ///   1. Physics.OverlapSphereNonAlloc → fills _overlapBuffer, zero allocation.
-        ///   2. Iterate hits, TryGetComponent to find ItemPickup instances.
-        ///   3. Track the closest one by sqrMagnitude (avoids sqrt until selection).
-        ///   4. Pattern-match on ItemDataSO subtype to determine the target slot.
-        ///   5. Atomic swap: drop old → assign new → DestroyPickup.
+        /// ALGORITMO:
+        ///   1. Physics.OverlapSphereNonAlloc → llena _overlapBuffer, cero asignaciones.
+        ///   2. Iterar colisiones, TryGetComponent para encontrar instancias de ItemPickup.
+        ///   3. Seguir el más cercano por sqrMagnitude (evita sqrt hasta la selección).
+        ///   4. Búsqueda de patrones en el subtipo de ItemDataSO para determinar la ranura de destino.
+        ///   5. Intercambio atómico: soltar antiguo → asignar nuevo → DestroyPickup.
         /// </summary>
         private void TryPickupNearestItem()
         {
@@ -238,7 +228,7 @@ namespace TopDownShooter.Player
 
             if (hitCount == 0) return;
 
-            // ── Find nearest ItemPickup in the results ────────────────────────
+            // ── Encontrar el ItemPickup más cercano en los resultados ─────────────────
             ItemPickup nearest        = null;
             float      nearestSqrDist = float.MaxValue;
 
@@ -257,13 +247,13 @@ namespace TopDownShooter.Player
                 }
             }
 
-            // Clear buffer references to prevent GC from retaining dead objects.
+            // Limpiar referencias del buffer para evitar que el GC retenga objetos muertos.
             for (int i = 0; i < hitCount; i++)
                 _overlapBuffer[i] = null;
 
             if (nearest == null) return;
 
-            // ── Read the item data and route to the correct slot ──────────────
+            // ── Leer los datos del objeto y enrutar a la ranura correcta ────────
             ItemDataSO itemData = nearest.GetItemData();
             if (itemData == null)
             {
@@ -276,12 +266,12 @@ namespace TopDownShooter.Player
         }
 
         /// <summary>
-        /// Performs the atomic slot-swap for the given item.
-        /// Uses C# pattern matching (is T t) to determine the slot —
-        /// no string comparisons, compile-time safe, zero allocations.
+        /// Realiza el intercambio atómico de ranuras para el objeto dado.
+        /// Utiliza coincidencia de patrones de C# (is T t) para determinar la ranura —
+        /// sin comparaciones de cadenas, seguro en tiempo de compilación, cero asignaciones.
         /// </summary>
-        /// <param name="itemData">The blueprint of the item being picked up.</param>
-        /// <param name="pickup">The world object to destroy after collection.</param>
+        /// <param name="itemData">La plantilla del objeto que se está recogiendo.</param>
+        /// <param name="pickup">El objeto del mundo que se destruirá después de la recogida.</param>
         private void ExecutePickup(ItemDataSO itemData, ItemPickup pickup)
         {
             if (itemData is WeaponDataSO weapon)
@@ -298,23 +288,23 @@ namespace TopDownShooter.Player
             }
             else
             {
-                // Future-proof: unknown subclass. Log but don't crash.
+                // A prueba de futuro: subtipo desconocido. Registrar pero no fallar.
                 Debug.LogWarning($"[PlayerInventory] Unknown ItemDataSO subtype: " +
                                  $"'{itemData.GetType().Name}'. Add a new slot or handler.", this);
-                return; // Do NOT destroy pickup if we can't process it.
+                return; // NO destruir la recogida si no podemos procesarla.
             }
 
-            // The slot is now updated. Remove the world object.
+            // La ranura está ahora actualizada. Eliminar el objeto del mundo.
             pickup.DestroyPickup();
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  SLOT SWAP HELPERS
-        //  Each helper: (1) drops existing, (2) assigns new, (3) fires event.
+        //  AYUDANTES DE INTERCAMBIO DE RANURAS
+        //  Cada ayudante: (1) suelta el existente, (2) asigna el nuevo, (3) activa el evento.
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Drops the current weapon (if any) and equips the new one.
+        /// Suelta el arma actual (si la hay) y equipa la nueva.
         /// </summary>
         private void SwapWeapon(WeaponDataSO newWeapon)
         {
@@ -327,12 +317,12 @@ namespace TopDownShooter.Player
             _currentWeapon = newWeapon;
             Debug.Log($"[PlayerInventory] Equipped weapon: '{_currentWeapon.DisplayName}'.");
 
-            // Notify HUD, PlayerCombat, and any other observer.
+            // Notificar al HUD, PlayerCombat y a cualquier otro observador.
             OnWeaponChanged?.Invoke(_currentWeapon);
         }
 
         /// <summary>
-        /// Drops the current relic (if any) and equips the new one.
+        /// Suelta la reliquia actual (si la hay) y equipa la nueva.
         /// </summary>
         private void SwapRelic(RelicDataSO newRelic)
         {
@@ -349,7 +339,7 @@ namespace TopDownShooter.Player
         }
 
         /// <summary>
-        /// Drops the current consumable (if any) and picks up the new one.
+        /// Suelta el consumible actual (si lo hay) y recoge el nuevo.
         /// </summary>
         private void SwapConsumable(ConsumableDataSO newConsumable)
         {
@@ -366,18 +356,18 @@ namespace TopDownShooter.Player
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  DROP LOGIC
+        //  LÓGICA DE SOLTAR (DROP)
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Instantiates the item's <see cref="ItemDataSO.DropPrefab"/> at the
-        /// player's position (with a configurable local offset) so the dropped
-        /// item can be picked up again immediately.
+        /// Instancia el <see cref="ItemDataSO.DropPrefab"/> del objeto en la
+        /// posición del jugador (con un desplazamiento local configurable) para que el objeto
+        /// soltado pueda ser recogido de nuevo inmediatamente.
         ///
-        /// The drop uses <see cref="_dropOffset"/> in local space (player-relative)
-        /// so the item always lands in front of the player regardless of rotation.
+        /// El soltado utiliza <see cref="_dropOffset"/> en espacio local (relativo al jugador)
+        /// para que el objeto siempre caiga en frente del jugador independientemente de su rotación.
         /// </summary>
-        /// <param name="item">The item blueprint whose DropPrefab to instantiate.</param>
+        /// <param name="item">La plantilla del objeto cuyo DropPrefab se instanciará.</param>
         private void DropItem(ItemDataSO item)
         {
             if (item.DropPrefab == null)
@@ -387,36 +377,36 @@ namespace TopDownShooter.Player
                 return;
             }
 
-            // Convert local offset to world space using the player's current rotation.
+            // Convertir el desplazamiento local al espacio de mundo usando la rotación actual del jugador.
             Vector3 worldDropPosition = _transform.TransformPoint(_dropOffset);
 
-            // Instantiate at the player's Y position to avoid items floating or sinking.
+            // Instanciar en la posición Y del jugador para evitar que los objetos floten o se hundan.
             worldDropPosition.y = _transform.position.y;
 
             Instantiate(item.DropPrefab, worldDropPosition, Quaternion.identity);
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  CONSUME LOGIC
+        //  LÓGICA DE CONSUMIR
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Activates the currently held consumable item and clears the slot.
+        /// Activa el objeto consumible equipado actualmente y vacía la ranura.
         ///
-        /// Part 1 STUB: Logs the action and fires <see cref="OnConsumableChanged"/>.
+        /// Parte 1 CÓDIGO VACÍO: Registra la acción y activa <see cref="OnConsumableChanged"/>.
         ///
-        /// Part 2 EXPANSION:
-        /// Read <c>_currentConsumable.HealAmount</c> and call
+        /// Parte 2 EXPANSIÓN:
+        /// Lee <c>_currentConsumable.HealAmount</c> y llama a
         /// <c>GetComponent&lt;HealthComponent&gt;().Heal(healAmount)</c>.
-        /// Read <c>_currentConsumable.SpeedBoostMultiplier</c> and call
+        /// Lee <c>_currentConsumable.SpeedBoostMultiplier</c> y llama a
         /// <c>PlayerStats.ApplyTemporarySpeedBoost(...)</c>.
-        /// Route VFX and SFX through dedicated managers.
+        /// Enruta los VFX y SFX a través de los administradores dedicados.
         /// </summary>
         private void ConsumeCurrentItem()
         {
             Debug.Log($"[PlayerInventory] Consuming '{_currentConsumable.DisplayName}'.");
 
-            // Apply healing if the player has a HealthComponent.
+            // Aplicar curación si el jugador tiene un HealthComponent.
             if (TryGetComponent<HealthComponent>(out var health))
             {
                 health.Heal(_currentConsumable.HealAmount);
@@ -428,9 +418,9 @@ namespace TopDownShooter.Player
                                  "Healing effect was skipped.", this);
             }
 
-            // Apply a temporary speed boost if this consumable defines one.
-            // Both guards must pass: duration > 0 (timed effect) AND multiplier > 0 (speed type).
-            // Plain healing potions (EffectDuration == 0) are intentionally skipped.
+            // Aplicar un aumento de velocidad temporal si este consumible define uno.
+            // Ambas comprobaciones deben pasar: duración > 0 (efecto temporal) Y multiplicador > 0 (tipo velocidad).
+            // Las pociones de curación simples (EffectDuration == 0) se omiten intencionalmente.
             if (TryGetComponent<PlayerStatsComponent>(out var stats))
             {
                 if (_currentConsumable.EffectDuration > 0f && _currentConsumable.SpeedBoostMultiplier > 0f)
@@ -441,13 +431,13 @@ namespace TopDownShooter.Player
                 }
             }
 
-            // Clear the slot after use — consumables are single-use.
+            // Vaciar la ranura después del uso — los consumibles son de un solo uso.
             _currentConsumable = null;
             OnConsumableChanged?.Invoke(null);
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  VALIDATION
+        //  VALIDACIÓN
         // ─────────────────────────────────────────────────────────────────────
 
         private void ValidateSetup()
@@ -475,25 +465,25 @@ namespace TopDownShooter.Player
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  EDITOR GIZMOS
+        //  GIZMOS EN EDITOR
         // ─────────────────────────────────────────────────────────────────────
 
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
-            // Pickup radius — green
+            // Radio de recogida — verde
             Gizmos.color = new Color(0.2f, 1f, 0.4f, 0.12f);
             Gizmos.DrawSphere(transform.position, _pickupRadius);
             Gizmos.color = new Color(0.2f, 1f, 0.4f, 0.7f);
             Gizmos.DrawWireSphere(transform.position, _pickupRadius);
 
-            // Interactable radius — cyan (same radius, different color)
+            // Radio interactuable — cian (mismo radio, diferente color)
             Gizmos.color = new Color(0.2f, 0.9f, 1f, 0.12f);
             Gizmos.DrawSphere(transform.position, _pickupRadius);
             Gizmos.color = new Color(0.2f, 0.9f, 1f, 0.5f);
             Gizmos.DrawWireSphere(transform.position, _pickupRadius);
 
-            // Drop offset position — orange dot
+            // Posición de desplazamiento de caída — punto naranja
             Vector3 dropWorld = transform.TransformPoint(_dropOffset);
             dropWorld.y = transform.position.y;
             Gizmos.color = new Color(1f, 0.5f, 0.1f, 0.9f);

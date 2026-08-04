@@ -6,44 +6,44 @@ using TopDownShooter.Inventory;
 namespace TopDownShooter.Player
 {
     /// <summary>
-    /// Listens to <see cref="PlayerInventory.OnRelicChanged"/> and recalculates
-    /// passive stat multipliers from the equipped relic, and applies temporary
-    /// speed buffs from consumables via <see cref="ApplyTemporarySpeedBoost"/>.
-    /// Consumer systems (e.g. <see cref="PlayerController3D"/>) only read the
-    /// combined <see cref="MoveSpeedMultiplier"/> float — they are fully decoupled
-    /// from the underlying sources.
+    /// Escucha a <see cref="PlayerInventory.OnRelicChanged"/> y recalcula
+    /// los multiplicadores de estadísticas pasivas de la reliquia equipada, y aplica aumentos
+    /// temporales de velocidad de consumibles a través de <see cref="ApplyTemporarySpeedBoost"/>.
+    /// Los sistemas consumidores (por ejemplo, <see cref="PlayerController3D"/>) solo leen el
+    /// float combinado <see cref="MoveSpeedMultiplier"/> — están completamente desacoplados
+    /// de las fuentes subyacentes.
     /// </summary>
     [RequireComponent(typeof(PlayerInventory))]
     public sealed class PlayerStatsComponent : MonoBehaviour
     {
         // ─────────────────────────────────────────────────────────────────────
-        //  PUBLIC PROPERTIES  (computed; read-only from the outside)
+        //  PROPIEDADES PÚBLICAS  (calculadas; de solo lectura desde el exterior)
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Combined movement-speed multiplier: baseline 1.0 plus the relic bonus
-        /// plus any active consumable bonus.<br/>
-        /// Examples: 1.0 = no change, 1.2 = +20%, 1.5 = relic +20% and potion +30%.
+        /// Multiplicador de velocidad de movimiento combinado: valor base 1.0 más el bono de reliquia
+        /// más cualquier bono de consumible activo.<br/>
+        /// Ejemplos: 1.0 = sin cambios, 1.2 = +20%, 1.5 = reliquia +20% y poción +30%.
         /// </summary>
         public float MoveSpeedMultiplier => 1f + _relicSpeedModifier + _consumableSpeedModifier + _dungeonSpeedModifier;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PRIVATE STATE
+        //  ESTADO PRIVADO
         // ─────────────────────────────────────────────────────────────────────
 
-        // Cached reference to the sibling inventory — required by the attribute.
+        // Referencia guardada en caché al inventario hermano — requerida por el atributo.
         private PlayerInventory _inventory;
 
-        // Fractional speed bonus from the currently equipped relic (permanent while equipped).
-        // 0f = no bonus. Mutated only by HandleRelicChanged().
+        // Bono de velocidad fraccional de la reliquia equipada actualmente (permanente mientras esté equipada).
+        // 0f = sin bono. Mutado solo por HandleRelicChanged().
         private float _relicSpeedModifier = 0f;
 
-        // Fractional speed bonus from an active consumable buff (temporary, timed).
-        // 0f = no active buff. Mutated only by SpeedBuffRoutine().
+        // Bono de velocidad fraccional de un efecto de consumible activo (temporal, temporizado).
+        // 0f = sin efecto activo. Mutado solo por SpeedBuffRoutine().
         private float _consumableSpeedModifier = 0f;
 
-        // Handle to the running speed-buff coroutine, or null if none is active.
-        // Stored so a new buff can cancel an in-progress one before starting fresh.
+        // Referencia a la corrutina de aumento de velocidad en ejecución, o nulo si no hay ninguna activa.
+        // Guardado para que un nuevo efecto pueda cancelar uno en progreso antes de comenzar uno nuevo.
         private Coroutine _activeBuffCoroutine;
 
         // Modificador de velocidad persistente inyectado por el sistema D20 Dungeon Master.
@@ -52,21 +52,20 @@ namespace TopDownShooter.Player
         private float _dungeonSpeedModifier = 0f;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  INSPECTOR-EXPOSED VFX
+        //  VFX EXPUESTOS EN EL INSPECTOR
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("VFX")]
-        [Tooltip("Particle System played while a speed buff is active. " +
-                 "Leave unassigned to skip (null-safe).")]
+        [Tooltip("Sistema de partículas reproducido mientras un aumento de velocidad está activo. Déjelo sin asignar para omitir (seguro contra nulos).")]
         [SerializeField] private ParticleSystem _speedAuraParticles;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  UNITY LIFECYCLE
+        //  CICLO DE VIDA DE UNITY
         // ─────────────────────────────────────────────────────────────────────
 
         private void Awake()
         {
-            // GetComponent is safe here: RequireComponent guarantees presence.
+            // GetComponent es seguro aquí: RequireComponent garantiza la presencia.
             _inventory = GetComponent<PlayerInventory>();
         }
 
@@ -74,8 +73,8 @@ namespace TopDownShooter.Player
         {
             _inventory.OnRelicChanged += HandleRelicChanged;
 
-            // Synchronise immediately in case a relic was already equipped
-            // before this component was enabled (e.g. loaded from a save).
+            // Sincronizar inmediatamente en caso de que ya hubiera una reliquia equipada
+            // antes de que este componente fuera habilitado (por ejemplo, cargado desde un guardado).
             HandleRelicChanged(_inventory.CurrentRelic);
         }
 
@@ -85,15 +84,15 @@ namespace TopDownShooter.Player
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  EVENT HANDLER — RELIC
+        //  MANEJADOR DE EVENTOS — RELIQUIA
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Updates <see cref="_relicSpeedModifier"/> whenever the relic slot changes.
-        /// Called by <see cref="PlayerInventory.OnRelicChanged"/> (<c>null</c> = cleared).
-        /// The <see cref="MoveSpeedMultiplier"/> getter picks up the change automatically.
+        /// Actualiza <see cref="_relicSpeedModifier"/> cada vez que cambia la ranura de reliquia.
+        /// Llamado por <see cref="PlayerInventory.OnRelicChanged"/> (<c>null</c> = limpiado).
+        /// El getter <see cref="MoveSpeedMultiplier"/> detecta el cambio automáticamente.
         /// </summary>
-        /// <param name="relic">The newly equipped relic, or <c>null</c> if cleared.</param>
+        /// <param name="relic">La reliquia recién equipada, o <c>null</c> si se limpia.</param>
         private void HandleRelicChanged(RelicDataSO relic)
         {
             _relicSpeedModifier = relic != null ? relic.MoveSpeedModifier : 0f;
@@ -105,22 +104,22 @@ namespace TopDownShooter.Player
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PUBLIC API — CONSUMABLE BUFFS
+        //  API PÚBLICA — EFECTOS DE CONSUMIBLES
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Applies a temporary fractional speed boost that expires after
-        /// <paramref name="duration"/> seconds.
+        /// Aplica un aumento de velocidad fraccional temporal que expira después de
+        /// <paramref name="duration"/> segundos.
         /// <para>
-        /// If a buff is already running, it is cancelled and replaced — no stacking.
-        /// The boost is a fractional additive bonus: 0.3 = +30% speed.
+        /// Si ya hay un aumento activo, se cancela y se reemplaza — no se acumula.
+        /// El aumento es un bono aditivo fraccional: 0.3 = +30% de velocidad.
         /// </para>
         /// </summary>
-        /// <param name="boostMultiplier">Fractional speed bonus (e.g. 0.3 for +30%).</param>
-        /// <param name="duration">Seconds before the boost expires.</param>
+        /// <param name="boostMultiplier">Bono de velocidad fraccional (por ejemplo, 0.3 para +30%).</param>
+        /// <param name="duration">Segundos antes de que expire el aumento.</param>
         public void ApplyTemporarySpeedBoost(float boostMultiplier, float duration)
         {
-            // Cancel any in-progress buff so the new one takes full effect immediately.
+            // Cancelar cualquier aumento en progreso para que el nuevo tenga pleno efecto de inmediato.
             if (_activeBuffCoroutine != null)
             {
                 StopCoroutine(_activeBuffCoroutine);
@@ -144,18 +143,18 @@ namespace TopDownShooter.Player
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  COROUTINES
+        //  CORRUTINAS
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Sets <see cref="_consumableSpeedModifier"/>, waits, then clears it.
-        /// Managed exclusively through <see cref="ApplyTemporarySpeedBoost"/>.
+        /// Establece <see cref="_consumableSpeedModifier"/>, espera y luego lo limpia.
+        /// Gestionado exclusivamente a través de <see cref="ApplyTemporarySpeedBoost"/>.
         /// </summary>
         private IEnumerator SpeedBuffRoutine(float boostMultiplier, float duration)
         {
             _consumableSpeedModifier = boostMultiplier;
 
-            // Start the speed aura VFX (null-safe — no error if not assigned).
+            // Iniciar el VFX de aura de velocidad (seguro contra nulos — sin error si no está asignado).
             _speedAuraParticles?.Play();
 
             Debug.Log($"[PlayerStatsComponent] Speed buff active: +{boostMultiplier:P0} for {duration:0.#}s. " +
@@ -163,7 +162,7 @@ namespace TopDownShooter.Player
 
             yield return new WaitForSeconds(duration);
 
-            // Stop the aura before clearing the modifier so the VFX ends cleanly.
+            // Detener el aura antes de limpiar el modificador para que el VFX termine limpiamente.
             _speedAuraParticles?.Stop();
 
             _consumableSpeedModifier = 0f;

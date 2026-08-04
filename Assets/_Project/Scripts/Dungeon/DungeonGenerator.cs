@@ -233,13 +233,13 @@ namespace TopDownShooter.Dungeon
                       $"{_occupiedCells.Count} rooms placed, " +
                       $"{_availableSockets.Count} open socket(s) remaining.");
 
-            // ── Step 6: Generate Branches ────────────────────────────────────
+            // ── Paso 6: Generar ramas (caminos secundarios) ──────────────────
             GenerateBranches();
 
-            // ── Step 7: Spawn Victory Door ───────────────────────────────────
+            // ── Paso 7: Generar puerta de victoria ───────────────────────────
             SpawnVictoryDoor(bossRoomInstance);
 
-            // ── Step 8: Bake NavMesh ─────────────────────────────────────────
+            // ── Paso 8: Hornear NavMesh ──────────────────────────────────────
             if (_navMeshSurface != null)
             {
                 Debug.Log("[DungeonGenerator] Baking NavMesh...");
@@ -248,7 +248,7 @@ namespace TopDownShooter.Dungeon
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  BRANCH SPAWNING
+        //  GENERACIÓN DE RAMAS (CAMINOS SECUNDARIOS)
         // ─────────────────────────────────────────────────────────────────────
 
         private void GenerateBranches()
@@ -471,20 +471,20 @@ namespace TopDownShooter.Dungeon
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  SOCKET CONNECTION
+        //  CONEXIÓN DE SOCKETS
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Connects the origin socket (on an existing room) to the matching
-        /// socket on the newly-spawned room. Selects the door prefab based
-        /// strictly on <paramref name="newRoom"/>.Type — the prefab's own
-        /// declared <see cref="RoomType"/> — so the prefab is the single
-        /// source of truth and caller intent cannot cause mismatches.
+        /// Conecta el socket de origen (en una sala existente) con el socket coincidente
+        /// en la sala recién generada. Selecciona el prefab de puerta basándose
+        /// estrictamente en <paramref name="newRoom"/>.Type — el propio <see cref="RoomType"/>
+        /// declarado del prefab — de modo que el prefab sea la única
+        /// fuente de verdad y la intención del llamador no pueda causar desajustes.
         /// </summary>
         private void ConnectSockets(RoomSocket originSocket, RoomController newRoom,
                                     Vector2Int newRoomCell)
         {
-            // The new room's matching socket faces the opposite direction.
+            // El socket coincidente de la nueva sala mira en la dirección opuesta.
             SocketDirection oppositeDir =
                 RoomSocket.GetOppositeDirection(originSocket.Direction);
 
@@ -492,10 +492,10 @@ namespace TopDownShooter.Dungeon
                 ? newRoom.GetAvailableSocket(oppositeDir)
                 : null;
 
-            // Door prefab is chosen from the DESTINATION room's RoomType.
-            // This guarantees e.g. _doorPrefabBoss only appears at Boss room
-            // entrances, regardless of where in the algorithm ConnectSockets
-            // is invoked.
+            // El prefab de puerta se elige a partir del RoomType de la sala de DESTINO.
+            // Esto garantiza que, por ejemplo, _doorPrefabBoss solo aparezca en las
+            // entradas de la sala Boss, independientemente de dónde se invoque ConnectSockets
+            // en el algoritmo.
             RoomType targetType = (newRoom != null) ? newRoom.Type : RoomType.Combat;
 
             GameObject selectedDoorPrefab = _doorPrefab;
@@ -513,10 +513,10 @@ namespace TopDownShooter.Dungeon
                 door = doorObj.GetComponent<DoorController>();
             }
 
-            // Connect the origin side.
+            // Conectar el lado de origen.
             originSocket.AssignDoor(door);
 
-            // Connect the new room side.
+            // Conectar el lado de la nueva sala.
             if (newRoomSocket != null)
             {
                 newRoomSocket.AssignDoor(door);
@@ -530,7 +530,7 @@ namespace TopDownShooter.Dungeon
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  FRONTIER MANAGEMENT
+        //  GESTIÓN DE LA FRONTERA
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
@@ -567,44 +567,45 @@ namespace TopDownShooter.Dungeon
         }
 
         /// <summary>
-        /// Iterates the frontier in random order, looking for a socket whose
-        /// target cell is not yet occupied. Removes every invalid socket it
-        /// encounters along the way (shrinks the frontier).
-        /// Returns <c>null</c> if no valid socket exists.
+        /// Itera la frontera en orden aleatorio, buscando un socket cuya
+        /// celda objetivo aún no esté ocupada. Elimina cada socket inválido que
+        /// encuentre en el camino (reduce la frontera).
+        /// Devuelve <c>null</c> si no existe ningún socket válido.
         /// </summary>
         private SocketData FindValidSocket()
         {
             while (_availableSockets.Count > 0)
             {
-                // Pick a random index and swap-remove it (O(1) removal).
+                // Elegir un índice aleatorio y realizar un swap-remove (eliminación O(1)).
                 int randomIndex = Random.Range(0, _availableSockets.Count);
                 SocketData candidate = _availableSockets[randomIndex];
 
-                // Swap-remove: replace with last element, then shrink the list.
+                // Swap-remove: reemplazar con el último elemento, luego reducir la lista.
                 int lastIndex = _availableSockets.Count - 1;
                 _availableSockets[randomIndex] = _availableSockets[lastIndex];
                 _availableSockets.RemoveAt(lastIndex);
 
-                // Check if the target cell is free.
+                // Comprobar si la celda objetivo está libre.
                 if (!_occupiedCells.Contains(candidate.TargetGridPos))
                 {
                     return candidate;   // Valid — use this socket.
                 }
 
-                // Target cell is occupied — discard and try another.
+                // La celda objetivo está ocupada — descartar e intentar con otra.
             }
 
-            return null;   // Frontier exhausted — no valid placement exists.
+            return null;   // Frontera agotada — no existe ninguna colocación válida.
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  ROOM SELECTION
+        // ─────────────────────────────────────────────────────────────────────
+        //  SELECCIÓN DE SALAS
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Returns the first <see cref="RoomDataSO"/> of the given type, or
-        /// <c>null</c> if none exists in the pool. Used for Start and Boss
-        /// rooms that appear exactly once.
+        /// Devuelve el primer <see cref="RoomDataSO"/> del tipo dado, o
+        /// <c>null</c> si no existe ninguno en el conjunto. Se usa para las salas
+        /// Start y Boss que aparecen exactamente una vez.
         /// </summary>
         private RoomDataSO FindRoomByType(RoomType type)
         {
@@ -618,18 +619,18 @@ namespace TopDownShooter.Dungeon
         }
 
         /// <summary>
-        /// Weighted random selection from rooms matching a specific type.
-        /// If <paramref name="filter"/> is <c>null</c>, all non-Start,
-        /// non-Boss rooms are eligible (fallback pool).
-        /// Respects <see cref="RoomDataSO.Weight"/>: a room with weight 3
-        /// is three times as likely to be selected as one with weight 1.
+        /// Selección aleatoria ponderada de salas que coinciden con un tipo específico.
+        /// Si el <paramref name="filter"/> es <c>null</c>, todas las salas que no sean Start
+        /// ni Boss son elegibles (conjunto de respaldo).
+        /// Respeta el <see cref="RoomDataSO.Weight"/>: una sala con peso 3
+        /// tiene el triple de probabilidad de ser seleccionada que una con peso 1.
         /// </summary>
         private RoomDataSO PickWeightedRoom(RoomType? filter)
         {
             IReadOnlyList<RoomDataSO> pool = _config.AvailableRooms;
 
-            // ── Build the candidate list and total weight ────────────────────
-            // Using a temporary list per call. For larger pools, cache this.
+            // ── Construir la lista de candidatos y el peso total ──────────────
+            // Usando una lista temporal por llamada. Para conjuntos más grandes, cachear esto.
             int totalWeight = 0;
             var candidates = new List<RoomDataSO>();
 
@@ -638,11 +639,11 @@ namespace TopDownShooter.Dungeon
                 RoomDataSO room = pool[i];
                 if (room == null) continue;
 
-                // Never randomly pick Start or Boss — those are placed explicitly.
+                // Nunca elegir aleatoriamente Start o Boss — esas se colocan explícitamente.
                 if (room.Type == RoomType.Start || room.Type == RoomType.Boss)
                     continue;
 
-                // If a specific filter is requested, enforce it.
+                // Si se solicita un filtro específico, aplicarlo.
                 if (filter.HasValue && room.Type != filter.Value)
                     continue;
 
@@ -653,7 +654,7 @@ namespace TopDownShooter.Dungeon
             if (candidates.Count == 0 || totalWeight <= 0)
                 return null;
 
-            // ── Weighted random pick ─────────────────────────────────────────
+            // ── Selección aleatoria ponderada ────────────────────────────────
             int roll = Random.Range(0, totalWeight);
             int cumulative = 0;
 
@@ -664,17 +665,17 @@ namespace TopDownShooter.Dungeon
                     return candidates[i];
             }
 
-            // Defensive fallback — should never hit.
+            // Respaldo defensivo — nunca debería ocurrir.
             return candidates[candidates.Count - 1];
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  GRID MATH
+        //  MATEMÁTICA DE LA GRILLA
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Converts a <see cref="SocketDirection"/> to a unit offset on the
-        /// 2D grid.  North = +Y, South = −Y, East = +X, West = −X.
+        /// Convierte una <see cref="SocketDirection"/> en un offset unitario en la
+        /// grilla 2D. North = +Y, South = −Y, East = +X, West = −X.
         /// </summary>
         private static Vector2Int GetDirectionVector(SocketDirection direction)
         {
@@ -689,8 +690,8 @@ namespace TopDownShooter.Dungeon
         }
 
         /// <summary>
-        /// Converts a grid cell coordinate to a world-space position.
-        /// Y is always 0 (flat dungeon on the XZ plane).
+        /// Convierte una coordenada de celda de la grilla en una posición en espacio de mundo.
+        /// Y siempre es 0 (mazmorra plana en el plano XZ).
         /// </summary>
         private Vector3 GridToWorld(Vector2Int cell)
         {
@@ -701,12 +702,12 @@ namespace TopDownShooter.Dungeon
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  CLEANUP
+        //  LIMPIEZA
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Destroys the previous dungeon hierarchy and resets all generation
-        /// state, making <see cref="Generate"/> safe to call multiple times.
+        /// Destruye la jerarquía de la mazmorra anterior y restablece todo el estado
+        /// de generación, haciendo que sea seguro llamar a <see cref="Generate"/> múltiples veces.
         /// </summary>
         private void ClearDungeon()
         {
@@ -718,7 +719,7 @@ namespace TopDownShooter.Dungeon
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  EDITOR GIZMOS
+        //  GIZMOS DE EDITOR
         // ─────────────────────────────────────────────────────────────────────
 
 #if UNITY_EDITOR

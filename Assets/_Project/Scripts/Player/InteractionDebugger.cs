@@ -2,29 +2,29 @@
 //  InteractionDebugger.cs
 //  Project : TopDownShooter
 //
-//  !! TEMPORARY DIAGNOSTIC SCRIPT — REMOVE BEFORE SHIPPING !!
+//  !! SCRIPT DE DIAGNÓSTICO TEMPORAL — ELIMINAR ANTES DE LANZAR !!
 //  ───────────────────────────────────────────────────────────
-//  Attach this to the Player GameObject alongside PlayerInventory.
-//  Every <_logInterval> seconds it runs the same OverlapSphere that
-//  PlayerInventory.TryWorldInteract() uses and logs what it finds.
+//  Adjunte esto al GameObject Player junto con PlayerInventory.
+//  Cada <_logInterval> segundos ejecuta la misma OverlapSphere que
+//  PlayerInventory.TryWorldInteract() usa y registra lo que encuentra.
 //
-//  HOW TO READ THE OUTPUT
-//  ──────────────────────
-//  Case 1 — "No interactables found in range"
-//    The OverlapSphere hit nothing on _interactableLayerMask.
-//    Sub-case A: "All-layer scan found: VictoryDoor (layer: Default)"
-//      → The door exists but is on the WRONG layer. Change it to 'Interactable'.
-//    Sub-case B: "All-layer scan found nothing either"
-//      → The door is out of range OR has no collider at all.
+//  CÓMO LEER LA SALIDA
+//  ───────────────────
+//  Caso 1 — "No interactables found in range"
+//    La OverlapSphere no golpeó nada en _interactableLayerMask.
+//    Subcaso A: "All-layer scan found: VictoryDoor (layer: Default)"
+//      → La puerta existe pero está en la capa INCORRECTA. Cámbiela a 'Interactable'.
+//    Subcaso B: "All-layer scan found nothing either"
+//      → La puerta está fuera de alcance O no tiene ningún colisionador.
 //
-//  Case 2 — "Found interactable: VictoryDoor (layer: Interactable)"
-//    The door is correctly detected. If E-key still does nothing, the bug
-//    is inside VictoryDoor.Interact() — check the [VictoryDoor] Console logs.
+//  Caso 2 — "Found interactable: VictoryDoor (layer: Interactable)"
+//    La puerta se detecta correctamente. Si la tecla E sigue sin hacer nada, el error
+//    está dentro de VictoryDoor.Interact() — verifique los registros de la consola de [VictoryDoor].
 //
-//  SETUP
-//  ─────
-//  • _interactableLayerMask must match the value set on PlayerInventory.
-//  • _detectionRadius    must match PlayerInventory._pickupRadius (default 1.5).
+//  CONFIGURACIÓN
+//  ─────────────
+//  • _interactableLayerMask debe coincidir con el valor establecido en PlayerInventory.
+//  • _detectionRadius debe coincidir con PlayerInventory._pickupRadius (por defecto 1.5).
 // =============================================================================
 
 using UnityEngine;
@@ -33,10 +33,10 @@ using TopDownShooter.Interaction;
 namespace TopDownShooter.Player
 {
     /// <summary>
-    /// Temporary diagnostic helper. Runs a periodic OverlapSphere identical to
-    /// <see cref="PlayerInventory.TryWorldInteract"/> and logs every
-    /// <see cref="IWorldInteractable"/> it finds (or warns when it finds none).
-    /// Attach to the Player GameObject; disable or delete before shipping.
+    /// Ayudante de diagnóstico temporal. Ejecuta una OverlapSphere periódica idéntica a
+    /// <see cref="PlayerInventory.TryWorldInteract"/> y registra cada
+    /// <see cref="IWorldInteractable"/> que encuentra (o advierte cuando no encuentra ninguno).
+    /// Adjuntar al GameObject Player; desactivar o eliminar antes de lanzar.
     /// </summary>
     public sealed class InteractionDebugger : MonoBehaviour
     {
@@ -44,18 +44,18 @@ namespace TopDownShooter.Player
         //  INSPECTOR FIELDS
         // ─────────────────────────────────────────────────────────────────────
 
-        [Header("Mirror these values from PlayerInventory")]
-        [Tooltip("Must match PlayerInventory._pickupRadius (default: 1.5). " +
-                 "The OverlapSphere will not detect a door that sits outside this radius.")]
+        [Header("Espejar estos valores desde PlayerInventory")]
+        [Tooltip("Debe coincidir con PlayerInventory._pickupRadius (por defecto: 1.5). " +
+                 "La OverlapSphere no detectará una puerta que esté fuera de este radio.")]
         [SerializeField] private float _detectionRadius = 1.5f;
 
-        [Tooltip("Must match PlayerInventory._interactableLayerMask. " +
-                 "If this mask is empty, PlayerInventory will never detect anything.")]
+        [Tooltip("Debe coincidir con PlayerInventory._interactableLayerMask. " +
+                 "Si esta máscara está vacía, PlayerInventory nunca detectará nada.")]
         [SerializeField] private LayerMask _interactableLayerMask;
 
-        [Header("Throttle")]
-        [Tooltip("Seconds between each diagnostic scan. " +
-                 "Keep at 0.5 or higher to avoid flooding the Console.")]
+        [Header("Regulador")]
+        [Tooltip("Segundos entre cada escaneo de diagnóstico. " +
+                 "Mantener en 0.5 o más alto para evitar inundar la Consola.")]
         [SerializeField] [Range(0.1f, 5f)] private float _logInterval = 0.5f;
 
         // ─────────────────────────────────────────────────────────────────────
@@ -64,7 +64,7 @@ namespace TopDownShooter.Player
 
         private float _nextLogTime = 0f;
 
-        // Pre-allocated buffer — reused every scan, zero GC allocations.
+        // Buffer preasignado — reutilizado en cada escaneo, cero asignaciones de GC.
         private readonly Collider[] _buffer = new Collider[16];
 
         // ─────────────────────────────────────────────────────────────────────
@@ -73,7 +73,7 @@ namespace TopDownShooter.Player
 
         private void Start()
         {
-            // Warn immediately if the mask is unset — this is the #1 silent failure.
+            // Advertir de inmediato si la máscara no está configurada — este es el fallo silencioso número 1.
             if (_interactableLayerMask.value == 0)
             {
                 Debug.LogWarning("[InteractionDebugger] _interactableLayerMask is EMPTY (Nothing). " +
@@ -103,7 +103,7 @@ namespace TopDownShooter.Player
         {
             Vector3 origin = transform.position;
 
-            // ── Pass 1: Masked scan (replicates PlayerInventory exactly) ─────
+            // ── Paso 1: Escaneo enmascarado (replica a PlayerInventory exactamente) ─────
             int hitCount = Physics.OverlapSphereNonAlloc(
                 origin,
                 _detectionRadius,
@@ -117,7 +117,7 @@ namespace TopDownShooter.Player
                 Collider col = _buffer[i];
                 if (col == null) continue;
 
-                // Mirror PlayerInventory: only care about objects with IWorldInteractable.
+                // Espejar PlayerInventory: solo importan los objetos con IWorldInteractable.
                 if (col.TryGetComponent<IWorldInteractable>(out _))
                 {
                     Debug.Log($"[InteractionDebugger] Found interactable: '{col.gameObject.name}' " +
@@ -127,8 +127,8 @@ namespace TopDownShooter.Player
                 }
                 else
                 {
-                    // Collider is on the right layer but missing IWorldInteractable —
-                    // this is another common setup mistake.
+                    // El colisionador está en la capa correcta pero le falta IWorldInteractable —
+                    // este es otro error común de configuración.
                     Debug.LogWarning($"[InteractionDebugger] Collider '{col.gameObject.name}' " +
                                      $"is on layer '{LayerMask.LayerToName(col.gameObject.layer)}' " +
                                      "but has NO IWorldInteractable component. " +
@@ -136,14 +136,14 @@ namespace TopDownShooter.Player
                 }
             }
 
-            // Clear buffer to release stale object references.
+            // Limpiar el buffer para liberar referencias de objetos obsoletas.
             System.Array.Clear(_buffer, 0, hitCount);
 
             if (foundAny) return;
 
-            // ── Pass 2: All-layer fallback — reveals layer misconfiguration ──
-            // If Pass 1 found nothing, scan ALL layers to see if the object
-            // is simply on the wrong layer.
+            // ── Paso 2: Alternativa para todas las capas — revela una mala configuración de capa ──
+            // Si el Paso 1 no encontró nada, escanear TODAS las capas para ver si el objeto
+            // está simplemente en la capa incorrecta.
             int allHitCount = Physics.OverlapSphereNonAlloc(
                 origin,
                 _detectionRadius,
@@ -156,7 +156,7 @@ namespace TopDownShooter.Player
             {
                 Collider col = _buffer[i];
                 if (col == null) continue;
-                if (col.gameObject == gameObject) continue;   // Skip the Player itself.
+                if (col.gameObject == gameObject) continue;   // Omitir al propio Player.
 
                 if (col.TryGetComponent<IWorldInteractable>(out _))
                 {
@@ -185,8 +185,8 @@ namespace TopDownShooter.Player
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Returns a human-readable list of layer names included in the mask.
-        /// Useful for verifying the mask is set correctly without opening the Inspector.
+        /// Devuelve una lista legible para humanos de los nombres de capas incluidos en la máscara.
+        /// Útil para verificar que la máscara esté configurada correctamente sin abrir el Inspector.
         /// </summary>
         private static string LayerMaskToString(LayerMask mask)
         {
@@ -215,11 +215,11 @@ namespace TopDownShooter.Player
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
-            // Semi-transparent fill — shows the exact detection bubble.
+            // Relleno semitransparente — muestra la burbuja de detección exacta.
             Gizmos.color = new Color(1f, 0.4f, 0f, 0.08f);
             Gizmos.DrawSphere(transform.position, _detectionRadius);
 
-            // Solid wire ring — easy to judge distance at a glance.
+            // Anillo de alambre sólido — fácil de juzgar la distancia de un vistazo.
             Gizmos.color = new Color(1f, 0.4f, 0f, 0.9f);
             Gizmos.DrawWireSphere(transform.position, _detectionRadius);
 

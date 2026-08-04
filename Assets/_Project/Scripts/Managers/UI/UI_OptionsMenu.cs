@@ -2,65 +2,60 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Drives the volume sliders inside the Options panel.
+/// Controla los sliders de volumen dentro del panel de Opciones.
 ///
-/// Responsibilities:
-/// - On Start(), reads the saved PlayerPrefs values to set each slider's
-///   visual position so it matches the last session's settings.
-/// - Registers onValueChanged listeners that forward the new slider value
-///   to AudioManager.Instance.SetXxxVolume(), which handles the logarithmic
-///   conversion and PlayerPrefs persistence.
+/// Responsabilidades:
+/// - En el Start(), lee los valores guardados de PlayerPrefs para establecer la posición
+///   visual de cada slider de modo que coincida con los ajustes de la última sesión.
+/// - Registra oyentes onValueChanged que reenvían el nuevo valor del slider
+///   a AudioManager.Instance.SetXxxVolume(), el cual maneja la conversión logarítmica
+///   y la persistencia en PlayerPrefs.
 ///
-/// Setup:
-/// 1. Attach this script to the Options Panel root GameObject (or a child).
-/// 2. Drag the three UI Sliders into the Inspector fields below.
-/// 3. Each Slider MUST have Min Value = 0.0001 and Max Value = 1.
-///    (A Min Value of exactly 0 would produce -Infinity dB via Log10.)
+/// Configuración:
+/// 1. Adjunte este script al GameObject raíz del panel de Opciones (o a un hijo).
+/// 2. Arrastre los tres Sliders de UI a los campos del Inspector que se muestran a continuación.
+/// 3. Cada Slider DEBE tener Min Value = 0.0001 y Max Value = 1.
+///    (Un Min Value de exactamente 0 produciría -Infinito dB mediante Log10).
 ///
-/// Architecture rules (context.md):
-/// - No direct references to the AudioMixer — all volume logic is centralised
-///   in AudioManager, keeping this script purely a UI binding.
-/// - No coroutines, no DOTween, no Time.timeScale changes.
-/// - Uses AudioManager's public PREF_KEY constants to read PlayerPrefs,
-///   avoiding duplicated magic strings.
+/// Reglas de arquitectura (context.md):
+/// - Sin referencias directas al AudioMixer — toda la lógica de volumen está centralizada
+///   en AudioManager, manteniendo este script puramente como una vinculación de UI.
+/// - Sin corrutinas, sin DOTween, sin cambios en Time.timeScale.
+/// - Utiliza las constantes públicas PREF_KEY de AudioManager para leer PlayerPrefs,
+///   evitando cadenas mágicas duplicadas.
 /// </summary>
 public class UI_OptionsMenu : MonoBehaviour
 {
     // -------------------------------------------------------------------------
-    // Inspector Fields — drag the matching Slider components here
+    // Campos del Inspector — arrastre los componentes Slider correspondientes aquí
     // -------------------------------------------------------------------------
 
-    [Header("Volume Sliders")]
-    [Tooltip(
-        "Reference to the Music volume Slider component.\n" +
-        "Min Value must be 0.0001, Max Value must be 1.")]
+    [Header("Sliders de Volumen")]
+    [Tooltip("Referencia al componente Slider de volumen de Música.\nEl Min Value debe ser 0.0001, el Max Value debe ser 1.")]
     [SerializeField] private Slider _musicSlider;
 
-    [Tooltip(
-        "Reference to the SFX volume Slider component.\n" +
-        "Min Value must be 0.0001, Max Value must be 1.")]
+    [Tooltip("Referencia al componente Slider de volumen de SFX.\nEl Min Value debe ser 0.0001, el Max Value debe ser 1.")]
     [SerializeField] private Slider _sfxSlider;
 
 
     // -------------------------------------------------------------------------
-    // Unity Lifecycle
+    // Ciclo de Vida de Unity
     // -------------------------------------------------------------------------
 
     /// <summary>
-    /// Initialises slider positions from saved preferences and wires up
-    /// onValueChanged listeners.
+    /// Inicializa las posiciones de los sliders a partir de las preferencias guardadas y conecta
+    /// los oyentes onValueChanged.
     ///
-    /// Important: listeners are added AFTER setting .value so the initial
-    /// assignment does not trigger a redundant SetXxxVolume() call — the
-    /// AudioManager already applied these values during its own Awake().
+    /// Importante: los oyentes se añaden DESPUÉS de establecer .value para que la asignación inicial
+    /// no dispare una llamada SetXxxVolume() redundante — el AudioManager ya aplicó estos valores durante su propio Awake().
     /// </summary>
     private void Start()
     {
-        // --- Read saved preferences (default to 1 = full volume) -------------
+        // --- Leer preferencias guardadas (por defecto 1 = volumen máximo) -------------
         float savedMusic = PlayerPrefs.GetFloat(AudioManager.PREF_KEY_MUSIC, 1f);
         float savedSFX   = PlayerPrefs.GetFloat(AudioManager.PREF_KEY_SFX,   1f);
 
-        // --- Set slider visuals to match the saved values --------------------
+        // --- Establecer visuales de sliders para que coincidan con los valores guardados --------------------
         // Listeners are not connected yet, so this won't fire SetXxxVolume().
         if (_musicSlider != null)
             _musicSlider.value = savedMusic;
@@ -68,7 +63,7 @@ public class UI_OptionsMenu : MonoBehaviour
         if (_sfxSlider != null)
             _sfxSlider.value = savedSFX;
 
-        // --- Register listeners AFTER initial value assignment ----------------
+        // --- Registrar oyentes DESPUÉS de la asignación de valor inicial ----------------
         // Each listener simply forwards the float to the AudioManager singleton.
         if (_musicSlider != null)
             _musicSlider.onValueChanged.AddListener(OnMusicSliderChanged);
@@ -79,9 +74,9 @@ public class UI_OptionsMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Removes all listeners added by this script when the GameObject is
-    /// destroyed, preventing ghost callbacks if the AudioManager outlives
-    /// this UI element (which it will, thanks to DontDestroyOnLoad).
+    /// Elimina todos los oyentes añadidos por este script cuando el GameObject es
+    /// destruido, previniendo llamadas de retorno fantasma si el AudioManager sobrevive
+    /// a este elemento de UI (lo cual hará, gracias a DontDestroyOnLoad).
     /// </summary>
     private void OnDestroy()
     {
@@ -98,28 +93,28 @@ public class UI_OptionsMenu : MonoBehaviour
     // -------------------------------------------------------------------------
 
     /// <summary>
-    /// Called every time the Music slider value changes.
-    /// Forwards the linear value [0.0001, 1] to the AudioManager.
+    /// Llamado cada vez que cambia el valor del slider de Música.
+    /// Reenvía el valor lineal [0.0001, 1] al AudioManager.
     /// </summary>
-    /// <param name="value">New slider value.</param>
+    /// <param name="value">Nuevo valor del slider.</param>
     private void OnMusicSliderChanged(float value)
     {
         AudioManager.Instance.SetMusicVolume(value);
     }
 
     /// <summary>
-    /// Called every time the SFX slider value changes.
-    /// Forwards the linear value [0.0001, 1] to the AudioManager.
+    /// Llamado cada vez que cambia el valor del slider de SFX.
+    /// Reenvía el valor lineal [0.0001, 1] al AudioManager.
     /// </summary>
-    /// <param name="value">New slider value.</param>
+    /// <param name="value">Nuevo valor del slider.</param>
     private void OnSFXSliderChanged(float value)
     {
         AudioManager.Instance.SetSFXVolume(value);
     }
 
     /// <summary>
-    /// Called every time the Voice slider value changes.
-    /// Forwards the linear value [0.0001, 1] to the AudioManager.
+    /// Llamado cada vez que cambia el valor del slider de Voz.
+    /// Reenvía el valor lineal [0.0001, 1] al AudioManager.
     /// </summary>
-    /// <param name="value">New slider value.</param>
+    /// <param name="value">Nuevo valor del slider.</param>
 }

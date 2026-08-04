@@ -5,9 +5,9 @@ using UnityEngine;
 namespace TopDownShooter.Dungeon
 {
     /// <summary>
-    /// Marker component indicating a spawn point inside a room prefab.
-    /// Collected by <see cref="RoomController"/> and consumed by external
-    /// spawning systems (WaveManager, LootSpawner, etc.).
+    /// Componente marcador que indica un punto de aparición (spawn) dentro de un prefab de sala.
+    /// Recopilado por <see cref="RoomController"/> y consumido por sistemas de aparición
+    /// externos (WaveManager, LootSpawner, etc.).
     /// </summary>
     public sealed class EntitySpawnerNode : MonoBehaviour
     {
@@ -16,17 +16,17 @@ namespace TopDownShooter.Dungeon
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Classifies what kind of entity should appear at this spawn node.
+        /// Clasifica qué tipo de entidad debe aparecer en este nodo de aparición.
         /// </summary>
         public enum SpawnerType
         {
-            /// <summary>Enemy wave spawn point — used by the WaveManager.</summary>
+            /// <summary>Punto de aparición de oleadas de enemigos — usado por el WaveManager.</summary>
             Enemy,
 
-            /// <summary>Environmental prop spawn (barrels, crates, cover).</summary>
+            /// <summary>Aparición de objetos de entorno (barriles, cajas, coberturas).</summary>
             Environment,
 
-            /// <summary>Loot drop point (chests, pickups, currency).</summary>
+            /// <summary>Punto de caída de botín (cofres, objetos recogibles, monedas).</summary>
             Loot
         }
 
@@ -35,16 +35,14 @@ namespace TopDownShooter.Dungeon
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Spawner Identity")]
-        [Tooltip("What kind of entity this node spawns. " +
-                 "Enemy nodes feed into the WaveManager; Loot nodes feed " +
-                 "into the LootSpawner; Environment nodes feed into the PropPlacer.")]
+        [Tooltip("Qué tipo de entidad genera este nodo. Los nodos Enemy alimentan al WaveManager; los nodos Loot alimentan al LootSpawner; los nodos Environment alimentan al PropPlacer.")]
         [SerializeField] private SpawnerType _type = SpawnerType.Enemy;
 
         // ─────────────────────────────────────────────────────────────────────
         //  READ-ONLY PROPERTY
         // ─────────────────────────────────────────────────────────────────────
 
-        /// <summary>The category of entity this node is designated for.</summary>
+        /// <summary>La categoría de entidad para la cual está designado este nodo.</summary>
         public SpawnerType Type => _type;
 
         // ─────────────────────────────────────────────────────────────────────
@@ -54,8 +52,8 @@ namespace TopDownShooter.Dungeon
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
-            // Colour-coded sphere so designers can visually distinguish
-            // spawn types in the Scene view at a glance.
+            // Esfera codificada por colores para que los diseñadores puedan distinguir visualmente
+            // los tipos de aparición en la vista de Escena de un vistazo.
             Gizmos.color = _type switch
             {
                 SpawnerType.Enemy       => new Color(1f, 0.2f, 0.2f, 0.7f),  // Red
@@ -66,7 +64,7 @@ namespace TopDownShooter.Dungeon
 
             Gizmos.DrawSphere(transform.position, 0.25f);
 
-            // Draw an upward line to make nodes visible even when occluded by floor geometry.
+            // Dibujar una línea hacia arriba para hacer que los nodos sean visibles incluso si están ocluidos por la geometría del suelo.
             Gizmos.DrawRay(transform.position, Vector3.up * 0.8f);
         }
 #endif

@@ -15,7 +15,7 @@ namespace TopDownShooter.VFX
     public sealed class MeleeSlashEffect : MonoBehaviour
     {
         // ─────────────────────────────────────────────────────────────────────
-        //  INSPECTOR FIELDS
+        //  CAMPOS DEL INSPECTOR
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Animación")]
@@ -41,7 +41,7 @@ namespace TopDownShooter.VFX
         [SerializeField] private Vector3 _rotationOffset = Vector3.zero;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PRIVATE STATE
+        //  ESTADO PRIVADO
         // ─────────────────────────────────────────────────────────────────────
 
         // Referencia cacheada al SpriteRenderer; resuelta en Awake para
@@ -56,7 +56,7 @@ namespace TopDownShooter.VFX
         private Coroutine _activeCoroutine;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  UNITY LIFECYCLE
+        //  CICLO DE VIDA DE UNITY
         // ─────────────────────────────────────────────────────────────────────
 
         private void Awake()

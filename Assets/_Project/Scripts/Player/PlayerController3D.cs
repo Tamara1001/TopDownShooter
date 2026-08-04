@@ -8,108 +8,101 @@ using System.Collections;
 namespace TopDownShooter.Player
 {
     /// <summary>
-    /// Drives Lunaria's movement, aiming rotation, gravity, and jump
-    /// using Unity's CharacterController and New Input System.
+    /// Controla el movimiento, la rotación de apuntado, la gravedad y el salto de Lunaria
+    /// utilizando el CharacterController de Unity y el Nuevo Sistema de Entradas.
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(PlayerInput))]
     public sealed class PlayerController3D : MonoBehaviour
     {
         // ─────────────────────────────────────────────────────────────────────
-        //  INSPECTOR-EXPOSED PARAMETERS  (private + [SerializeField])
+        //  PARÁMETROS EXPUESTOS EN EL INSPECTOR  (private + [SerializeField])
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Movement")]
-        [Tooltip("Base horizontal movement speed in units per second.")]
+        [Tooltip("Velocidad de movimiento horizontal base en unidades por segundo.")]
         [SerializeField] private float moveSpeed = 6f;
 
-        [Tooltip("Multiplier applied on top of moveSpeed when sprinting.")]
+        [Tooltip("Multiplicador aplicado sobre moveSpeed al correr.")]
         [SerializeField] private float sprintMultiplier = 1.65f;
 
         [Header("Dash")]
-        [Tooltip("Energy cost deducted from PlayerResourceComponent on each dash attempt. " +
-                 "If insufficient energy is available the dash is silently rejected.")]
+        [Tooltip("Costo de energía deducido del PlayerResourceComponent en cada intento de dash. Si no hay suficiente energía disponible, el dash se rechaza silenciosamente.")]
         [SerializeField] private int   _dashCost     = 20;
 
-        [Tooltip("Horizontal speed in units per second applied during the dash window.")]
+        [Tooltip("Velocidad horizontal en unidades por segundo aplicada durante la ventana de dash.")]
         [SerializeField] private float _dashSpeed    = 18f;
 
-        [Tooltip("Duration in seconds that the dash velocity override is active.")]
+        [Tooltip("Duración en segundos que el desvío de velocidad del dash permanece activo.")]
         [Min(0.05f)]
         [SerializeField] private float _dashDuration = 0.2f;
 
         [Header("Jump & Gravity")]
-        [Tooltip("Initial vertical velocity when the player jumps.")]
+        [Tooltip("Velocidad vertical inicial cuando el jugador salta.")]
         [SerializeField] private float jumpForce = 7f;
 
-        [Tooltip("Gravity magnitude applied each second while airborne. " +
-                 "Use a positive value; it is negated internally.")]
+        [Tooltip("Magnitud de la gravedad aplicada cada segundo mientras está en el aire. Use un valor positivo; se niega internamente.")]
         [SerializeField] private float gravity = 20f;
 
-        [Tooltip("Small downward force applied when grounded to keep the " +
-                 "CharacterController firmly pressed against the floor.")]
+        [Tooltip("Pequeña fuerza hacia abajo aplicada al estar en el suelo para mantener el CharacterController firmemente presionado contra el piso.")]
         [SerializeField] private float groundStickForce = 2f;
 
         [Header("Rotation / Aiming")]
-        [Tooltip("Speed at which the character rotates to face the mouse " +
-                 "cursor. Higher = snappier, lower = smoother.")]
+        [Tooltip("Velocidad a la que el personaje gira para mirar el cursor del ratón. Mayor = más rápido/directo, menor = más suave.")]
         [SerializeField] private float rotationSpeed = 15f;
 
-        [Tooltip("Height of the virtual aim plane above world origin. " +
-                 "Set to Lunaria's hip/waist height for best visual results.")]
+        [Tooltip("Altura del plano de apuntado virtual por encima del origen del mundo. Establézcalo a la altura de la cadera/cintura de Lunaria para obtener los mejores resultados visuales.")]
         [SerializeField] private float aimPlaneHeight = 0f;
 
         [Header("Flags – Runtime Control")]
-        [Tooltip("Disable to lock all horizontal movement (e.g. during cutscenes).")]
+        [Tooltip("Desactivar para bloquear todo el movimiento horizontal (por ejemplo, durante cinemáticas).")]
         [SerializeField] private bool canMove = true;
 
-        [Tooltip("Disable to lock aim-rotation (e.g. during root-motion attacks).")]
+        [Tooltip("Desactivar para bloquear la rotación de apuntado (por ejemplo, durante ataques con movimiento de raíz).")]
         [SerializeField] private bool canRotate = true;
 
         [Header("VFX")]
-        [Tooltip("Particle System played at the start of each successful dash. " +
-                 "Leave unassigned to skip (null-safe).")]
+        [Tooltip("Sistema de partículas reproducido al inicio de cada dash exitoso. Dejar sin asignar para omitir (seguro contra nulos).")]
         [SerializeField] private ParticleSystem _dashDustParticles;
 
-        [Tooltip("TrailRenderer toggled on/off during the dash window for a ghosting effect. " +
-                 "Leave unassigned to skip (null-safe).")]
+        [Tooltip("TrailRenderer activado/desactivado durante la ventana de dash para un efecto de estela fantasma. Dejar sin asignar para omitir (seguro contra nulos).")]
         [SerializeField] private TrailRenderer _dashTrail;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PRIVATE STATE  (never serialised, never public)
+        //  ESTADO PRIVADO  (never serialised, never public)
         // ─────────────────────────────────────────────────────────────────────
 
-        // Component references – cached in Awake()
+        // Referencias a componentes – almacenadas en caché en Awake()
         private CharacterController _characterController;
         private Camera              _mainCamera;
         private Transform           _transform;
 
-        // Optional resource component — if absent, dash is free (fallback behaviour).
+        // Componente de recursos opcional — si está ausente, el dash es gratuito (comportamiento alternativo).
         private PlayerResourceComponent _resourceComponent;
 
-        // Optional stats component — if absent, speed multipliers default to 1.
+        // Componente de estadísticas opcional — si está ausente, los multiplicadores de velocidad son 1 por defecto.
         private PlayerStatsComponent _statsComponent;
 
-        // Raw input values written by New Input System callbacks
+        // Valores de entrada brutos escritos por las devoluciones de llamada del Nuevo Sistema de Entradas
         private Vector2 _rawMoveInput;
         private Vector2 _rawMouseScreenPosition;
         private bool    _jumpRequested;
         private bool    _sprintHeld;
 
-        // Dash state — true for exactly _dashDuration seconds per dash
+        // Estado de dash — verdadero por exactamente _dashDuration segundos por dash
         private bool _isDashing = false;
 
-        // Physics state
-        private Vector3 _verticalVelocity;   // Only Y component is used
-        private Plane   _aimPlane;           // Mathematical ground plane for raycasting
+        // Estado de físicas
+        private Vector3 _verticalVelocity;   // Solo se utiliza el componente Y
+        private Plane   _aimPlane;           // Plano de suelo matemático para raycasting
 
         // ─────────────────────────────────────────────────────────────────────
         //  STATIC EVENTS  (subscribed by HUD / other UI without a direct reference)
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Fired when a dash attempt is rejected due to insufficient Energy.
-        /// Static so the HUD can subscribe without holding a reference to this component.
+        /// Se activa cuando un intento de dash es rechazado debido a Energía insuficiente.
+        /// Estático para que el HUD pueda suscribirse sin mantener una referencia a este componente.
         /// </summary>
         public static event Action OnEnergyDepleted;
 
@@ -117,16 +110,16 @@ namespace TopDownShooter.Player
         //  PUBLIC READ-ONLY PROPERTIES  (for FSM / animation layer queries)
         // ─────────────────────────────────────────────────────────────────────
 
-        /// <summary>True when the CharacterController reports ground contact.</summary>
+        /// <summary>Verdadero cuando el CharacterController informa contacto con el suelo.</summary>
         public bool IsGrounded  => _characterController.isGrounded;
 
-        /// <summary>True when there is non-zero movement input this frame.</summary>
+        /// <summary>Verdadero cuando hay una entrada de movimiento distinta de cero en este frame.</summary>
         public bool IsMoving    => _rawMoveInput.sqrMagnitude > 0.01f;
 
-        /// <summary>True when the sprint modifier is held.</summary>
+        /// <summary>Verdadero cuando se mantiene presionado el modificador de correr.</summary>
         public bool IsSprinting => _sprintHeld && IsMoving;
 
-        /// <summary>True while an active dash is in progress.</summary>
+        /// <summary>Verdadero mientras hay un dash activo en curso.</summary>
         public bool IsDashing   => _isDashing;
 
         // ─────────────────────────────────────────────────────────────────────
@@ -140,8 +133,8 @@ namespace TopDownShooter.Player
         }
 
         /// <summary>
-        /// Clean dispatcher – each frame routes work to single-purpose helpers.
-        /// No logic lives here directly.
+        /// Despachador limpio – cada frame enruta el trabajo a ayudantes de un solo propósito.
+        /// Ninguna lógica vive directamente aquí.
         /// </summary>
         private void Update()
         {
@@ -155,9 +148,9 @@ namespace TopDownShooter.Player
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Caches all required component references once at startup.
-        /// Logs a fatal error and disables the script if anything is missing,
-        /// preventing obscure NullReferenceExceptions later at runtime.
+        /// Guarda en caché todas las referencias de componentes requeridas una vez al inicio.
+        /// Registra un error fatal y deshabilita el script si falta algo,
+        /// evitando excepciones NullReference poco claras más adelante en tiempo de ejecución.
         /// </summary>
         private void CacheComponents()
         {
@@ -172,7 +165,7 @@ namespace TopDownShooter.Player
                 return;
             }
 
-            // Camera.main uses a tag-lookup; cache it once to avoid O(n) searches.
+            // Camera.main utiliza una búsqueda de etiquetas; la guardamos en caché una vez para evitar búsquedas O(n).
             _mainCamera = Camera.main;
             if (_mainCamera == null)
             {
@@ -182,25 +175,25 @@ namespace TopDownShooter.Player
                 return;
             }
 
-            // Optional — dash is free if absent (graceful degradation).
+            // Opcional — el dash es gratuito si no está presente (degradación suave).
             if (!TryGetComponent(out _resourceComponent))
             {
                 Debug.LogWarning("[PlayerController3D] No PlayerResourceComponent found. " +
                                  "Dash will work without any Energy cost.", this);
             }
 
-            // Optional — speed multipliers fall back to 1 if absent.
+            // Opcional — los multiplicadores de velocidad vuelven a 1 por defecto si no está presente.
             TryGetComponent(out _statsComponent);
         }
 
         /// <summary>
-        /// Creates the mathematical Plane used for mouse-aim raycasting.
-        /// The plane is flat (normal = up) at the configured aim height.
-        /// Call this again at runtime if aimPlaneHeight changes dynamically.
+        /// Crea el plano matemático utilizado para el raycasting de apuntado del ratón.
+        /// El plano es plano (normal = arriba) a la altura de apuntado configurada.
+        /// Llame a esto nuevamente en tiempo de ejecución si aimPlaneHeight cambia dinámicamente.
         /// </summary>
         private void InitialiseAimPlane()
         {
-            // Plane(normal, distance from origin along normal)
+            // Plane(normal, distancia desde el origen a lo largo de la normal)
             _aimPlane = new Plane(Vector3.up, new Vector3(0f, aimPlaneHeight, 0f));
         }
 
@@ -209,24 +202,23 @@ namespace TopDownShooter.Player
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Translates the raw 2-axis input into absolute world-space (XZ) motion.
+        /// Traduce la entrada bruta de 2 ejes en movimiento absoluto en el espacio del mundo (XZ).
         ///
-        /// WHY ABSOLUTE WORLD SPACE?
-        /// In a top-down shooter the camera is fixed overhead, so the player
-        /// always expects W = north (world +Z), S = south, A = west, D = east,
-        /// completely ignoring which direction Lunaria's model is facing.
-        /// This is the standard Twin-Stick / ARPG movement convention.
+        /// ¿POR QUÉ EL ESPACIO DEL MUNDO ABSOLUTO?
+        /// En un shooter top-down, la cámara está fija en la parte superior, por lo que el jugador
+        /// siempre espera W = norte (+Z del mundo), S = sur, A = oeste, D = este,
+        /// ignorando por completo la dirección en la que está orientado el modelo de Lunaria.
+        /// Esta es la convención de movimiento estándar de Twin-Stick / ARPG.
         /// </summary>
         private void MovePlayer()
         {
             if (!canMove) return;
 
-            // ── DASH OVERRIDE ──────────────────────────────────────────────────
-            // While dashing, ignore all normal input and push the player along
-            // transform.forward. Because RotateTowardsMouse() already ensures
-            // forward = the direction the player is aiming, the dash travels
-            // exactly toward the mouse cursor. Vertical velocity is preserved so
-            // jumping and dashing can combine naturally.
+            // ── ANULACIÓN POR DASH ─────────────────────────────────────────────
+            // Durante el dash, ignora toda entrada normal y empuja al jugador a lo largo de transform.forward.
+            // Dado que RotateTowardsMouse() ya garantiza que forward = la dirección en la que apunta el jugador,
+            // el dash viaja exactamente hacia el cursor del ratón. La velocidad vertical se conserva para que
+            // el salto y el dash puedan combinarse de forma natural.
             if (_isDashing)
             {
                 Vector3 dashVelocity = _transform.forward * _dashSpeed;
@@ -234,24 +226,24 @@ namespace TopDownShooter.Player
                 return;
             }
 
-            // ── NORMAL MOVEMENT ───────────────────────────────────────────────
-            // Map Vector2 (X,Y) from keyboard/gamepad → world (X,Z) axes
-            // _rawMoveInput.x = strafe (A/D), _rawMoveInput.y = forward (W/S)
+            // ── MOVIMIENTO NORMAL ─────────────────────────────────────────────
+            // Mapear Vector2 (X,Y) de teclado/gamepad → ejes del mundo (X,Z)
+            // _rawMoveInput.x = desplazamiento lateral (A/D), _rawMoveInput.y = avanzar (W/S)
             Vector3 worldMoveDirection = new Vector3(_rawMoveInput.x, 0f, _rawMoveInput.y);
 
-            // Clamp to magnitude 1 so diagonal movement isn't faster (the
-            // New Input System Dpad composite normalises automatically, but
-            // we guard here for safety with analogue sticks).
+            // Limitar a magnitud 1 para que el movimiento diagonal no sea más rápido (el
+            // compuesto Dpad del Nuevo Sistema de Entradas se normaliza automáticamente, pero
+            // nos protegemos aquí por seguridad con los sticks analógicos).
             if (worldMoveDirection.sqrMagnitude > 1f)
                 worldMoveDirection.Normalize();
 
-            // Apply the relic move-speed multiplier from PlayerStatsComponent.
-            // Falls back to 1 gracefully if the component is not present.
+            // Aplicar el multiplicador de velocidad de movimiento de reliquias de PlayerStatsComponent.
+            // Vuelve a 1 suavemente si el componente no está presente.
             float relicMultiplier = _statsComponent != null ? _statsComponent.MoveSpeedMultiplier : 1f;
             float currentSpeed    = (IsSprinting ? moveSpeed * sprintMultiplier : moveSpeed) * relicMultiplier;
 
-            // Combine horizontal and vertical velocity into a single Move() call
-            // so CharacterController handles collision correctly.
+            // Combinar velocidad horizontal y vertical en una sola llamada a Move()
+            // para que CharacterController maneje la colisión correctamente.
             Vector3 horizontalVelocity = worldMoveDirection * currentSpeed;
             Vector3 totalVelocity      = horizontalVelocity + _verticalVelocity;
 
@@ -263,32 +255,32 @@ namespace TopDownShooter.Player
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Accumulates gravity over time and applies an initial upward impulse
-        /// when a jump has been requested.  Uses manual integration rather than
-        /// Rigidbody physics so we keep full deterministic control over feel.
+        /// Acumula gravedad a lo largo del tiempo y aplica un impulso inicial hacia arriba
+        /// cuando se ha solicitado un salto. Utiliza integración manual en lugar de
+        /// físicas de Rigidbody para mantener el control determinista total sobre la sensación de juego.
         /// </summary>
         private void ApplyGravityAndJump()
         {
             if (IsGrounded)
             {
-                // Snap to a small negative value so isGrounded stays true
-                // on the next frame even on slightly uneven terrain.
+                // Ajustar a un pequeño valor negativo para que isGrounded siga siendo verdadero
+                // en el próximo frame, incluso en terrenos ligeramente irregulares.
                 _verticalVelocity.y = -groundStickForce;
 
                 if (_jumpRequested)
                 {
-                    // ► SO : Replace jumpForce with playerStats.JumpForce
+                    // ► SO : Reemplazar jumpForce con playerStats.JumpForce
                     _verticalVelocity.y = jumpForce;
                 }
             }
             else
             {
-                // Apply gravity (positive gravity field, negated here)
-                // ► SO : Replace gravity with playerStats.Gravity
+                // Aplicar gravedad (campo de gravedad positivo, negado aquí)
+                // ► SO : Reemplazar gravity con playerStats.Gravity
                 _verticalVelocity.y -= gravity * Time.deltaTime;
             }
 
-            // Always consume the jump request, even if airborne (no double-jump)
+            // Consumir siempre la solicitud de salto, incluso si está en el aire (sin doble salto)
             _jumpRequested = false;
         }
 
@@ -297,49 +289,49 @@ namespace TopDownShooter.Player
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Rotates Lunaria to face her mouse cursor by intersecting a ray from
-        /// the camera through the screen position onto the virtual ground plane.
+        /// Rota a Lunaria para que mire a su cursor del ratón intersectando un rayo desde
+        /// la cámara a través de la posición de la pantalla sobre el plano de suelo virtual.
         ///
-        /// ALGORITHM
+        /// ALGORITMO
         /// ─────────
-        /// 1. Build a Ray from the camera through the mouse's screen pixel.
-        /// 2. Find where that ray hits _aimPlane (a flat horizontal Plane).
-        /// 3. Calculate the direction from Lunaria's feet to the hit point.
-        /// 4. Zero out the Y component (prevents tilting up/down).
-        /// 5. Slerp the current rotation toward the target to smooth the aim.
+        /// 1. Construir un Ray desde la cámara a través del píxel de la pantalla del ratón.
+        /// 2. Encontrar dónde golpea ese rayo a _aimPlane (un plano horizontal plano).
+        /// 3. Calcular la dirección desde los pies de Lunaria hasta el punto de impacto.
+        /// 4. Poner a cero el componente Y (evita inclinar hacia arriba/abajo).
+        /// 5. Slerp la rotación actual hacia el objetivo para suavizar el apuntado.
         /// </summary>
         private void RotateTowardsMouse()
         {
             if (!canRotate) return;
 
-            // Build the screen-space ray.  _rawMouseScreenPosition holds the
-            // raw pixel position reported by the Input System.
+            // Construir el rayo en espacio de pantalla. _rawMouseScreenPosition contiene la
+            // posición de píxel bruta informada por el Sistema de Entradas.
             Ray screenRay = _mainCamera.ScreenPointToRay(_rawMouseScreenPosition);
 
-            // Intersect the ray with our mathematical ground plane.
-            // Raycast returns true if the ray is not parallel to the plane.
+            // Intersectar el rayo con nuestro plano de suelo matemático.
+            // Raycast devuelve verdadero si el rayo no es paralelo al plano.
             if (!_aimPlane.Raycast(screenRay, out float hitDistance)) return;
 
-            // World-space point where the cursor "lands" on the ground plane
+            // Punto en el espacio del mundo donde el cursor "aterriza" en el plano del suelo
             Vector3 aimWorldPoint = screenRay.GetPoint(hitDistance);
 
-            // Direction from the character's position to the aim point
+            // Dirección desde la posición del personaje hasta el punto de apuntado
             Vector3 lookDirection = aimWorldPoint - _transform.position;
 
-            // CRITICAL: Isolate the horizontal plane – set Y = 0 so Lunaria
-            // never tilts her body up or down when the mouse is near her feet.
+            // CRÍTICO: Aislar el plano horizontal – establecer Y = 0 para que Lunaria
+            // nunca incline su cuerpo hacia arriba o hacia abajo cuando el ratón esté cerca de sus pies.
             lookDirection.y = 0f;
 
-            // Degenerate guard: if the cursor is directly over the character
-            // the direction vector is near-zero – skip to avoid NaN rotations.
+            // Guardia degenerada: si el cursor está directamente sobre el personaje
+            // la dirección vector es casi cero – omitir para evitar rotaciones NaN.
             if (lookDirection.sqrMagnitude < 0.001f) return;
 
-            // Build the target rotation from the look direction
+            // Construir la rotación objetivo a partir de la dirección de la mirada
             Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
 
-            // ► SO : Replace rotationSpeed with playerStats.RotationSpeed
-            // Slerp gives smooth interpolation along the shortest arc of the
-            // unit sphere, avoiding "spinning the long way around" artefacts.
+            // ► SO : Reemplazar rotationSpeed con playerStats.RotationSpeed
+            // Slerp proporciona una interpolación suave a lo largo del arco más corto de la
+            // esfera unitaria, evitando artefactos de "girar por el camino largo".
             _transform.rotation = Quaternion.Slerp(
                 _transform.rotation,
                 targetRotation,
@@ -353,8 +345,8 @@ namespace TopDownShooter.Player
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Receives the Move action (Vector2) from the Player action map.
-        /// Action name in the Input Asset must be exactly "Move".
+        /// Recibe la acción Move (Vector2) del mapa de acciones Player.
+        /// El nombre de la acción en el Asset de Input debe ser exactamente "Move".
         /// </summary>
         private void OnMove(InputValue value)
         {
@@ -362,15 +354,15 @@ namespace TopDownShooter.Player
         }
 
         /// <summary>
-        /// Receives the Look action (Vector2) from the Player action map.
-        /// For Keyboard+Mouse this should be bound to &lt;Mouse&gt;/position
-        /// (absolute screen position) – NOT the delta.
-        /// For gamepad, right stick is converted to a pseudo-screen position
-        /// via the gamepad aim helper (see setup guide).
+        /// Recibe la acción Look (Vector2) del mapa de acciones Player.
+        /// Para Teclado+Ratón esto debe estar vinculado a &lt;Mouse&gt;/position
+        /// (posición absoluta de pantalla) – NO a la diferencia delta.
+        /// Para gamepad, el stick derecho se convierte a una posición de pantalla simulada
+        /// a través del ayudante de apuntado de gamepad (ver guía de configuración).
         ///
-        /// IMPORTANT: The Look action binding MUST use &lt;Mouse&gt;/position
-        /// (absolute), NOT &lt;Pointer&gt;/delta (relative movement). The
-        /// ScreenPointToRay call requires absolute screen coordinates.
+        /// IMPORTANTE: El binding de la acción Look DEBE usar &lt;Mouse&gt;/position
+        /// (absoluta), NOT &lt;Pointer&gt;/delta (movimiento relativo). La
+        /// llamada ScreenPointToRay requiere coordenadas de pantalla absolutas.
         /// </summary>
         private void OnLook(InputValue value)
         {
@@ -378,8 +370,8 @@ namespace TopDownShooter.Player
         }
 
         /// <summary>
-        /// Receives the Jump action (Button) from the Player action map.
-        /// Sets a one-frame flag consumed by ApplyGravityAndJump().
+        /// Recibe la acción Jump (Botón) del mapa de acciones Player.
+        /// Establece una bandera de un solo frame consumida por ApplyGravityAndJump().
         /// </summary>
         private void OnJump(InputValue value)
         {
@@ -388,38 +380,38 @@ namespace TopDownShooter.Player
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  STUB CALLBACKS  (ready for future systems)
+        //  DEVUELTAS DE LLAMADA VACÍAS (STUBS)  (listas para futuros sistemas)
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Intentional stub — attack input is handled by <see cref="TopDownShooter.Combat.PlayerCombat"/>.
+        /// Código vacío intencional — la entrada de ataque es manejada por <see cref="TopDownShooter.Combat.PlayerCombat"/>.
         ///
-        /// PlayerInput (Send Messages) broadcasts OnAttack to ALL MonoBehaviours on
-        /// this GameObject. PlayerCombat.OnAttack() contains the real logic.
-        /// This stub prevents Unity from logging a "Method not found" warning
-        /// while keeping this script's Single Responsibility (locomotion only).
+        /// PlayerInput (Send Messages) transmite OnAttack a TODOS los MonoBehaviours en
+        /// este GameObject. PlayerCombat.OnAttack() contiene la lógica real.
+        /// Este código vacío evita que Unity registre una advertencia de "Método no encontrado"
+        /// mientras mantiene la Responsabilidad Única de este script (solo locomoción).
         /// </summary>
         // ReSharper disable once UnusedMember.Local
         private void OnAttack(InputValue value) { /* Intentional no-op. See PlayerCombat.cs */ }
 
         /// <summary>
-        /// Intentional stub — pickup/swap logic is handled by <see cref="TopDownShooter.Player.PlayerInventory"/>.
-        /// PlayerInput (Send Messages) broadcasts OnInteract to ALL MonoBehaviours
-        /// on this GameObject. This stub suppresses the "Method not found" warning.
+        /// Código vacío intencional — la lógica de recogida/intercambio es manejada por <see cref="TopDownShooter.Player.PlayerInventory"/>.
+        /// PlayerInput (Send Messages) transmite OnInteract a TODOS los MonoBehaviours
+        /// en este GameObject. Este código vacío suprime la advertencia de "Método no encontrado".
         /// </summary>
         // ReSharper disable once UnusedMember.Local
-        private void OnInteract(InputValue value) { /* Intentional no-op. See PlayerInventory.cs */ }
+        private void OnInteract(InputValue value) { /* Operación nula intencional. Ver PlayerInventory.cs */ }
 
         /// <summary>
-        /// Intentional stub — consumable use logic is handled by <see cref="TopDownShooter.Player.PlayerInventory"/>.
-        /// PlayerInput (Send Messages) broadcasts OnConsume to ALL MonoBehaviours
-        /// on this GameObject. This stub suppresses the "Method not found" warning.
+        /// Código vacío intencional — la lógica de uso de consumibles es manejada por <see cref="TopDownShooter.Player.PlayerInventory"/>.
+        /// PlayerInput (Send Messages) transmite OnConsume a TODOS los MonoBehaviours
+        /// en este GameObject. Este código vacío suprime la advertencia de "Método no encontrado".
         /// </summary>
         // ReSharper disable once UnusedMember.Local
-        private void OnConsume(InputValue value) { /* Intentional no-op. See PlayerInventory.cs */ }
+        private void OnConsume(InputValue value) { /* Operación nula intencional. Ver PlayerInventory.cs */ }
 
         /// <summary>
-        /// Receives the Sprint hold (Button) from the Player action map.
+        /// Recibe el botón sostenido Sprint (Botón) del mapa de acciones Player.
         /// </summary>
         private void OnSprint(InputValue value)
         {
@@ -427,16 +419,16 @@ namespace TopDownShooter.Player
         }
 
         /// <summary>
-        /// Receives the Dash action (Button) from the Player action map.
-        /// Binds to &lt;Keyboard&gt;/space in the Input Asset ("Dash" action).
+        /// Recibe la acción Dash (Botón) del mapa de acciones Player.
+        /// Se vincula a &lt;Keyboard&gt;/space en el Asset de Input (acción "Dash").
         ///
-        /// FLOW:
-        /// [Space] → PlayerInput (Send Messages) → OnDash()
-        ///   → Guard: not already dashing
-        ///   → TryConsumeEnergy(_dashCost) → if true: StartCoroutine(DashRoutine)
+        /// FLUJO:
+        /// [Espacio] → PlayerInput (Send Messages) → OnDash()
+        ///   → Guardia: no estar ya haciendo dash
+        ///   → TryConsumeEnergy(_dashCost) → si es verdadero: StartCoroutine(DashRoutine)
         ///
-        /// The dash travels along transform.forward, which already points at the
-        /// mouse cursor thanks to RotateTowardsMouse() running every frame.
+        /// El dash viaja a lo largo de transform.forward, que ya apunta al
+        /// cursor del ratón gracias a que RotateTowardsMouse() se ejecuta en cada frame.
         /// </summary>
         public void OnDash(InputValue value)
         {
@@ -444,7 +436,7 @@ namespace TopDownShooter.Player
             if (_isDashing)     return;   // No dash chaining while one is active
             if (!canMove)       return;   // Respect the movement lock flag
 
-            // Resource gate — skip cost check entirely if component is missing.
+            // Compuerta de recursos — omitir la verificación de costos por completo si el componente no está presente.
             if (_resourceComponent != null &&
                 !_resourceComponent.TryConsumeEnergy(_dashCost))
             {
@@ -454,27 +446,27 @@ namespace TopDownShooter.Player
                 return;
             }
 
-            // Play dash-start VFX (null-safe — safe if not assigned in Inspector).
+            // Reproducir VFX de inicio de dash (seguro contra nulos — seguro si no se asigna en el Inspector).
             _dashDustParticles?.Play();
 
             StartCoroutine(DashRoutine());
         }
 
         /// <summary>
-        /// Activates the dash velocity override for exactly <see cref="_dashDuration"/> seconds.
-        /// Uses <c>WaitForSeconds</c> (scaled time) so the dash respects
-        /// Time.timeScale — pausing the game pauses mid-dash naturally.
+        /// Activa la anulación de la velocidad de dash por exactamente <see cref="_dashDuration"/> segundos.
+        /// Utiliza <c>WaitForSeconds</c> (tiempo a escala) para que el dash respete
+        /// Time.timeScale — pausar el juego pausa el dash a mitad de camino de forma natural.
         /// </summary>
         private IEnumerator DashRoutine()
         {
             _isDashing = true;
 
-            // Enable the trail for the duration of the dash.
+            // Habilitar la estela durante la duración del dash.
             if (_dashTrail != null) _dashTrail.emitting = true;
 
             yield return new WaitForSeconds(_dashDuration);
 
-            // Disable the trail as soon as normal movement resumes.
+            // Deshabilitar la estela tan pronto como se reanude el movimiento normal.
             if (_dashTrail != null) _dashTrail.emitting = false;
 
             _isDashing = false;
@@ -482,16 +474,16 @@ namespace TopDownShooter.Player
 
 #if UNITY_EDITOR
         // ─────────────────────────────────────────────────────────────────────
-        //  EDITOR-ONLY VISUALISATION
+        //  VISUALIZACIÓN SOLO EN EDITOR
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Draws the aim plane as a coloured grid in the Scene view for easy
-        /// debugging – only compiled in the Unity Editor.
+        /// Dibuja el plano de apuntado como una cuadrícula coloreada en la vista de Scene para facilitar
+        /// la depuración – solo se compila en el Editor de Unity.
         /// </summary>
         private void OnDrawGizmosSelected()
         {
-            // Draw the aim plane as a semi-transparent disc
+            // Dibuja el plano de apuntado como un disco semitransparente
             Gizmos.color = new Color(0.2f, 0.8f, 1f, 0.25f);
             Vector3 planeOrigin = new Vector3(
                 transform.position.x,
@@ -500,11 +492,11 @@ namespace TopDownShooter.Player
             );
             Gizmos.DrawSphere(planeOrigin, 0.1f);
 
-            // Draw forward direction (current facing)
+            // Dibuja la dirección forward (orientación actual)
             Gizmos.color = Color.cyan;
             Gizmos.DrawRay(transform.position, transform.forward * 2f);
 
-            // Draw move direction
+            // Dibuja la dirección de movimiento
             if (Application.isPlaying && _rawMoveInput.sqrMagnitude > 0.01f)
             {
                 Gizmos.color = Color.yellow;

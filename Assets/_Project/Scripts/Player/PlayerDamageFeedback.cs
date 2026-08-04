@@ -4,9 +4,9 @@ using Unity.Cinemachine;
 using UnityEngine;
 
 /// <summary>
-/// Fires a <see cref="CinemachineImpulseSource.GenerateImpulse()"/> whenever the
-/// entity's health decreases. Attach alongside <see cref="HealthComponent"/> and a
-/// <see cref="CinemachineImpulseSource"/> on the Player (or any damageable entity).
+/// Dispara un <see cref="CinemachineImpulseSource.GenerateImpulse()"/> cada vez que la
+/// salud de la entidad disminuye. Conéctelo junto a <see cref="HealthComponent"/> y un
+/// <see cref="CinemachineImpulseSource"/> en el Jugador (o cualquier entidad dañable).
 /// </summary>
 [RequireComponent(typeof(HealthComponent))]
 [RequireComponent(typeof(CinemachineImpulseSource))]
@@ -16,12 +16,12 @@ public sealed class PlayerDamageFeedback : MonoBehaviour
     //  PRIVATE STATE
     // ─────────────────────────────────────────────────────────────────────────
 
-    // Cached component references — guaranteed present by RequireComponent.
+    // Referencias de componentes almacenadas en caché — presencia garantizada por RequireComponent.
     private HealthComponent          _healthComponent;
     private CinemachineImpulseSource _impulseSource;
 
-    // Sentinel: -1 means "not yet initialised" so the first OnHealthChanged
-    // call establishes a baseline without triggering a false impulse.
+    // Centinela: -1 significa "aún no inicializado" para que la primera llamada a OnHealthChanged
+    // establezca una línea de base sin activar un impulso falso.
     private float _previousHealth = -1f;
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -38,7 +38,7 @@ public sealed class PlayerDamageFeedback : MonoBehaviour
     {
         _healthComponent.OnHealthChanged += HandleHealthChanged;
 
-        // Establish the baseline so the first real change is detected correctly.
+        // Establecer la línea de base para que el primer cambio real sea detectado correctamente.
         _previousHealth = _healthComponent.GetNormalizedHealth();
     }
 
@@ -52,9 +52,9 @@ public sealed class PlayerDamageFeedback : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Called by <see cref="HealthComponent.OnHealthChanged"/>.
-    /// Compares against the previous value to detect damage (decrease) and
-    /// fires a camera shake impulse only when health goes down.
+    /// Llamado por <see cref="HealthComponent.OnHealthChanged"/>.
+    /// Compara contra el valor anterior para detectar daño (disminución) y
+    /// dispara un impulso de sacudida de cámara solo cuando la salud disminuye.
     /// </summary>
     private void HandleHealthChanged(float normalized)
     {

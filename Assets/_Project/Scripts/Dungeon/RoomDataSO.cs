@@ -6,8 +6,8 @@ using UnityEngine;
 namespace TopDownShooter.Dungeon
 {
     /// <summary>
-    /// ScriptableObject blueprint for a single room archetype.
-    /// Created via <c>Create → Dungeon → Room Data</c>.
+    /// Plantilla ScriptableObject para un arquetipo de sala único.
+    /// Creado a través de <c>Create → Dungeon → Room Data</c>.
     /// </summary>
     [CreateAssetMenu(
         fileName = "NewRoomData",
@@ -16,21 +16,18 @@ namespace TopDownShooter.Dungeon
     public sealed class RoomDataSO : ScriptableObject
     {
         // ─────────────────────────────────────────────────────────────────────
-        //  INSPECTOR FIELDS
+        //  CAMPOS DEL INSPECTOR
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Room Identity")]
-        [Tooltip("Gameplay classification of this room (Start, Combat, Treasure, Boss, Corridor).")]
+        [Tooltip("Clasificación de jugabilidad de esta sala (Start, Combat, Treasure, Boss, Corridor).")]
         [SerializeField] private RoomType _type = RoomType.Combat;
 
-        [Tooltip("The prefab instantiated when this room is placed in the dungeon. " +
-                 "Must have a RoomController on the root GameObject.")]
+        [Tooltip("El prefab instanciado cuando esta sala se coloca en la mazmorra. Debe tener un RoomController en el GameObject raíz.")]
         [SerializeField] private GameObject _prefab;
 
         [Header("Generation")]
-        [Tooltip("Relative selection weight during random room picking. " +
-                 "Higher = more likely. A room with weight 3 is three times as " +
-                 "likely as one with weight 1.")]
+        [Tooltip("Peso de selección relativo durante la elección aleatoria de salas. Mayor = más probable. Una sala con peso 3 es tres veces más probable que una con peso 1.")]
         [Min(1)]
         [SerializeField] private int _weight = 1;
 
@@ -42,16 +39,16 @@ namespace TopDownShooter.Dungeon
         [SerializeField] private List<Vector2Int> _footprint = new List<Vector2Int> { Vector2Int.zero };
 
         // ─────────────────────────────────────────────────────────────────────
-        //  READ-ONLY PROPERTIES
+        //  PROPIEDADES DE SOLO LECTURA
         // ─────────────────────────────────────────────────────────────────────
 
-        /// <summary>Gameplay classification of this room.</summary>
+        /// <summary>Clasificación de jugabilidad de esta sala.</summary>
         public RoomType Type => _type;
 
-        /// <summary>Prefab to instantiate when placing this room.</summary>
+        /// <summary>Prefab a instanciar cuando se coloca esta sala.</summary>
         public GameObject Prefab => _prefab;
 
-        /// <summary>Relative selection weight for the random picker.</summary>
+        /// <summary>Peso de selección relativo para el selector aleatorio.</summary>
         public int Weight => _weight;
 
         /// <summary>

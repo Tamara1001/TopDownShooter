@@ -7,8 +7,8 @@ using Unity.Cinemachine;
 namespace TopDownShooter.Combat
 {
     /// <summary>
-    /// Self-propelled magic projectile managed entirely by an
-    /// <see cref="ObjectPool{T}"/> injected from <see cref="MagicWand"/>.
+    /// Proyectil mágico autopropulsado gestionado en su totalidad por un
+    /// <see cref="ObjectPool{T}"/> inyectado desde <see cref="MagicWand"/>.
     /// </summary>
     [RequireComponent(typeof(Collider))]
     public sealed class Projectile : MonoBehaviour
@@ -18,42 +18,42 @@ namespace TopDownShooter.Combat
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Motion")]
-        [Tooltip("Travel speed in units per second along local forward.")]
+        [Tooltip("Velocidad de desplazamiento en unidades por segundo a lo largo de forward local.")]
         [SerializeField] private float projectileSpeed = 18f;
 
-        [Tooltip("Maximum time in seconds before the projectile auto-returns " +
-                 "to the pool, even if it hasn't hit anything. Prevents leaks.")]
+        [Tooltip("Tiempo máximo en segundos antes de que el proyectil regrese automáticamente " +
+                 "al pool, incluso si no ha golpeado nada. Evita fugas.")]
         [SerializeField] private float lifetime = 4f;
 
         [Header("Layer Filtering")]
-        [Tooltip("The layer mask of objects this projectile should NOT react to. " +
-                 "Assign the 'Player' layer here to avoid self-collision.")]
+        [Tooltip("La máscara de capas de objetos ante los cuales este proyectil NO debe reaccionar. " +
+                 "Asigne la capa 'Player' aquí para evitar la autocolisión.")]
         [SerializeField] private LayerMask ignoreLayers;
 
         [Header("Game Feel")]
-        [Tooltip("CinemachineImpulseSource used to trigger camera shake on impact. " +
-                 "Leave unassigned to skip (null-safe).")]
+        [Tooltip("CinemachineImpulseSource utilizado para activar la sacudida de la cámara al impactar. " +
+                 "Dejar sin asignar para omitir (seguro contra nulos).")]
         [SerializeField] private CinemachineImpulseSource _impulseSource;
 
         // ─────────────────────────────────────────────────────────────────────
         //  PRIVATE STATE
         // ─────────────────────────────────────────────────────────────────────
 
-        // Injected by MagicWand immediately after pool.Get() — never null in flight.
+        // Inyectado por MagicWand inmediatamente después de pool.Get() — nunca nulo en vuelo.
         private IObjectPool<Projectile> _pool;
 
-        // Damage injected by the spawning weapon via SetDamage().
-        // Defaults to 0 so a missing SetDamage() call causes no unintended damage.
+        // Daño inyectado por el arma emisora a través de SetDamage().
+        // Por defecto es 0 para que una llamada faltante a SetDamage() no cause daño no deseado.
         private int _damage;
 
-        // Tracks elapsed time since this projectile was retrieved from the pool.
+        // Realiza un seguimiento del tiempo transcurrido desde que este proyectil se recuperó del pool.
         private float _activeTimer;
 
-        // Cached transform for performance (avoids repeated property access).
+        // Transform almacenado en caché para rendimiento (evita el acceso repetido a propiedades).
         private Transform _transform;
 
-        // Guard flag: prevents ReturnToPool() from being called twice in the
-        // same frame (e.g. if two colliders trigger on the same physics step).
+        // Bandera de guardia: evita que ReturnToPool() sea llamado dos veces en el
+        // mismo frame (por ejemplo, si dos colisionadores se activan en el mismo paso de físicas).
         private bool _isReturned;
 
         // TrailRenderer cacheado — resuelto una sola vez para evitar
@@ -71,12 +71,12 @@ namespace TopDownShooter.Combat
         {
             _transform = transform;
 
-            // Validate that the Collider is set as a Trigger.
+            // Verificar que el Collider esté configurado como un Trigger.
             var col = GetComponent<Collider>();
             if (col != null && !col.isTrigger)
             {
-                Debug.LogWarning("[Projectile] The Collider on this projectile is NOT set as a " +
-                                 "Trigger. Set 'Is Trigger = true' on the Collider component.", this);
+                Debug.LogWarning("[Projectile] El Collider de este proyectil NO está configurado como un " +
+                                 "Trigger. Establezca 'Is Trigger = true' en el componente Collider.", this);
             }
         }
 
@@ -91,8 +91,8 @@ namespace TopDownShooter.Combat
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Injects the pool reference so this projectile can release itself.
-        /// Called by <see cref="MagicWand"/> immediately after <c>pool.Get()</c>.
+        /// Inyecta la referencia del pool para que este proyectil pueda liberarse a sí mismo.
+        /// Llamado por <see cref="MagicWand"/> inmediatamente después de <c>pool.Get()</c>.
         /// </summary>
         public void SetPool(IObjectPool<Projectile> pool)
         {
@@ -101,11 +101,11 @@ namespace TopDownShooter.Combat
         }
 
         /// <summary>
-        /// Sets the damage this projectile will deal on impact.
-        /// Called by the spawning weapon (MagicWand, RangedWeapon) immediately
-        /// after retrieving the instance from the pool, before it goes active.
+        /// Establece el daño que este proyectil infligirá al impactar.
+        /// Llamado por el arma emisora (MagicWand, RangedWeapon) inmediatamente
+        /// después de recuperar la instancia del pool, antes de que se active.
         /// </summary>
-        /// <param name="damage">Positive integer damage value.</param>
+        /// <param name="damage">Valor de daño entero positivo.</param>
         public void SetDamage(int damage)
         {
             _damage = damage;
@@ -158,8 +158,8 @@ namespace TopDownShooter.Combat
         }
 
         /// <summary>
-        /// Called by the pool's <c>actionOnGet</c> delegate.
-        /// Resets all state so a recycled instance behaves like a fresh one.
+        /// Llamado por el delegado <c>actionOnGet</c> del pool.
+        /// Restablece todo el estado para que una instancia reciclada se comporte como una nueva.
         /// </summary>
         public void OnGetFromPool()
         {
@@ -177,8 +177,8 @@ namespace TopDownShooter.Combat
         }
 
         /// <summary>
-        /// Called by the pool's <c>actionOnRelease</c> delegate.
-        /// Hides the GameObject; the pool keeps it alive for future reuse.
+        /// Llamado por el delegado <c>actionOnRelease</c> del pool.
+        /// Oculta el GameObject; el pool lo mantiene vivo para futuras reutilizaciones.
         /// </summary>
         public void OnReturnToPool()
         {
@@ -190,19 +190,19 @@ namespace TopDownShooter.Combat
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Translates the projectile along its local forward axis each frame.
+        /// Desplaza el proyectil a lo largo de su eje forward local en cada frame.
         ///
-        /// WHY LOCAL FORWARD?
-        /// The projectile's rotation is copied from the player at spawn time
-        /// (see MagicWand.FireProjectile). Moving along local +Z means the
-        /// direction is baked into the transform — no separate velocity vector
-        /// needed. This is cheaper and simpler than a physics-driven approach.
+        /// ¿POR QUÉ EL FORWARD LOCAL?
+        /// La rotación del proyectil se copia del jugador al hacer el spawn
+        /// (ver MagicWand.FireProjectile). Desplazarse por el eje local +Z significa que la
+        /// dirección está horneada en el transform — no se requiere un vector de velocidad
+        /// independiente. Esto es más económico y simple que un enfoque basado en físicas.
         /// </summary>
         private void MoveForward()
         {
             _transform.Translate(
                 Vector3.forward * (projectileSpeed * Time.deltaTime),
-                Space.Self   // Crucial: local space = follows the baked rotation
+                Space.Self   // Crucial: espacio local = sigue la rotación horneada
             );
         }
 
@@ -211,9 +211,9 @@ namespace TopDownShooter.Combat
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Returns the projectile to the pool after <see cref="lifetime"/> seconds,
-        /// acting as a safety net for projectiles that never hit anything
-        /// (e.g. fired into open air or through gaps in the terrain).
+        /// Devuelve el proyectil al pool después de <see cref="lifetime"/> segundos,
+        /// actuando como una red de seguridad para los proyectiles que nunca golpean nada
+        /// (por ejemplo, disparados al aire libre o a través de huecos en el terreno).
         /// </summary>
         private void CheckLifetime()
         {
@@ -227,17 +227,17 @@ namespace TopDownShooter.Combat
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Detects when the projectile overlaps a Trigger or solid Collider.
+        /// Detecta cuándo el proyectil se superpone con un Trigger o un Collider sólido.
         ///
-        /// LAYER FILTERING:
-        /// We use a bitwise check against <see cref="ignoreLayers"/> to skip
-        /// the player's own colliders (the CharacterController layer). This
-        /// prevents the projectile from immediately returning to pool on the
-        /// frame it is spawned inside the player's collider volume.
+        /// FILTRADO DE CAPAS:
+        /// Usamos una verificación bit a bit contra <see cref="ignoreLayers"/> para omitir los
+        /// propios colisionadores del jugador (la capa CharacterController). Esto evita que
+        /// el proyectil regrese inmediatamente al pool en el frame en que se genera
+        /// dentro del volumen del colisionador del jugador.
         ///
-        /// FUTURE HOOKS:
-        /// ► ICombat  : Call other.GetComponent&lt;IDamageable&gt;()?.TakeDamage(damage)
-        /// ► VFX      : Spawn a hit-particle effect before returning to pool.
+        /// PUNTOS DE EXTENSIÓN FUTUROS:
+        /// ► ICombat  : Llamar a other.GetComponent&lt;IDamageable&gt;()?.TakeDamage(damage)
+        /// ► VFX      : Generar un efecto de partículas de impacto antes de regresar al pool.
         /// ► Audio    : AudioSource.PlayClipAtPoint(hitSFX, transform.position)
         /// </summary>
         private void OnTriggerEnter(Collider other)
@@ -260,9 +260,9 @@ namespace TopDownShooter.Combat
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Safely returns this projectile to its pool exactly once.
-        /// The <see cref="_isReturned"/> guard prevents double-release
-        /// if two colliders trigger in the same physics step.
+        /// Devuelve de forma segura este proyectil a su pool exactamente una vez.
+        /// La guardia de <see cref="_isReturned"/> evita la doble liberación
+        /// si dos colisionadores se activan en el mismo paso de físicas.
         /// </summary>
         private void ReturnToPool()
         {
@@ -271,8 +271,8 @@ namespace TopDownShooter.Combat
 
             if (_pool == null)
             {
-                Debug.LogError("[Projectile] Pool reference is null. " +
-                               "Falling back to Destroy() — check MagicWand.FireProjectile().", this);
+                Debug.LogError("[Projectile] La referencia del pool es nula. " +
+                               "Recurriendo a Destroy() — compruebe MagicWand.FireProjectile().", this);
                 Destroy(gameObject);
                 return;
             }

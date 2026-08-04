@@ -6,8 +6,8 @@ using TopDownShooter.Combat;
 namespace TopDownShooter.Enemy
 {
     /// <summary>
-    /// A ranged weapon strategy that fires multiple pooled projectiles in a spread arc.
-    /// Perfect for boss attacks (shotgun blasts, 360-novas).
+    /// Una estrategia de arma a distancia que dispara múltiples proyectiles agrupados en pool en un arco de dispersión.
+    /// Excelente para ataques de jefes (ráfagas de escopeta, novas de 360 grados).
     /// </summary>
     public sealed class SpreadRangedWeapon : MonoBehaviour, IWeapon, IWeaponConfigurable
     {
@@ -16,20 +16,20 @@ namespace TopDownShooter.Enemy
         // ----------------------------------------------------------
 
         [Header("Firing")]
-        [Tooltip("Empty child Transform at the enemy's muzzle/center. " +
-                 "Projectiles spawn at this position.")]
+        [Tooltip("Transform vacío hijo en la boca/centro del enemigo. " +
+                 "Los proyectiles se generan en esta posición.")]
         [SerializeField] private Transform _firePoint;
 
-        [Tooltip("Prefab that MUST have a Projectile component, a Kinematic Rigidbody, " +
-                 "and a Collider with 'Is Trigger = true'.")]
+        [Tooltip("Prefab que DEBE tener un componente Projectile, un Rigidbody cinemático, " +
+                 "y un Collider con 'Is Trigger = true'.")]
         [SerializeField] private Projectile _projectilePrefab;
 
         [Header("Spread Settings")]
-        [Tooltip("How many projectiles to spawn per attack.")]
+        [Tooltip("Cuántos proyectiles generar por ataque.")]
         [SerializeField] private int _projectileCount = 8;
 
-        [Tooltip("Total arc angle in degrees. 360 = full circle nova. " +
-                 "90 = front-facing shotgun blast.")]
+        [Tooltip("Ángulo total del arco en grados. 360 = nova circular completa. " +
+                 "90 = ráfaga de escopeta orientada hacia el frente.")]
         [SerializeField] private float _spreadAngle = 360f;
 
         [Header("Object Pool Settings")]
@@ -47,8 +47,8 @@ namespace TopDownShooter.Enemy
         // ----------------------------------------------------------
 
         [Header("VFX")]
-        [Tooltip("Color of the projectile sprite and trail. For enemies, set this in the Inspector. " +
-                 "For the player, this is overridden by WeaponDataSO at runtime.")]
+        [Tooltip("Color del sprite del proyectil y su estela. Para enemigos, configúrelo en el Inspector. " +
+                 "Para el jugador, esto es sobrescrito por WeaponDataSO en tiempo de ejecución.")]
         [SerializeField] private Color _projectileColor = Color.white;
 
         // ----------------------------------------------------------
@@ -68,9 +68,9 @@ namespace TopDownShooter.Enemy
         private IObjectPool<Projectile> _projectilePool;
         
         /// <summary>
-        /// Cached rotation mutated per-loop iteration inside ExecuteAttack.
-        /// Read by OnGetProjectile (and CreateProjectile) so the pool callback
-        /// knows which angle to spawn the bullet at.
+        /// Rotación almacenada en caché mutada por iteración del bucle dentro de ExecuteAttack.
+        /// Leída por OnGetProjectile (y CreateProjectile) para que la llamada de retorno del pool
+        /// sepa en qué ángulo generar la bala.
         /// </summary>
         private Quaternion _currentSpawnRotation;
 

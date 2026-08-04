@@ -11,7 +11,7 @@ using TopDownShooter.Combat;
 public class PlayerHUD : MonoBehaviour
 {
     // -------------------------------------------------------------------------
-    // INSPECTOR FIELDS
+    // CAMPOS DEL INSPECTOR
     // -------------------------------------------------------------------------
 
     [Header("Data Sources")]
@@ -19,193 +19,193 @@ public class PlayerHUD : MonoBehaviour
     [SerializeField] private PlayerResourceComponent playerResources;
 
     // -------------------------------------------------------------------------
-    // HEALTH — HEART DISPLAY
+    // SALUD — VISUALIZACIÓN DE CORAZONES
     // -------------------------------------------------------------------------
     //
-    //  Design rules (same as before):
-    //    • Max HP = 100, split across 5 hearts.
-    //    • Each full heart = 20 HP.
-    //    • Each heart has 5 states (sprite index 0–4):
+    //  Reglas de diseño (igual que antes):
+    //    • HP Máx = 100, dividido en 5 corazones.
+    //    • Cada corazón completo = 20 HP.
+    //    • Cada corazón tiene 5 estados (índice de sprite 0–4):
     //
-    //        State index | HP in this heart | Sprite suggestion
-    //        ------------|------------------|------------------
-    //            0       |   0 HP  (empty)  | heart_empty
-    //            1       |   5 HP  (1/4)    | heart_quarter
-    //            2       |  10 HP  (half)   | heart_half
-    //            3       |  15 HP  (3/4)    | heart_three_quarters
-    //            4       |  20 HP  (full)   | heart_full
+    //        Índice de estado | HP en este corazón | Sugerencia de sprite
+    //        -----------------|--------------------|---------------------
+    //            0            |   0 HP  (vacío)    | heart_empty
+    //            1            |   5 HP  (1/4)      | heart_quarter
+    //            2            |  10 HP  (medio)    | heart_half
+    //            3            |  15 HP  (3/4)      | heart_three_quarters
+    //            4            |  20 HP  (lleno)    | heart_full
     //
     // -------------------------------------------------------------------------
 
     [Header("Health Visuals (Hearts)")]
-    [Tooltip("The parent RectTransform that groups all heart images. Used for the heal punch-scale animation.")]
+    [Tooltip("El RectTransform padre que agrupa todas las imágenes de corazones. Usado para la animación de escala al curar.")]
     [SerializeField] private RectTransform heartsContainer;
 
-    [Tooltip("The individual Image components for each heart slot, ordered left to right (index 0 = leftmost heart).")]
+    [Tooltip("Los componentes Image individuales para cada ranura de corazón, ordenados de izquierda a derecha (índice 0 = corazón más a la izquierda).")]
     [SerializeField] private Image[] corazonesUI;
 
     [Tooltip(
-        "The 5 heart-state sprites in STRICT ORDER:\n" +
-        "  [0] Empty       (0 HP)\n" +
-        "  [1] Quarter     (5 HP)\n" +
-        "  [2] Half        (10 HP)\n" +
-        "  [3] Three-Qtr  (15 HP)\n" +
-        "  [4] Full        (20 HP)")]
+        "Los 5 sprites de estado del corazón en ORDEN ESTRICTO:\n" +
+        "  [0] Vacío       (0 HP)\n" +
+        "  [1] Cuarto      (5 HP)\n" +
+        "  [2] Medio       (10 HP)\n" +
+        "  [3] Tres cuartos (15 HP)\n" +
+        "  [4] Lleno       (20 HP)")]
     [SerializeField] private Sprite[] estadosCorazon;
 
     // -------------------------------------------------------------------------
-    // MANA — FLAME ICON DISPLAY
+    // MANA — VISUALIZACIÓN DE ICONOS DE LLAMA
     // -------------------------------------------------------------------------
     //
-    //  Same fractional math as hearts, but for Mana:
-    //    • Max Mana = 100, split across 5 flame icons.
-    //    • Each full flame = 20 Mana.
-    //    • Each flame has 5 states (sprite index 0–4):
+    //  Mismas matemáticas fraccionarias que los corazones, pero para el Mana:
+    //    • Mana Máx = 100, dividido en 5 iconos de llama.
+    //    • Cada llama completa = 20 de Mana.
+    //    • Cada llama tiene 5 estados (índice de sprite 0–4):
     //
-    //        State index | Mana in this icon | Sprite suggestion
-    //        ------------|-------------------|------------------
-    //            0       |   0 Mana (empty)  | flame_empty
-    //            1       |   5 Mana (1/4)    | flame_quarter
-    //            2       |  10 Mana (half)   | flame_half
-    //            3       |  15 Mana (3/4)    | flame_three_quarters
-    //            4       |  20 Mana (full)   | flame_full
+    //        Índice de estado | Mana en este icono | Sugerencia de sprite
+    //        -----------------|--------------------|---------------------
+    //            0            |   0 Mana (vacío)   | flame_empty
+    //            1            |   5 Mana (1/4)     | flame_quarter
+    //            2            |  10 Mana (medio)   | flame_half
+    //            3            |  15 Mana (3/4)     | flame_three_quarters
+    //            4            |  20 Mana (lleno)   | flame_full
     //
     // -------------------------------------------------------------------------
 
     [Header("Mana Visuals (Flames)")]
-    [Tooltip("The parent RectTransform that groups all mana flame images. Used for the error flash animation.")]
+    [Tooltip("El RectTransform padre que agrupa todas las imágenes de llamas de mana. Usado para la animación de parpadeo de error.")]
     [SerializeField] private RectTransform manaContainer;
 
-    [Tooltip("The individual Image components for each mana flame slot, ordered left to right.")]
+    [Tooltip("Los componentes Image individuales para cada ranura de llama de mana, ordenados de izquierda a derecha.")]
     [SerializeField] private Image[] manaUI;
 
     [Tooltip(
-        "The 5 mana-state sprites in STRICT ORDER:\n" +
-        "  [0] Empty       (0 Mana)\n" +
-        "  [1] Quarter     (5 Mana)\n" +
-        "  [2] Half        (10 Mana)\n" +
-        "  [3] Three-Qtr  (15 Mana)\n" +
-        "  [4] Full        (20 Mana)")]
+        "Los 5 sprites de estado del mana en ORDEN ESTRICTO:\n" +
+        "  [0] Vacío       (0 Mana)\n" +
+        "  [1] Cuarto      (5 Mana)\n" +
+        "  [2] Medio       (10 Mana)\n" +
+        "  [3] Tres cuartos (15 Mana)\n" +
+        "  [4] Lleno       (20 Mana)")]
     [SerializeField] private Sprite[] manaStates;
 
     // -------------------------------------------------------------------------
-    // ENERGY — LIGHTNING BOLT ICON DISPLAY
+    // ENERGÍA — VISUALIZACIÓN DE ICONOS DE RAYO
     // -------------------------------------------------------------------------
     //
-    //  Same fractional math as hearts and flames, but for Energy:
-    //    • Max Energy = 100, split across 5 lightning bolt icons.
-    //    • Each full bolt = 20 Energy.
-    //    • Each bolt has 5 states (sprite index 0–4):
+    //  Mismas matemáticas fraccionarias que los corazones y llamas, pero para la Energía:
+    //    • Energía Máx = 100, dividida en 5 iconos de rayo.
+    //    • Cada rayo completo = 20 de Energía.
+    //    • Cada rayo tiene 5 estados (índice de sprite 0–4):
     //
-    //        State index | Energy in this icon | Sprite suggestion
-    //        ------------|---------------------|------------------
-    //            0       |   0 Energy (empty)  | bolt_empty
-    //            1       |   5 Energy (1/4)    | bolt_quarter
-    //            2       |  10 Energy (half)   | bolt_half
-    //            3       |  15 Energy (3/4)    | bolt_three_quarters
-    //            4       |  20 Energy (full)   | bolt_full
+    //        Índice de estado | Energía en este icono | Sugerencia de sprite
+    //        -----------------|-----------------------|---------------------
+    //            0            |   0 Energía (vacío)   | bolt_empty
+    //            1            |   5 Energía (1/4)     | bolt_quarter
+    //            2            |  10 Energía (medio)   | bolt_half
+    //            3            |  15 Energía (3/4)     | bolt_three_quarters
+    //            4            |  20 Energía (lleno)   | bolt_full
     //
     // -------------------------------------------------------------------------
 
     [Header("Energy Visuals (Lightning Bolts)")]
-    [Tooltip("The parent RectTransform that groups all energy bolt images. Used for the error flash animation.")]
+    [Tooltip("El RectTransform padre que agrupa todas las imágenes de rayos de energía. Usado para la animación de parpadeo de error.")]
     [SerializeField] private RectTransform energyContainer;
 
-    [Tooltip("The individual Image components for each energy bolt slot, ordered left to right.")]
+    [Tooltip("Los componentes Image individuales para cada ranura de rayo de energía, ordenados de izquierda a derecha.")]
     [SerializeField] private Image[] energyUI;
 
     [Tooltip(
-        "The 5 energy-state sprites in STRICT ORDER:\n" +
-        "  [0] Empty       (0 Energy)\n" +
-        "  [1] Quarter     (5 Energy)\n" +
-        "  [2] Half        (10 Energy)\n" +
-        "  [3] Three-Qtr  (15 Energy)\n" +
-        "  [4] Full        (20 Energy)")]
+        "Los 5 sprites de estado de energía en ORDEN ESTRICTO:\n" +
+        "  [0] Vacío       (0 Energía)\n" +
+        "  [1] Cuarto      (5 Energía)\n" +
+        "  [2] Medio       (10 Energía)\n" +
+        "  [3] Tres cuartos (15 Energía)\n" +
+        "  [4] Lleno       (20 Energía)")]
     [SerializeField] private Sprite[] energyStates;
 
     // -------------------------------------------------------------------------
-    // JUICE — ANIMATION SETTINGS
+    // JUGO (JUICE) — CONFIGURACIÓN DE ANIMACIONES
     // -------------------------------------------------------------------------
 
     [Header("Juice Settings")]
-    [Tooltip("Scale multiplier applied to heartsContainer when the player is healed.")]
+    [Tooltip("Multiplicador de escala aplicado a heartsContainer cuando el jugador se cura.")]
     [SerializeField] private float _healPunchScale = 1.2f;
 
-    [Tooltip("How long (seconds) the punch-scale animation takes to return to normal.")]
+    [Tooltip("Cuánto tiempo (segundos) tarda la animación de escala de golpe en volver a la normalidad.")]
     [SerializeField] private float _punchDuration = 0.15f;
 
-    [Tooltip("How long (seconds) the flash color stays visible on damage or resource depletion.")]
+    [Tooltip("Cuánto tiempo (segundos) permanece visible el color de parpadeo al recibir daño o agotar recursos.")]
     [SerializeField] private float _flashDuration = 0.15f;
 
-    [Tooltip("The color the icons flash when the player takes damage or depletes a resource.")]
+    [Tooltip("El color con el que parpadean los iconos cuando el jugador recibe daño o agota un recurso.")]
     [SerializeField] private Color _errorFlashColor = Color.red;
 
     // -------------------------------------------------------------------------
-    // WALLET / COIN UI
+    // MONEDERO / UI DE MONEDAS
     // -------------------------------------------------------------------------
 
     [Header("Wallet UI")]
     [SerializeField] private TextMeshProUGUI _coinText;
 
-    [Tooltip("Scale multiplier applied to the coin text when coins are added.")]
+    [Tooltip("Multiplicador de escala aplicado al texto de monedas cuando se agregan monedas.")]
     [SerializeField] private float _pulseScale = 1.4f;
 
-    [Tooltip("How long (seconds) the coin-text pulse animation takes to shrink back.")]
+    [Tooltip("Cuánto tiempo (segundos) tarda la animación de pulso del texto de monedas en encogerse de nuevo.")]
     [SerializeField] private float _pulseDuration = 0.2f;
 
     // -------------------------------------------------------------------------
-    // ICON MATH CONSTANTS
+    // CONSTANTES MATEMÁTICAS DE ICONOS
     // -------------------------------------------------------------------------
     //
-    //  These constants are shared by ALL three resource types because they all
-    //  follow the exact same fractional icon rules:
-    //    MAX_VALUE         = 100  (total resource points)
-    //    ICONS_COUNT       =   5  (number of icons in the row)
-    //    POINTS_PER_ICON   =  20  (100 / 5)
-    //    POINTS_PER_QUARTER =  5  (20 / 4 quarters)
+    //  Estas constantes son compartidas por los TRES tipos de recursos porque todos
+    //  siguen exactamente las mismas reglas de iconos fraccionarios:
+    //    MAX_VALUE          = 100  (puntos totales de recurso)
+    //    ICONS_COUNT        =   5  (número de iconos en la fila)
+    //    POINTS_PER_ICON    =  20  (100 / 5)
+    //    POINTS_PER_QUARTER =   5  (20 / 4 cuartos)
     //
     // -------------------------------------------------------------------------
 
     /// <summary>
-    /// Total resource points that one completely filled icon represents.
-    /// (Max 100 / 5 icons = 20 points per icon)
+    /// Puntos de recurso totales que representa un icono completamente lleno.
+    /// (Máx 100 / 5 iconos = 20 puntos por icono)
     /// </summary>
     private const int POINTS_PER_ICON = 20;
 
     /// <summary>
-    /// Resource points that one quarter-segment of an icon represents.
-    /// (20 points per icon / 4 quarters = 5 points per quarter)
+    /// Puntos de recurso que representa un segmento de cuarto de icono.
+    /// (20 puntos por icono / 4 cuartos = 5 puntos por cuarto)
     /// </summary>
     private const int POINTS_PER_QUARTER = 5;
 
     // -------------------------------------------------------------------------
-    // PRIVATE RUNTIME STATE
+    // ESTADO DE EJECUCIÓN PRIVADO
     // -------------------------------------------------------------------------
 
     private PlayerWallet _wallet;
     private Coroutine    _pulseCoroutine;
     private Vector3      _originalCoinTextScale;
 
-    // Keeps track of the previous normalized health so we can detect
-    // whether the player healed (value went UP) or took damage (value went DOWN).
+    // Realiza un seguimiento de la salud normalizada anterior para que podamos detectar
+    // si el jugador se curó (el valor subió) o recibió daño (el valor bajó).
     private float _previousHealth = -1f;
 
-    // Coroutine handles let us stop a running flash/pulse before starting a new one,
-    // which prevents visual glitches when events fire in rapid succession.
+    // Los manejadores de corrutinas nos permiten detener un parpadeo/pulso en curso antes de comenzar uno nuevo,
+    // lo que evita fallos visuales cuando los eventos se disparan en rápida sucesión.
     private Coroutine _healthFlash;
     private Coroutine _manaFlash;
     private Coroutine _energyFlash;
 
     // -------------------------------------------------------------------------
-    // UNITY LIFECYCLE
+    // CICLO DE VIDA DE UNITY
     // -------------------------------------------------------------------------
 
     private void Awake()
     {
-        // Find the PlayerWallet that lives somewhere in the scene.
+        // Encontrar el PlayerWallet que vive en algún lugar de la escena.
         _wallet = FindObjectOfType<PlayerWallet>();
 
-        // Cache coin text state so we can restore it after the pulse animation.
+        // Guardar en caché el estado del texto de monedas para poder restaurarlo después de la animación de pulso.
         if (_coinText != null)
         {
             _originalCoinTextScale = _coinText.transform.localScale;
@@ -215,13 +215,13 @@ public class PlayerHUD : MonoBehaviour
 
     private void OnEnable()
     {
-        // ── Health ──────────────────────────────────────────────────────────
+        // ── Salud ──────────────────────────────────────────────────────────
         if (playerHealth != null)
         {
             playerHealth.OnHealthChanged += UpdateHealthBar;
 
-            // Draw the initial heart state immediately so the HUD is correct
-            // from the very first frame (before any damage is taken).
+            // Dibuja el estado inicial de los corazones de inmediato para que el HUD sea correcto
+            // desde el primer frame (antes de recibir cualquier daño).
             UpdateHealthBar(playerHealth.GetNormalizedHealth());
         }
 
@@ -231,12 +231,12 @@ public class PlayerHUD : MonoBehaviour
             playerResources.OnManaChanged   += UpdateManaBar;
             playerResources.OnEnergyChanged += UpdateEnergyBar;
 
-            // Initialise icon rows with current values on startup.
+            // Inicializar las filas de iconos con los valores actuales al iniciar.
             UpdateManaBar(playerResources.GetNormalizedMana());
             UpdateEnergyBar(playerResources.GetNormalizedEnergy());
         }
 
-        // ── Depletion flash events (fired by combat/movement systems) ────────
+        // ── Eventos de parpadeo por agotamiento (disparados por sistemas de combate/movimiento) ────────
         PlayerCombat.OnManaDepleted         += HandleManaDepleted;
         PlayerCombat.OnEnergyDepleted       += HandleEnergyDepleted;
         PlayerController3D.OnEnergyDepleted += HandleEnergyDepleted;
@@ -251,8 +251,8 @@ public class PlayerHUD : MonoBehaviour
 
     private void OnDisable()
     {
-        // Always unsubscribe in OnDisable to prevent memory leaks and
-        // "ghost" callbacks from destroyed objects.
+        // Cancelar siempre la suscripción en OnDisable para evitar fugas de memoria y
+        // llamadas de retorno "fantasma" de objetos destruidos.
         if (playerHealth != null)
             playerHealth.OnHealthChanged -= UpdateHealthBar;
 
@@ -274,184 +274,184 @@ public class PlayerHUD : MonoBehaviour
     // =========================================================================
 
     /// <summary>
-    /// Updates a row of fractional resource icons to reflect <paramref name="currentValue"/>.
+    /// Actualiza una fila de iconos de recursos fraccionarios para reflejar <paramref name="currentValue"/>.
     ///
-    /// HOW THE MATH WORKS (same logic for Health, Mana, and Energy):
+    /// CÓMO FUNCIONA LAS MATEMÁTICAS (misma lógica para Salud, Maná y Energía):
     ///
-    ///   Each icon in the array is responsible for a 20-point "window":
-    ///     Icon 0 →  1 – 20 pts
-    ///     Icon 1 → 21 – 40 pts
-    ///     Icon 2 → 41 – 60 pts
-    ///     Icon 3 → 61 – 80 pts
-    ///     Icon 4 → 81 – 100 pts
+    ///   Cada icono en el arreglo es responsable de una "ventana" de 20 puntos:
+    ///     Icono 0 →  1 – 20 pts
+    ///     Icono 1 → 21 – 40 pts
+    ///     Icono 2 → 41 – 60 pts
+    ///     Icono 3 → 61 – 80 pts
+    ///     Icono 4 → 81 – 100 pts
     ///
-    ///   For each icon we calculate how many points "spill" into its window:
+    ///   Para cada icono calculamos cuántos puntos "se desbordan" en su ventana:
     ///     pointsInThisIcon = currentValue - (iconIndex * POINTS_PER_ICON)
-    ///     → clamped to [0, 20] so it's never negative or over-full.
+    ///     → limitado a [0, 20] para que nunca sea negativo o exceda el límite.
     ///
-    ///   We then divide by POINTS_PER_QUARTER (5) using integer division to
-    ///   get a sprite state index in [0, 4]:
-    ///     0 pts  → index 0 → Empty sprite
-    ///     1–5    → index 1 → Quarter sprite
-    ///     6–10   → index 2 → Half sprite
-    ///     11–15  → index 3 → Three-quarter sprite
-    ///     16–20  → index 4 → Full sprite
+    ///   Luego dividimos por POINTS_PER_QUARTER (5) usando división entera para
+    ///   obtener un índice de estado de sprite en [0, 4]:
+    ///     0 pts   → índice 0 → Sprite Vacío
+    ///     1–5     → índice 1 → Sprite de Cuarto
+    ///     6–10    → índice 2 → Sprite de Medio
+    ///     11–15   → índice 3 → Sprite de Tres Cuartos
+    ///     16–20   → índice 4 → Sprite Lleno
     ///
-    ///   EXAMPLE: currentValue = 55 (out of 100)
-    ///     i=0 → 55 - (0*20) = 55 → clamp → 20 → /5 = 4 → Full
-    ///     i=1 → 55 - (1*20) = 35 → clamp → 20 → /5 = 4 → Full
-    ///     i=2 → 55 - (2*20) = 15 → clamp → 15 → /5 = 3 → Three-quarter
-    ///     i=3 → 55 - (3*20) = -5 → clamp →  0 → /5 = 0 → Empty
-    ///     i=4 → 55 - (4*20) =-25 → clamp →  0 → /5 = 0 → Empty
+    ///   EJEMPLO: currentValue = 55 (de 100)
+    ///     i=0 → 55 - (0*20) = 55 → limit → 20 → /5 = 4 → Lleno
+    ///     i=1 → 55 - (1*20) = 35 → limit → 20 → /5 = 4 → Lleno
+    ///     i=2 → 55 - (2*20) = 15 → limit → 15 → /5 = 3 → Tres Cuartos
+    ///     i=3 → 55 - (3*20) = -5 → limit →  0 → /5 = 0 → Vacío
+    ///     i=4 → 55 - (4*20) =-25 → limit →  0 → /5 = 0 → Vacío
     ///
     /// </summary>
-    /// <param name="currentValue">The current resource value as an integer (e.g. 55).</param>
-    /// <param name="uiIcons">The array of Image components to update (one per icon slot).</param>
+    /// <param name="currentValue">El valor del recurso actual como un entero (por ejemplo, 55).</param>
+    /// <param name="uiIcons">El arreglo de componentes Image a actualizar (uno por ranura de icono).</param>
     /// <param name="states">
-    ///   Array of exactly 5 sprites in order: [0]=Empty, [1]=Quarter, [2]=Half,
-    ///   [3]=Three-quarter, [4]=Full.
+    ///   Arreglo de exactamente 5 sprites en orden: [0]=Vacío, [1]=Cuarto, [2]=Medio,
+    ///   [3]=Tres cuartos, [4]=Lleno.
     /// </param>
     private void UpdateFractionalIcons(int currentValue, Image[] uiIcons, Sprite[] states)
     {
-        // ── Safety checks ───────────────────────────────────────────────────
-        // If any required reference is missing in the Inspector, bail out
-        // silently rather than throwing a NullReferenceException at runtime.
+        // ── Comprobaciones de seguridad ─────────────────────────────────────
+        // Si falta alguna referencia requerida en el Inspector, salir silenciosamente
+        // en lugar de lanzar una excepción NullReferenceException en tiempo de ejecución.
         if (uiIcons == null || uiIcons.Length == 0) return;
         if (states  == null || states.Length < 5)   return;
 
-        // ── Loop over every icon slot ───────────────────────────────────────
+        // ── Bucle sobre cada ranura de icono ────────────────────────────────
         for (int i = 0; i < uiIcons.Length; i++)
         {
-            // Skip null entries (in case an array slot was left empty).
+            // Omitir entradas nulas (en caso de que una ranura de arreglo se haya dejado vacía).
             if (uiIcons[i] == null) continue;
 
-            // STEP A: How many points "spill" into this icon's 20-pt window?
+            // PASO A: ¿Cuántos puntos "se desbordan" en la ventana de 20 puntos de este icono?
             int pointsInThisIcon = currentValue - (i * POINTS_PER_ICON);
 
-            // Clamp so we never exceed 20 (full) or go below 0 (empty).
+            // Limitar para que nunca excedamos 20 (lleno) o bajemos de 0 (vacío).
             pointsInThisIcon = Mathf.Clamp(pointsInThisIcon, 0, POINTS_PER_ICON);
 
-            // STEP B: Integer division → sprite state index [0, 4].
-            //   0 pts  →  0  (Empty)
-            //   1-5    →  1  (Quarter)
-            //   6-10   →  2  (Half)
-            //   11-15  →  3  (Three-quarter)
-            //   16-20  →  4  (Full)
+            // PASO B: División entera → índice de estado del sprite [0, 4].
+            //   0 pts  →  0  (Vacío)
+            //   1-5    →  1  (Cuarto)
+            //   6-10   →  2  (Medio)
+            //   11-15  →  3  (Tres cuartos)
+            //   16-20  →  4  (Lleno)
             int stateIndex = pointsInThisIcon / POINTS_PER_QUARTER;
 
-            // Apply the correct sprite to this icon slot's Image component.
+            // Aplicar el sprite correcto al componente Image de esta ranura de icono.
             uiIcons[i].sprite = states[stateIndex];
         }
     }
 
     // =========================================================================
-    // HEALTH HEARTS — UPDATE LOGIC
+    // CORAZONES DE SALUD — LÓGICA DE ACTUALIZACIÓN
     // =========================================================================
 
     /// <summary>
-    /// Called every time HealthComponent fires OnHealthChanged.
-    /// Converts the normalised health float back to an integer HP value,
-    /// then delegates all icon-sprite math to UpdateFractionalIcons.
+    /// Llamado cada vez que HealthComponent dispara OnHealthChanged.
+    /// Convierte el float de salud normalizado de nuevo a un valor HP entero,
+    /// luego delega todo el cálculo de icono-sprite a UpdateFractionalIcons.
     /// </summary>
-    /// <param name="normalized">Health fraction 0.0 (dead) → 1.0 (full).</param>
+    /// <param name="normalized">Fracción de salud 0.0 (muerto) → 1.0 (lleno).</param>
     private void UpdateHealthBar(float normalized)
     {
-        // We need the component to read CurrentHealth as a raw integer.
+        // Necesitamos el componente para leer CurrentHealth como un entero bruto.
         if (playerHealth == null) return;
 
-        // Convert normalised float → integer HP.
-        // We read CurrentHealth directly (e.g. 65) instead of using the
-        // normalised float to avoid any floating-point rounding errors at
-        // exact quarter-segment boundaries.
+        // Convertir float normalizado → HP entero.
+        // Leemos CurrentHealth directamente (por ejemplo, 65) en lugar de usar el
+        // float normalizado para evitar errores de redondeo de punto flotante en
+        // los límites exactos de los cuartos de segmento.
         int currentHP = playerHealth.CurrentHealth;
 
-        // Hand off all math to the shared helper.
+        // Entregar todas las matemáticas al ayudante compartido.
         UpdateFractionalIcons(currentHP, corazonesUI, estadosCorazon);
 
-        // ── JUICE — Animate on heal or damage ────────────────────────────────
-        // _previousHealth is -1 on the very first call (initialisation),
-        // so we skip animations that frame to avoid a false "heal" flash.
+        // ── JUGO (JUICE) — Animación al curar o recibir daño ──────────────────
+        // _previousHealth es -1 en la primera llamada (inicialización),
+        // por lo que omitimos las animaciones en ese frame para evitar un parpadeo falso de "curación".
         if (_previousHealth >= 0f)
         {
             if (normalized < _previousHealth)
             {
-                // Health went DOWN → player took damage → flash all hearts red.
+                // La salud bajó → el jugador recibió daño → parpadear todos los corazones en rojo.
                 if (_healthFlash != null) StopCoroutine(_healthFlash);
                 _healthFlash = StartCoroutine(FlashIconsRoutine(corazonesUI));
             }
             else if (normalized > _previousHealth && heartsContainer != null)
             {
-                // Health went UP → player was healed → punch-scale the container.
+                // La salud subió → el jugador se curó → escalar el contenedor con un golpe (punch-scale).
                 StartCoroutine(PunchScaleRoutine(heartsContainer));
             }
         }
 
-        // Store normalised value for the next comparison.
+        // Guardar el valor normalizado para la siguiente comparación.
         _previousHealth = normalized;
     }
 
     // =========================================================================
-    // MANA FLAMES — UPDATE LOGIC
+    // LLAMAS DE MANÁ — LÓGICA DE ACTUALIZACIÓN
     // =========================================================================
 
     /// <summary>
-    /// Called every time PlayerResourceComponent fires OnManaChanged.
-    /// Converts the normalised mana float to an integer and delegates to
+    /// Llamado cada vez que PlayerResourceComponent dispara OnManaChanged.
+    /// Convierte el float de maná normalizado a un entero y delega en
     /// UpdateFractionalIcons.
     /// </summary>
-    /// <param name="normalized">Mana fraction 0.0 (empty) → 1.0 (full).</param>
+    /// <param name="normalized">Fracción de maná 0.0 (vacío) → 1.0 (lleno).</param>
     private void UpdateManaBar(float normalized)
     {
         if (playerResources == null) return;
 
-        // Convert normalised float → integer Mana points.
-        // PlayerResourceComponent.CurrentMana is already an int property.
+        // Convertir float normalizado → puntos de Maná enteros.
+        // PlayerResourceComponent.CurrentMana ya es una propiedad entera.
         int currentMana = playerResources.CurrentMana;
 
-        // Hand off all math to the shared helper.
+        // Entregar todas las matemáticas al ayudante compartido.
         UpdateFractionalIcons(currentMana, manaUI, manaStates);
     }
 
     // =========================================================================
-    // ENERGY BOLTS — UPDATE LOGIC
+    // RAYOS DE ENERGÍA — LÓGICA DE ACTUALIZACIÓN
     // =========================================================================
 
     /// <summary>
-    /// Called every time PlayerResourceComponent fires OnEnergyChanged.
-    /// Converts the normalised energy float to an integer and delegates to
+    /// Llamado cada vez que PlayerResourceComponent dispara OnEnergyChanged.
+    /// Convierte el float de energía normalizado a un entero y delega en
     /// UpdateFractionalIcons.
     /// </summary>
-    /// <param name="normalized">Energy fraction 0.0 (empty) → 1.0 (full).</param>
+    /// <param name="normalized">Fracción de energía 0.0 (vacío) → 1.0 (lleno).</param>
     private void UpdateEnergyBar(float normalized)
     {
         if (playerResources == null) return;
 
-        // Convert normalised float → integer Energy points.
+        // Convertir float normalizado → puntos de Energía enteros.
         int currentEnergy = playerResources.CurrentEnergy;
 
-        // Hand off all math to the shared helper.
+        // Entregar todas las matemáticas al ayudante compartido.
         UpdateFractionalIcons(currentEnergy, energyUI, energyStates);
     }
 
     // =========================================================================
-    // DEPLETION FLASH HANDLERS
+    // MANEJADORES DE DESTELLO POR AGOTAMIENTO
     // =========================================================================
-    //  These are called by static events when a system TRIES to spend a resource
-    //  but there isn't enough. They trigger the error flash "juice" animation.
+    //  Estos son llamados por eventos estáticos cuando un sistema INTENTA gastar un recurso
+    //  pero no hay suficiente. Disparan la animación de parpadeo de error "jugo" (juice).
 
     private void HandleManaDepleted()
     {
-        // Guard: if the array hasn't been set up in the Inspector, do nothing.
+        // Guardia: si el arreglo no se ha configurado en el Inspector, no hacer nada.
         if (manaUI == null || manaUI.Length == 0) return;
 
-        // Stop any flash already in progress before starting a fresh one.
+        // Detener cualquier parpadeo ya en curso antes de comenzar uno nuevo.
         if (_manaFlash != null) StopCoroutine(_manaFlash);
         _manaFlash = StartCoroutine(FlashIconsRoutine(manaUI));
     }
 
     private void HandleEnergyDepleted()
     {
-        // Guard: if the array hasn't been set up in the Inspector, do nothing.
+        // Guardia: si el arreglo no se ha configurado en el Inspector, no hacer nada.
         if (energyUI == null || energyUI.Length == 0) return;
 
         if (_energyFlash != null) StopCoroutine(_energyFlash);
@@ -459,7 +459,7 @@ public class PlayerHUD : MonoBehaviour
     }
 
     // =========================================================================
-    // WALLET / COINS
+    // MONEDERO / MONEDAS
     // =========================================================================
 
     private void HandleCoinsChanged(int newAmount)
@@ -467,40 +467,40 @@ public class PlayerHUD : MonoBehaviour
         if (_coinText == null) return;
         _coinText.text = newAmount.ToString();
 
-        // Stop any already-running pulse so we don't have two competing routines.
+        // Detener cualquier pulso ya en ejecución para que no haya dos rutinas compitiendo.
         if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
         _pulseCoroutine = StartCoroutine(PulseText());
     }
 
     // =========================================================================
-    // COROUTINES — JUICE ANIMATIONS
+    // CORRUTINAS — ANIMACIONES DE JUGO (JUICE)
     // =========================================================================
 
     /// <summary>
-    /// Instantly changes ALL icons in the given array to the error flash colour,
-    /// then restores them to white after <see cref="_flashDuration"/> seconds.
+    /// Cambia instantáneamente TODOS los iconos del arreglo dado al color de parpadeo de error,
+    /// luego los restaura a blanco después de <see cref="_flashDuration"/> segundos.
     ///
-    /// This is the same concept as the old FlashBarRoutine / FlashHeartsRoutine,
-    /// but now works with any icon array — so it handles Hearts, Flames, and
-    /// Bolts without duplicating the coroutine code.
+    /// Este es el mismo concepto que el antiguo FlashBarRoutine / FlashHeartsRoutine,
+    /// pero ahora funciona con cualquier arreglo de iconos, por lo que maneja corazones, llamas y
+    /// rayos sin duplicar el código de la corrutina.
     /// </summary>
-    /// <param name="icons">The icon Image array to flash.</param>
+    /// <param name="icons">El arreglo Image de iconos a parpadear.</param>
     private IEnumerator FlashIconsRoutine(Image[] icons)
     {
-        // Flash all icons red.
+        // Parpadear todos los iconos en rojo.
         foreach (var img in icons)
             if (img != null) img.color = _errorFlashColor;
 
         yield return new WaitForSeconds(_flashDuration);
 
-        // Restore all icons to white (default Unity Image color).
+        // Restaurar todos los iconos a blanco (color predeterminado de Image de Unity).
         foreach (var img in icons)
             if (img != null) img.color = Color.white;
     }
 
     /// <summary>
-    /// Instantly scales the coin text up to <see cref="_pulseScale"/>, then
-    /// smoothly lerps it back to its original scale over <see cref="_pulseDuration"/> seconds.
+    /// Escala instantáneamente el texto de monedas hasta <see cref="_pulseScale"/>, luego
+    /// realiza un lerp suave de regreso a su escala original durante <see cref="_pulseDuration"/> segundos.
     /// </summary>
     private IEnumerator PulseText()
     {
@@ -523,9 +523,9 @@ public class PlayerHUD : MonoBehaviour
     }
 
     /// <summary>
-    /// Instantly scales a RectTransform up to <see cref="_healPunchScale"/>,
-    /// then smoothly lerps it back to (1, 1, 1) over <see cref="_punchDuration"/> seconds.
-    /// Used for the heal animation on the hearts container.
+    /// Escala instantáneamente un RectTransform hasta <see cref="_healPunchScale"/>,
+    /// luego realiza un lerp suave de regreso a (1, 1, 1) durante <see cref="_punchDuration"/> segundos.
+    /// Se usa para la animación de curación en el contenedor de corazones.
     /// </summary>
     private IEnumerator PunchScaleRoutine(RectTransform rt)
     {

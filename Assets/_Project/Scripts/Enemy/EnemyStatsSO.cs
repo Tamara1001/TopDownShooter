@@ -2,100 +2,100 @@
 using UnityEngine;
 
 /// <summary>
-/// ScriptableObject that stores all tunable stats for one enemy archetype.
-/// Assign one of these assets to <see cref="EnemyBrain"/> via the Inspector.
+/// ScriptableObject que almacena todas las estadísticas ajustables para un arquetipo de enemigo.
+/// Asigne uno de estos assets a <see cref="EnemyBrain"/> a través del Inspector.
 /// </summary>
 [CreateAssetMenu(fileName = "NewEnemyStats", menuName = "TopDownShooter/Enemy Stats")]
 public class EnemyStatsSO : ScriptableObject
 {
     // ----------------------------------------------------------
-    // HEALTH
+    // SALUD
     // ----------------------------------------------------------
 
     [Header("Health")]
-    [Tooltip("Maximum hit points. The HealthComponent will read this value at initialisation.")]
+    [Tooltip("Puntos de vida máximos. El HealthComponent leerá este valor al inicializarse.")]
     [SerializeField] private int maxHealth = 100;
 
     // ----------------------------------------------------------
-    // MOVEMENT
+    // MOVIMIENTO
     // ----------------------------------------------------------
 
     [Header("Movement")]
-    [Tooltip("NavMeshAgent movement speed (units per second).")]
+    [Tooltip("Velocidad de movimiento del NavMeshAgent (unidades por segundo).")]
     [SerializeField] private float moveSpeed = 3.5f;
 
     // ----------------------------------------------------------
-    // DETECTION & RANGE
+    // DETECCIÓN Y RANGO
     // ----------------------------------------------------------
 
     [Header("Detection & Attack Range")]
-    [Tooltip("Radius (world units) within which this enemy detects the player and transitions from Idle → Chase.")]
+    [Tooltip("Radio (unidades del mundo) dentro del cual este enemigo detecta al jugador y realiza la transición de Idle → Chase.")]
     [SerializeField] private float detectionRange = 10f;
 
-    [Tooltip("Radius (world units) at which this enemy stops chasing and transitions to the Attack state.")]
+    [Tooltip("Radio (unidades del mundo) en el cual este enemigo deja de perseguir y realiza la transición al estado Attack.")]
     [SerializeField] private float attackRange = 2f;
 
     // ----------------------------------------------------------
-    // COMBAT TIMING
+    // TIEMPOS DE COMBATE
     // ----------------------------------------------------------
 
     [Header("Combat")]
-    [Tooltip("Minimum seconds between consecutive attack executions while in Attack state.")]
+    [Tooltip("Segundos mínimos entre ejecuciones de ataque consecutivas mientras está en el estado Attack.")]
     [SerializeField] private float attackCooldown = 1.5f;
 
     // ----------------------------------------------------------
-    // PUBLIC READ-ONLY GETTERS
-    // External code (e.g., EnemyBrain) reads these but CANNOT
-    // write to them, preserving the SO's data integrity.
+    // GETTERS PÚBLICOS DE SOLO LECTURA
+    // El código externo (por ejemplo, EnemyBrain) lee estos pero NO puede
+    // escribir en ellos, preservando la integridad de los datos del SO.
     // ----------------------------------------------------------
 
-    /// <summary>Maximum hit points for this enemy archetype.</summary>
+    /// <summary>Puntos de vida máximos para este arquetipo de enemigo.</summary>
     public int   MaxHealth      => maxHealth;
 
-    /// <summary>NavMeshAgent movement speed in units per second.</summary>
+    /// <summary>Velocidad de movimiento del NavMeshAgent en unidades por segundo.</summary>
     public float MoveSpeed      => moveSpeed;
 
-    /// <summary>World-space radius at which the enemy detects the player.</summary>
+    /// <summary>Radio en espacio de mundo en el cual el enemigo detecta al jugador.</summary>
     public float DetectionRange => detectionRange;
 
-    /// <summary>World-space radius at which the enemy switches to the Attack state.</summary>
+    /// <summary>Radio en espacio de mundo en el cual el enemigo cambia al estado Attack.</summary>
     public float AttackRange    => attackRange;
 
-    /// <summary>Seconds between consecutive attack activations.</summary>
+    /// <summary>Segundos entre activaciones de ataque consecutivas.</summary>
     public float AttackCooldown => attackCooldown;
 
     // ----------------------------------------------------------
-    // EDITOR VALIDATION
-    // Runs in the Editor whenever a value is changed in the
-    // Inspector, catching design mistakes before entering Play Mode.
+    // VALIDACIÓN EN EDITOR
+    // Se ejecuta en el Editor cada vez que se cambia un valor en el
+    // Inspector, detectando errores de diseño antes de entrar en Play Mode.
     // ----------------------------------------------------------
 
 #if UNITY_EDITOR
     private void OnValidate()
     {
-        // Clamp health to a sensible minimum.
+        // Limitar la salud a un mínimo sensato.
         if (maxHealth <= 0)
         {
             maxHealth = 1;
             Debug.LogWarning($"[EnemyStatsSO] '{name}': maxHealth must be > 0. Clamped to 1.", this);
         }
 
-        // Speed must be positive.
+        // La velocidad debe ser positiva.
         if (moveSpeed <= 0f)
         {
             moveSpeed = 0.1f;
             Debug.LogWarning($"[EnemyStatsSO] '{name}': moveSpeed must be > 0. Clamped to 0.1.", this);
         }
 
-        // Attack range must be strictly inside detection range, otherwise
-        // the enemy would never Chase before reaching the player.
+        // El rango de ataque debe estar estrictamente dentro del rango de detección, de lo contrario
+        // el enemigo nunca realizaría la persecución (Chase) antes de alcanzar al jugador.
         if (attackRange >= detectionRange)
         {
             attackRange = detectionRange - 0.5f;
             Debug.LogWarning($"[EnemyStatsSO] '{name}': attackRange must be < detectionRange. Adjusted to {attackRange}.", this);
         }
 
-        // Cooldown must be positive to avoid infinite attack spam.
+        // El enfriamiento (cooldown) debe ser positivo para evitar el spam infinito de ataques.
         if (attackCooldown <= 0f)
         {
             attackCooldown = 0.1f;

@@ -5,18 +5,17 @@ using UnityEngine;
 namespace TopDownShooter.Dungeon
 {
     /// <summary>
-    /// Doorway attachment point on a room prefab.
-    /// Placed on each wall that can connect to an adjacent room.
+    /// Punto de conexión de entrada (puerta) en un prefab de sala.
+    /// Colocado en cada pared que pueda conectarse a una sala adyacente.
     /// </summary>
     public sealed class RoomSocket : MonoBehaviour
     {
         // ─────────────────────────────────────────────────────────────────────
-        //  INSPECTOR FIELDS
+        //  CAMPOS DEL INSPECTOR
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Socket Identity")]
-        [Tooltip("Cardinal direction this socket faces relative to the room's local space. " +
-                 "North = +Z, East = +X, South = −Z, West = −X.")]
+        [Tooltip("Dirección cardinal a la que mira este socket relativa al espacio local de la sala. North = +Z, East = +X, South = −Z, West = −X.")]
         [SerializeField] private SocketDirection _direction;
 
         [Tooltip("Coordenada local en la grilla de este socket relativo al pivote (0,0) de la sala. " +
@@ -26,25 +25,24 @@ namespace TopDownShooter.Dungeon
         [SerializeField] private Vector2Int _localGridPosition = Vector2Int.zero;
 
         [Header("Wall Reference")]
-        [Tooltip("The solid wall GameObject that blocks this doorway when unconnected. " +
-                 "Disabled by Connect() and replaced with a door prefab.")]
+        [Tooltip("El GameObject de pared sólida que bloquea esta entrada cuando no está conectada. Se desactiva mediante Connect() y se reemplaza con un prefab de puerta.")]
         [SerializeField] private GameObject _solidWall;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PRIVATE STATE
+        //  ESTADO PRIVADO
         // ─────────────────────────────────────────────────────────────────────
 
-        // True once Connect() has been called — prevents double-connection.
+        // Verdadero una vez que se ha llamado a Connect() — evita la doble conexión.
         private bool _isConnected;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  READ-ONLY PROPERTIES
+        //  PROPIEDADES DE SOLO LECTURA
         // ─────────────────────────────────────────────────────────────────────
 
-        /// <summary>Cardinal direction this socket faces.</summary>
+        /// <summary>Dirección cardinal a la que mira este socket.</summary>
         public SocketDirection Direction => _direction;
 
-        /// <summary>True if this socket has been connected to another room.</summary>
+        /// <summary>Verdadero si este socket ha sido conectado a otra sala.</summary>
         public bool IsConnected => _isConnected;
 
         /// <summary>
@@ -55,29 +53,29 @@ namespace TopDownShooter.Dungeon
         /// </summary>
         public Vector2Int LocalGridPosition => _localGridPosition;
 
-        /// <summary>The shared door assigned to this connection, if any.</summary>
+        /// <summary>La puerta compartida asignada a esta conexión, si existe alguna.</summary>
         public DoorController AssignedDoor { get; private set; }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PUBLIC API
+        //  API PÚBLICA
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Finalises a connection at this socket:
+        /// Finaliza una conexión en este socket:
         /// <list type="number">
-        ///   <item>Marks the socket as connected.</item>
-        ///   <item>Disables the solid wall blocking the doorway.</item>
-        ///   <item>Assigns the shared <paramref name="door"/> reference.</item>
+        ///   <item>Marca el socket como conectado.</item>
+        ///   <item>Desactiva la pared sólida que bloquea la entrada.</item>
+        ///   <item>Asigna la referencia de <paramref name="door"/> compartida.</item>
         /// </list>
-        /// Idempotent — calling twice is a safe no-op with a warning log.
+        /// Idempotente — llamarlo dos veces es una operación segura y sin efectos secundarios con un registro de advertencia.
         /// </summary>
         /// <param name="door">
-        /// The shared door controller. Pass <c>null</c> to simply open
-        /// the wall without a door (e.g. for corridor connections).
+        /// El controlador de puerta compartido. Pase <c>null</c> para simplemente abrir
+        /// la pared sin una puerta (por ejemplo, para conexiones de pasillos).
         /// </param>
         public void AssignDoor(DoorController door)
         {
-            // Guard: prevent double-connection.
+            // Guardia: evitar la doble conexión.
             if (_isConnected)
             {
                 Debug.LogWarning($"[RoomSocket] '{name}' ({_direction}): Already connected. " +
@@ -88,7 +86,7 @@ namespace TopDownShooter.Dungeon
             _isConnected = true;
             AssignedDoor = door;
 
-            // Disable the solid wall so the doorway opening is revealed.
+            // Desactivar la pared sólida para que se revele la apertura de la entrada.
             if (_solidWall != null)
             {
                 _solidWall.SetActive(false);
@@ -101,13 +99,13 @@ namespace TopDownShooter.Dungeon
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  STATIC UTILITY
+        //  UTILIDAD ESTÁTICA
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Returns the opposing <see cref="SocketDirection"/> for a given direction.
-        /// Used by the generator to find the matching socket on an adjacent room
-        /// (e.g. our North socket connects to their South socket).
+        /// Devuelve la <see cref="SocketDirection"/> opuesta para una dirección dada.
+        /// Utilizada por el generador para encontrar el socket coincidente en una sala adyacente
+        /// (por ejemplo, nuestro socket North se conecta a su socket South).
         /// </summary>
         public static SocketDirection GetOppositeDirection(SocketDirection direction)
         {
@@ -117,19 +115,19 @@ namespace TopDownShooter.Dungeon
                 SocketDirection.South => SocketDirection.North,
                 SocketDirection.East  => SocketDirection.West,
                 SocketDirection.West  => SocketDirection.East,
-                _ => direction   // Defensive fallback — should never hit.
+                _ => direction   // Respaldo defensivo — nunca debería ocurrir.
             };
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  EDITOR GIZMOS
+        //  GIZMOS DE EDITOR
         // ─────────────────────────────────────────────────────────────────────
 
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
-            // Draw a small directional arrow so designers can verify socket
-            // orientation in the Scene view without entering Play Mode.
+            // Dibujar una pequeña flecha direccional para que los diseñadores puedan verificar
+            // la orientación del socket en la vista de Escena sin entrar en Play Mode.
             Gizmos.color = _isConnected
                 ? new Color(0.2f, 0.9f, 0.3f, 0.8f)   // Green = connected
                 : new Color(0.9f, 0.2f, 0.2f, 0.8f);   // Red   = available

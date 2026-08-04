@@ -13,57 +13,57 @@ using UnityEditor;
 namespace TopDownShooter.World
 {
     /// <summary>
-    /// A world object that requires a specific <see cref="ConsumableDataSO"/> Key
-    /// to be in the player's consumable slot before granting Victory.
-    /// Implements <see cref="IWorldInteractable"/> to integrate with
-    /// <see cref="PlayerInventory"/>'s E-key interaction flow.
+    /// Objeto del mundo que requiere que una llave <see cref="ConsumableDataSO"/> específica
+    /// esté en la ranura de consumibles del jugador antes de otorgar la victoria.
+    /// Implementa <see cref="IWorldInteractable"/> para integrarse con el
+    /// flujo de interacción de la tecla E de <see cref="PlayerInventory"/>.
     /// </summary>
     [RequireComponent(typeof(Collider))]
     public sealed class VictoryDoor : MonoBehaviour, IWorldInteractable
     {
         // ─────────────────────────────────────────────────────────────────────
-        //  INSPECTOR FIELDS
+        //  CAMPOS DEL INSPECTOR
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Door Configuration")]
-        [Tooltip("The ConsumableDataSO representing the Key that unlocks this door. " +
-                 "Must be a Quest Item (IsQuestItem = true) so it cannot be consumed " +
-                 "accidentally with Q.")]
+        [Tooltip("El ConsumableDataSO que representa la llave que desbloquea esta puerta. " +
+                 "Debe ser un objeto de misión (IsQuestItem = true) para que no se consuma " +
+                 "accidentalmente con Q.")]
         [SerializeField] private ConsumableDataSO _requiredKey;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PRIVATE STATE
+        //  ESTADO PRIVADO
         // ─────────────────────────────────────────────────────────────────────
 
-        // Prevents the Victory state from triggering more than once if the player
-        // presses E repeatedly before the state transition completes.
-        // Mirrors the _isUnlocked guard used in LockedBossDoor.
-        // Exposed publicly so debug tools can query the state without reflection.
+        // Evita que el estado de victoria se active más de una vez si el jugador
+        // presiona E repetidamente antes de que se complete la transición de estado.
+        // Refleja la salvaguarda _isUnlocked utilizada en LockedBossDoor.
+        // Expuesto públicamente para que las herramientas de depuración puedan consultar el estado sin reflexión.
         public bool IsUnlocked { get; private set; } = false;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  IWorldInteractable IMPLEMENTATION
+        //  IMPLEMENTACIÓN DE IWorldInteractable
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Called by <see cref="PlayerInventory"/> when the player presses E
-        /// near this door. Checks whether the player holds <see cref="_requiredKey"/>
-        /// in the consumable slot and transitions to Victory if so.
+        /// Llamado por <see cref="PlayerInventory"/> cuando el jugador presiona E
+        /// cerca de esta puerta. Comprueba si el jugador sostiene <see cref="_requiredKey"/>
+        /// en la ranura de consumibles y realiza la transición a Victoria si es así.
         /// </summary>
         /// <param name="inventory">The player's inventory to inspect.</param>
         public void Interact(PlayerInventory inventory)
         {
-            // ── Entry-point trace ────────────────────────────────────────────
-            // If this line NEVER appears in the Console, the problem is upstream:
-            // the door's collider is missing, is on the wrong layer, or sits outside
-            // the PlayerInventory._pickupRadius OverlapSphere.
+            // ── Traza del punto de entrada ───────────────────────────────────
+            // Si esta línea NUNCA aparece en la consola, el problema está río arriba:
+            // falta el colisionador de la puerta, está en la capa incorrecta o se encuentra fuera
+            // del OverlapSphere de PlayerInventory._pickupRadius.
             Debug.Log($"[VictoryDoor] Interact called by '{inventory?.name ?? "NULL"}'. " +
                       $"Player holds: '{inventory?.CurrentConsumable?.DisplayName ?? "None"}'.");
 
-            // ── Guard: already unlocked ──────────────────────────────────────
+            // ── Salvaguarda: ya desbloqueada ─────────────────────────────────
             if (IsUnlocked) return;
 
-            // ── Guard: inventory must be valid ───────────────────────────────
+            // ── Salvaguarda: el inventario debe ser válido ───────────────────
             if (inventory == null)
             {
                 Debug.LogError("[VictoryDoor] Interact received a null PlayerInventory reference. " +
@@ -71,7 +71,7 @@ namespace TopDownShooter.World
                 return;
             }
 
-            // ── Guard: required key must be configured ───────────────────────
+            // ── Salvaguarda: la llave requerida debe estar configurada ───────
             if (_requiredKey == null)
             {
                 Debug.LogError("[VictoryDoor] _requiredKey is not assigned! " +
@@ -79,9 +79,9 @@ namespace TopDownShooter.World
                 return;
             }
 
-            // ── Key comparison ───────────────────────────────────────────────
-            // SO reference equality: two pickups sharing the same SO asset are
-            // the same key type — no string comparison needed or desired.
+            // ── Comparación de llaves ────────────────────────────────────────
+            // Igualdad de referencia de SO: dos objetos que comparten el mismo asset SO son
+            // del mismo tipo de llave — no se necesita ni se desea comparación de cadenas.
             string heldKeyName   = inventory.CurrentConsumable?.DisplayName ?? "None";
             string neededKeyName = _requiredKey.DisplayName;
 
@@ -121,15 +121,15 @@ namespace TopDownShooter.World
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  EDITOR UTILITIES & GIZMOS
+        //  UTILIDADES Y GIZMOS DE EDITOR
         // ─────────────────────────────────────────────────────────────────────
 
 #if UNITY_EDITOR
         /// <summary>
-        /// One-click fix for a BoxCollider that is buried inside the door mesh
-        /// and therefore invisible to PlayerInventory's OverlapSphere.
-        /// Run via right-click → "Reset Collider Size" in the Inspector.
-        /// Adjust the size to match your prefab after running this.
+        /// Corrección de un clic para un BoxCollider que está enterrado dentro de la malla de la puerta
+        /// y, por lo tanto, es invisible para el OverlapSphere de PlayerInventory.
+        /// Ejecutar a través de clic derecho → "Reset Collider Size" en el Inspector.
+        /// Ajuste el tamaño para que coincida con su prefab después de ejecutar esto.
         /// </summary>
         [ContextMenu("Reset Collider Size")]
         private void ResetColliderSize()
@@ -143,7 +143,7 @@ namespace TopDownShooter.World
             }
 
             box.center = Vector3.zero;
-            box.size   = new Vector3(3f, 5f, 2f);   // Visible, walk-through interactable volume.
+            box.size   = new Vector3(3f, 5f, 2f);   // Volumen interactivo visible y transitable.
 
             EditorUtility.SetDirty(this);
             Debug.Log("[VictoryDoor] BoxCollider reset to (3, 5, 2). " +
@@ -152,12 +152,12 @@ namespace TopDownShooter.World
 
         private void OnDrawGizmos()
         {
-            // Draw a gold wire cube to make the door visible in the Scene view.
+            // Dibujar un cubo de alambre dorado para hacer la puerta visible en la vista de Escena.
             Gizmos.color = new Color(1f, 0.84f, 0f, 0.7f);
             Gizmos.matrix = transform.localToWorldMatrix;
             Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
 
-            // Small icon above the door.
+            // Pequeño icono sobre la puerta.
             Handles.Label(
                 transform.position + Vector3.up * 1.5f,
                 $"[VictoryDoor]\n" +

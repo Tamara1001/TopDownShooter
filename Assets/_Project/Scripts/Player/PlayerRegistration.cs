@@ -2,32 +2,32 @@
 using UnityEngine;
 
 /// <summary>
-/// Lightweight component attached to the Player prefab.
-/// Registers and unregisters the player's <see cref="Transform"/>
-/// with <see cref="GameManager"/> so all systems (EnemyBrain,
-/// minimap, camera rigs) can obtain a canonical, spawn-order-
-/// independent reference to the player.
+/// Componente ligero adjunto al prefab del Jugador.
+/// Registra y desregistra el <see cref="Transform"/> del jugador
+/// en el <see cref="GameManager"/> para que todos los sistemas (EnemyBrain,
+/// minimapa, plataformas de cámara) puedan obtener una referencia canónica al
+/// jugador que sea independiente de su orden de aparición.
 /// </summary>
 public class PlayerRegistration : MonoBehaviour
 {
     // ----------------------------------------------------------
-    // UNITY LIFECYCLE
+    // CICLO DE VIDA DE UNITY
     // ----------------------------------------------------------
 
     /// <summary>
-    /// Publishes this Transform to GameManager as early as possible
-    /// (Awake runs before Start on all other scripts in the same frame).
+    /// Publica este Transform en el GameManager lo antes posible
+    /// (Awake se ejecuta antes de Start en todos los demás scripts en el mismo frame).
     ///
-    /// Uses a null-guard on <see cref="GameManager.Instance"/> so the
-    /// script degrades gracefully in isolated test scenes that have no
-    /// GameManager — a warning is logged but nothing breaks.
+    /// Utiliza una protección contra nulos en <see cref="GameManager.Instance"/> para que el
+    /// script se degrade suavemente en escenas de prueba aisladas que no tienen
+    /// GameManager — se registra una advertencia pero nada se rompe.
     /// </summary>
     private void Awake()
     {
         if (GameManager.Instance == null)
         {
-            // Graceful degradation: EnemyBrain's Tier 2 (tag search)
-            // will still find the player normally.
+            // Degradación suave: la búsqueda de Nivel 2 (por etiqueta) de EnemyBrain
+            // seguirá encontrando al jugador de forma normal.
             Debug.LogWarning("[PlayerRegistration] GameManager.Instance is null. " +
                              "Player will NOT be registered centrally. " +
                              "Add a GameManager to the scene for full multi-system support.");
@@ -38,18 +38,18 @@ public class PlayerRegistration : MonoBehaviour
     }
 
     /// <summary>
-    /// Clears the central player reference when this GameObject is
-    /// permanently destroyed (e.g., game over without immediate respawn).
+    /// Limpia la referencia central del jugador cuando este GameObject se
+    /// destruye permanentemente (por ejemplo, fin del juego sin reaparición inmediata).
     ///
-    /// POOLING NOTE: If the player is deactivated (pooled) rather than
-    /// destroyed, replace this with an explicit UnregisterPlayer() call
-    /// in your pool's release callback to keep the timeline predictable.
+    /// NOTA SOBRE POOLING: Si el jugador se desactiva (se devuelve al pool) en lugar de
+    /// destruirse, reemplace esto con una llamada explícita a UnregisterPlayer()
+    /// en la llamada de retorno de liberación de su pool para mantener la línea de tiempo predecible.
     /// </summary>
     private void OnDestroy()
     {
-        // Guard: only unregister if WE are the currently registered player.
-        // This prevents a newly respawned player from being unregistered
-        // by the old instance's OnDestroy firing a frame later.
+        // Guardia: solo desregistrar si NOSOTROS somos el jugador registrado actualmente.
+        // Esto evita que un jugador recién reaparecido sea desregistrado
+        // por el OnDestroy de la instancia antigua que se dispara un frame más tarde.
         if (GameManager.Instance == null) return;
 
         if (GameManager.Instance.PlayerTransform == transform)

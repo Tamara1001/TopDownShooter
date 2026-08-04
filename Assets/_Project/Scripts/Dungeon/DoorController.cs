@@ -6,10 +6,10 @@ using UnityEngine;
 namespace TopDownShooter.Dungeon
 {
     /// <summary>
-    /// Controls the vertical translation and collision toggle of a door.
-    /// Opens by sinking child visual parts below the floor; closes by raising
-    /// them back to their original authored positions. Uses 100% Opaque
-    /// materials — no alpha transparency required.
+    /// Controla la traslación vertical y la alternancia de colisión de una puerta.
+    /// Se abre hundiendo las partes visuales hijas debajo del suelo; se cierra elevándolas
+    /// de vuelta a sus posiciones originales. Utiliza materiales 100% opacos —
+    /// no requiere transparencia alfa.
     /// </summary>
     public sealed class DoorController : MonoBehaviour
     {
@@ -18,74 +18,74 @@ namespace TopDownShooter.Dungeon
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Caches one visual part's Transform and its authored (closed)
-        /// local position so the animation can always return to exactly
-        /// the right place regardless of prefab hierarchy depth.
+        /// Almacena en caché el Transform de una parte visual y su posición local
+        /// original (cerrada) para que la animación siempre pueda regresar exactamente
+        /// al lugar correcto independientemente de la profundidad de la jerarquía del prefab.
         /// </summary>
         private class VisualPartCache
         {
-            /// <summary>The child Transform to move.</summary>
+            /// <summary>El Transform hijo a mover.</summary>
             public Transform Part;
 
             /// <summary>
-            /// The localPosition recorded in Awake — this is the CLOSED state.
+            /// La localPosition registrada en Awake — este es el estado CERRADO.
             /// </summary>
             public Vector3 ClosedLocalPosition;
 
             /// <summary>
-            /// Derived from ClosedLocalPosition + Vector3.down * sinkDistance.
-            /// This is the OPEN (sunken) state.
+            /// Derivado de ClosedLocalPosition + Vector3.down * sinkDistance.
+            /// Este es el estado ABIERTO (hundido).
             /// </summary>
             public Vector3 OpenLocalPosition;
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  INSPECTOR FIELDS
+        //  CAMPOS DEL INSPECTOR
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Animation")]
-        [Tooltip("Duration of the open/close translation in seconds.")]
+        [Tooltip("Duración de la traslación de apertura/cierre en segundos.")]
         [SerializeField] private float _slideDuration = 0.4f;
 
-        [Tooltip("Distance (world units) the visual parts sink below their " +
-                 "resting position when the door is open. " +
-                 "Should be at least as tall as your door mesh.")]
+        [Tooltip("Distancia (unidades del mundo) que las partes visuales se hunden por debajo de su " +
+                 "posición de reposo cuando la puerta está abierta. " +
+                 "Debe ser al menos tan alta como la malla de su puerta.")]
         [SerializeField] private float _sinkDistance = 5f;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PRIVATE STATE
+        //  ESTADO PRIVADO
         // ─────────────────────────────────────────────────────────────────────
 
-        // Physical colliders — toggled on CloseDoor / OpenDoor.
+        // Colisionadores físicos — alternados en CloseDoor / OpenDoor.
         private Collider[] _colliders;
 
-        // Visual parts that will be translated during animation.
+        // Partes visuales que se trasladarán durante la animación.
         private List<VisualPartCache> _visualParts = new List<VisualPartCache>();
 
-        // Active slide coroutine — stopped before launching a new one so that
-        // calling OpenDoor() mid-close (or vice-versa) never fights itself.
+        // Corrutina de deslizamiento activa — detenida antes de lanzar una nueva para que
+        // llamar a OpenDoor() a mitad del cierre (o viceversa) nunca cause conflictos.
         private Coroutine _slideCoroutine;
 
-        // Cached lock component — queried once in Awake, zero per-frame cost.
-        // Any sibling MonoBehaviour implementing IDoorLock can veto OpenDoor().
+        // Componente de bloqueo cacheado — consultado una vez en Awake, costo cero por frame.
+        // Cualquier MonoBehaviour hermano que implemente IDoorLock puede vetar OpenDoor().
         private IDoorLock _lock;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  UNITY LIFECYCLE
+        //  CICLO DE VIDA DE UNITY
         // ─────────────────────────────────────────────────────────────────────
 
         private void Awake()
         {
-            // Cache any IDoorLock sibling — e.g. LockedBossDoor on the same prefab root.
-            // GetComponent is O(1) and only runs once, so the veto costs nothing at runtime.
+            // Cachear cualquier hermano IDoorLock — por ejemplo, LockedBossDoor en la misma raíz del prefab.
+            // GetComponent es O(1) and only runs once, so the veto costs nothing at runtime.
             _lock = GetComponent<IDoorLock>();
 
-            // Discover all physical barriers — isTrigger check applied in SetCollidersState.
+            // Descubrir todas las barreras físicas — comprobación isTrigger aplicada en SetCollidersState.
             _colliders = GetComponentsInChildren<Collider>();
 
-            // ── Discover visual parts ──────────────────────────────────────────
-            // We move only Transforms that own a Renderer, avoiding accidental
-            // displacement of sockets, spawner nodes, or other non-visual children.
+            // ── Descubrir partes visuales ──────────────────────────────────────────
+            // Movemos solo los Transforms que poseen un Renderer, evitando el desplazamiento
+            // accidental de sockets, nodos de aparición u otros hijos no visuales.
             Renderer[] renderers = GetComponentsInChildren<Renderer>();
             foreach (Renderer r in renderers)
             {
@@ -100,11 +100,11 @@ namespace TopDownShooter.Dungeon
                 });
             }
 
-            // ── Lock-aware initialization ──────────────────────────────────────
-            // Locked door  → start in CLOSED position (raised, solid, blocking).
-            // Unlocked door → start in OPEN position (sunken, passable) — this is
-            //                 the default for combat/corridor doors that only close
-            //                 when the player enters the room.
+            // ── Inicialización consciente del bloqueo ─────────────────────────────
+            // Puerta bloqueada → comenzar en posición CERRADA (elevada, sólida, bloqueando).
+            // Puerta desbloqueada → comenzar en posición ABIERTA (hundida, transitable) — este es
+            //                       el valor predeterminado para las puertas de combate/pasillos que solo se cierran
+            //                       cuando el jugador entra en la sala.
             if (_lock != null && _lock.IsLocked)
             {
                 SetToPosition(closed: true);
@@ -122,10 +122,9 @@ namespace TopDownShooter.Dungeon
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Raises the door to its closed position and enables physics collision.
-        /// Safe to call while the door is already closing or mid-animation —
-        /// the previous coroutine is stopped and a new one starts from the
-        /// current translated position.
+        /// Eleva la puerta a su posición cerrada y habilita la colisión física.
+        /// Es seguro llamarlo mientras la puerta ya se está cerrando o a mitad de la animación —
+        /// la corrutina anterior se detiene y se inicia una nueva desde la posición trasladada actual.
         /// </summary>
         public void CloseDoor()
         {
@@ -136,20 +135,20 @@ namespace TopDownShooter.Dungeon
         }
 
         /// <summary>
-        /// Sinks the door below the floor and disables physics collision.
-        /// Silently vetoed when a sibling <see cref="IDoorLock"/> reports
-        /// <c>IsLocked == true</c> — e.g. when RoomController.ClearRoom()
-        /// broadcasts to all doors but the boss door is still key-locked.
+        /// Hunde la puerta debajo del suelo y deshabilita la colisión física.
+        /// Vetado silenciosamente cuando un hermano <see cref="IDoorLock"/> reporta
+        /// <c>IsLocked == true</c> — por ejemplo, cuando RoomController.ClearRoom()
+        /// transmite la orden a todas las puertas pero la del jefe todavía está bloqueada con llave.
         /// </summary>
         public void OpenDoor()
         {
-            // ── Lock veto ────────────────────────────────────────────────────
-            // A LockedBossDoor (or any IDoorLock) on this same GameObject can
-            // block this call until the player uses the key via Interact().
+            // ── Veto de bloqueo ──────────────────────────────────────────────
+            // Un LockedBossDoor (o cualquier IDoorLock) en este mismo GameObject puede
+            // bloquear esta llamada hasta que el jugador use la llave mediante Interact().
             if (_lock != null && _lock.IsLocked)
             {
-                Debug.Log($"[DoorController] OpenDoor() blocked by lock on '{gameObject.name}'. " +
-                          "Waiting for the player to use the required key.", this);
+                Debug.Log($"[DoorController] OpenDoor() bloqueado por el cerrojo en '{gameObject.name}'. " +
+                          "Esperando a que el jugador use la llave requerida.", this);
                 return;
             }
 
@@ -164,13 +163,13 @@ namespace TopDownShooter.Dungeon
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Smoothly translates every visual part between its open and closed
-        /// local positions over <see cref="_slideDuration"/> seconds.
-        /// Uses smoothstep easing (Mathf.SmoothStep) for a satisfying feel.
+        /// Traslada suavemente cada parte visual entre sus posiciones locales abiertas y cerradas
+        /// durante <see cref="_slideDuration"/> segundos.
+        /// Utiliza una atenuación smoothstep (Mathf.SmoothStep) para una sensación satisfactoria.
         /// </summary>
         /// <param name="closingDoor">
-        /// <c>true</c>  → animate toward ClosedLocalPosition (raise).<br/>
-        /// <c>false</c> → animate toward OpenLocalPosition   (sink).
+        /// <c>true</c>  → anima hacia ClosedLocalPosition (elevar).<br/>
+        /// <c>false</c> → anima hacia OpenLocalPosition   (hundir).
         /// </param>
         private IEnumerator SlideRoutine(bool closingDoor)
         {
@@ -219,7 +218,7 @@ namespace TopDownShooter.Dungeon
                 yield return null;
             }
 
-            // Snap to exact target — eliminates any floating-point drift.
+            // Ajustar al objetivo exacto — elimina cualquier desviación de punto flotante.
             for (int i = 0; i < _visualParts.Count; i++)
             {
                 if (_visualParts[i].Part == null) continue;
@@ -233,12 +232,12 @@ namespace TopDownShooter.Dungeon
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  POSITION UTILITY
+        //  UTILIDAD DE POSICIÓN
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Instantly snaps all visual parts to either the closed or open
-        /// position without animation. Used during Awake() initialisation.
+        /// Ajusta instantáneamente todas las partes visuales a la posición cerrada o abierta
+        /// sin animación. Usado durante la inicialización de Awake().
         /// </summary>
         private void SetToPosition(bool closed)
         {
@@ -254,15 +253,15 @@ namespace TopDownShooter.Dungeon
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  COLLISION UTILITY
+        //  UTILIDAD DE COLISIÓN
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Enables or disables every non-trigger <see cref="Collider"/> in
-        /// the door hierarchy. isTrigger colliders are intentionally skipped —
-        /// they are used for IWorldInteractable detection (VictoryDoor,
-        /// LockedBossDoor) and RoomController.OnTriggerEnter room activation.
-        /// Disabling them would silently break both systems.
+        /// Habilita o deshabilita cada <see cref="Collider"/> que no sea disparador (non-trigger) en
+        /// la jerarquía de la puerta. Los colisionadores isTrigger se omiten intencionadamente —
+        /// se utilizan para la detección de IWorldInteractable (VictoryDoor, LockedBossDoor)
+        /// y la activación de sala en RoomController.OnTriggerEnter.
+        /// Deshabilitarlos rompería silenciosamente ambos sistemas.
         /// </summary>
         private void SetCollidersState(bool state)
         {

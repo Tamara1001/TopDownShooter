@@ -8,12 +8,12 @@ namespace TopDownShooter.VFX
     /// <summary>
     /// Agrega y pulsa una luz puntual sobre un ítem del mundo para que
     /// sea fácilmente visible en el suelo del dungeon.
-    /// Attach to the root GameObject of any lootable item prefab.
+    /// Adjuntar al GameObject raíz de cualquier prefab de objeto recolectable.
     /// </summary>
     public sealed class ItemGlowEffect : MonoBehaviour
     {
         // ─────────────────────────────────────────────────────────────────────
-        //  INSPECTOR FIELDS
+        //  CAMPOS DEL INSPECTOR
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Color y Brillo")]
@@ -41,7 +41,7 @@ namespace TopDownShooter.VFX
         [SerializeField] private float _lightRange = 2f;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PRIVATE STATE
+        //  ESTADO PRIVADO
         // ─────────────────────────────────────────────────────────────────────
 
         // Referencia a la luz; puede ser encontrada en Awake o agregada en código.
@@ -52,7 +52,7 @@ namespace TopDownShooter.VFX
         private float _phaseOffset;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  UNITY LIFECYCLE
+        //  CICLO DE VIDA DE UNITY
         // ─────────────────────────────────────────────────────────────────────
 
         private void Awake()
@@ -125,7 +125,7 @@ namespace TopDownShooter.VFX
 
 #if UNITY_EDITOR
         // ─────────────────────────────────────────────────────────────────────
-        //  EDITOR VALIDATION
+        //  VALIDACIÓN EN EDITOR
         // ─────────────────────────────────────────────────────────────────────
 
         private void OnValidate()

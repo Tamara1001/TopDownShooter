@@ -6,34 +6,34 @@ using TopDownShooter.Player;
 namespace TopDownShooter.UI
 {
     /// <summary>
-    /// Listens to <see cref="PlayerInventory"/> slot events and routes
-    /// the updated <see cref="ItemDataSO"/> to the matching <see cref="UI_InventorySlot"/>.
-    /// Handles dynamic player registration so the HUD works regardless of
-    /// scene load order or player respawn.
+    /// Escucha los eventos de ranuras de <see cref="PlayerInventory"/> y enruta
+    /// el <see cref="ItemDataSO"/> actualizado a la ranura <see cref="UI_InventorySlot"/> correspondiente.
+    /// Maneja el registro dinámico del jugador para que el HUD funcione independientemente del
+    /// orden de carga de la escena o la reaparición del jugador.
     /// </summary>
     public sealed class UI_InventoryHUD : MonoBehaviour
     {
         // ─────────────────────────────────────────────────────────────────────
-        //  INSPECTOR FIELDS
+        //  CAMPOS DEL INSPECTOR
         // ─────────────────────────────────────────────────────────────────────
 
-        [Header("Inventory Slots")]
-        [Tooltip("Slot component for the Weapon inventory slot.")]
+        [Header("Ranuras de Inventario")]
+        [Tooltip("Componente de ranura para la ranura de inventario de Arma.")]
         [SerializeField] private UI_InventorySlot _weaponSlot;
 
-        [Tooltip("Slot component for the Relic inventory slot.")]
+        [Tooltip("Componente de ranura para la ranura de inventario de Reliquia.")]
         [SerializeField] private UI_InventorySlot _relicSlot;
 
-        [Tooltip("Slot component for the Consumable inventory slot.")]
+        [Tooltip("Componente de ranura para la ranura de inventario de Consumible.")]
         [SerializeField] private UI_InventorySlot _consumableSlot;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PRIVATE RUNTIME STATE
+        //  ESTADO PRIVADO EN TIEMPO DE EJECUCIÓN
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// The currently bound inventory. Cached so it can be safely
-        /// unsubscribed before rebinding on respawn or scene reload.
+        /// El inventario actualmente vinculado. Almacenado en caché para que pueda ser
+        /// desvinculado de forma segura antes de volver a vincularse tras reaparecer o recargar la escena.
         /// </summary>
         private PlayerInventory _boundInventory;
 
@@ -43,7 +43,7 @@ namespace TopDownShooter.UI
 
         private void OnEnable()
         {
-            // Tier-1 subscription: know the instant a new player Transform exists.
+            // Suscripción de Nivel 1: saber el instante en que existe un nuevo Transform del jugador.
             GameManager.OnPlayerRegistered += OnPlayerRegistered;
         }
 
@@ -51,9 +51,9 @@ namespace TopDownShooter.UI
         {
             ValidateSlots();
 
-            // If the player was registered before this UI was enabled (e.g. player
-            // Awake runs before the HUD's Start), bind immediately without waiting
-            // for the OnPlayerRegistered event.
+            // Si el jugador fue registrado antes de que esta interfaz se habilitara (por ejemplo, el Awake
+            // del jugador se ejecuta antes del Start del HUD), vincular inmediatamente sin esperar
+            // al evento OnPlayerRegistered.
             if (GameManager.Instance != null && GameManager.Instance.PlayerTransform != null)
             {
                 BindToPlayer(GameManager.Instance.PlayerTransform);
@@ -62,14 +62,14 @@ namespace TopDownShooter.UI
 
         private void OnDisable()
         {
-            // Tier-1 unsubscribe. Safe to call even if OnEnable never fired
-            // because C# delegate -= on a non-subscribed method is a no-op.
+            // Desuscripción de Nivel 1. Es seguro llamarlo incluso si OnEnable nunca se disparó
+            // porque el operador delegate -= en C# sobre un método no suscrito es una operación nula.
             GameManager.OnPlayerRegistered -= OnPlayerRegistered;
         }
 
         private void OnDestroy()
         {
-            // Tier-2 cleanup: prevent callbacks arriving on a destroyed object.
+            // Limpieza de Nivel 2: evitar que las llamadas de retorno lleguen a un objeto destruido.
             UnbindCurrentInventory();
         }
 
@@ -78,8 +78,8 @@ namespace TopDownShooter.UI
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Called by <see cref="GameManager.OnPlayerRegistered"/> whenever a new
-        /// player Transform is published — including on respawn after a scene reload.
+        /// Llamado por <see cref="GameManager.OnPlayerRegistered"/> cada vez que se publica un nuevo
+        /// Transform del jugador, incluyendo al reaparecer tras una recarga de escena.
         /// </summary>
         private void OnPlayerRegistered(Transform playerTransform)
         {
@@ -91,12 +91,12 @@ namespace TopDownShooter.UI
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Finds the <see cref="PlayerInventory"/> on <paramref name="player"/>,
-        /// safely unsubscribes from the previous inventory (respawn safety),
-        /// subscribes to all three slot events, and immediately syncs the UI
-        /// to the inventory's current state.
+        /// Encuentra el <see cref="PlayerInventory"/> en <paramref name="player"/>,
+        /// se desuscribe de forma segura del inventario anterior (seguridad al reaparecer),
+        /// se suscribe a los eventos de las tres ranuras y sincroniza inmediatamente la interfaz
+        /// con el estado actual del inventario.
         /// </summary>
-        /// <param name="player">The player's root Transform. Must not be null.</param>
+        /// <param name="player">El Transform raíz del jugador. No debe ser nulo.</param>
         private void BindToPlayer(Transform player)
         {
             if (player == null)
@@ -113,20 +113,20 @@ namespace TopDownShooter.UI
                 return;
             }
 
-            // ── Unsubscribe from any previously bound inventory ───────────────
-            // Critical for respawn: prevents the old (now-destroyed) inventory
-            // from double-triggering events on the still-live HUD.
+            // ── Desuscribirse de cualquier inventario previamente vinculado ───────────────
+            // Crítico al reaparecer: evita que el inventario antiguo (ahora destruido)
+            // duplique los eventos en el HUD que aún sigue activo.
             UnbindCurrentInventory();
 
-            // ── Tier-2: Subscribe to the new inventory ────────────────────────
+            // ── Nivel 2: Suscribirse al nuevo inventario ────────────────────────
             _boundInventory = inventory;
             _boundInventory.OnWeaponChanged     += OnWeaponChanged;
             _boundInventory.OnRelicChanged      += OnRelicChanged;
             _boundInventory.OnConsumableChanged += OnConsumableChanged;
 
-            // ── Immediate sync: push current slot state to the UI ─────────────
-            // Without this, the HUD would show empty slots until the next event,
-            // which is wrong when the player already holds items (e.g. on Continue).
+            // ── Sincronización inmediata: enviar el estado actual de la ranura a la interfaz ─────────────
+            // Sin esto, el HUD mostraría ranuras vacías hasta el próximo evento,
+            // lo cual es incorrecto cuando el jugador ya tiene objetos (por ejemplo, en Continuar).
             _weaponSlot?    .UpdateSlot(_boundInventory.CurrentWeapon);
             _relicSlot?     .UpdateSlot(_boundInventory.CurrentRelic);
             _consumableSlot?.UpdateSlot(_boundInventory.CurrentConsumable);
@@ -135,8 +135,8 @@ namespace TopDownShooter.UI
         }
 
         /// <summary>
-        /// Safely unsubscribes from all events on <see cref="_boundInventory"/>
-        /// and clears the reference. Called before rebinding and on destroy.
+        /// Se desuscribe de forma segura de todos los eventos en <see cref="_boundInventory"/>
+        /// y limpia la referencia. Llamado antes de volver a vincular y al destruir.
         /// </summary>
         private void UnbindCurrentInventory()
         {
@@ -149,14 +149,14 @@ namespace TopDownShooter.UI
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  TIER-2 EVENT HANDLERS
-        //  Each handler receives the new ItemDataSO (or null on clear) and
-        //  routes it to the correct UI_InventorySlot. No game logic here.
+        //  MANEJADORES DE EVENTOS DE NIVEL 2
+        //  Cada manejador recibe el nuevo ItemDataSO (o nulo al limpiar) y
+        //  lo enruta al UI_InventorySlot correspondiente. Sin lógica de juego aquí.
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Invoked by <see cref="PlayerInventory.OnWeaponChanged"/>.
-        /// Passes the weapon data (or null) to the weapon slot visual.
+        /// Invocado por <see cref="PlayerInventory.OnWeaponChanged"/>.
+        /// Pasa los datos del arma (o nulo) a la ranura visual de arma.
         /// </summary>
         private void OnWeaponChanged(WeaponDataSO weaponData)
         {
@@ -164,8 +164,8 @@ namespace TopDownShooter.UI
         }
 
         /// <summary>
-        /// Invoked by <see cref="PlayerInventory.OnRelicChanged"/>.
-        /// Passes the relic data (or null) to the relic slot visual.
+        /// Invocado por <see cref="PlayerInventory.OnRelicChanged"/>.
+        /// Pasa los datos de la reliquia (o nulo) a la ranura visual de reliquia.
         /// </summary>
         private void OnRelicChanged(RelicDataSO relicData)
         {
@@ -173,8 +173,8 @@ namespace TopDownShooter.UI
         }
 
         /// <summary>
-        /// Invoked by <see cref="PlayerInventory.OnConsumableChanged"/>.
-        /// Passes the consumable data (or null) to the consumable slot visual.
+        /// Invocado por <see cref="PlayerInventory.OnConsumableChanged"/>.
+        /// Pasa los datos del consumible (o nulo) a la ranura visual de consumible.
         /// </summary>
         private void OnConsumableChanged(ConsumableDataSO consumableData)
         {

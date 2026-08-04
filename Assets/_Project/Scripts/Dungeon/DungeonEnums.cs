@@ -2,50 +2,50 @@
 namespace TopDownShooter.Dungeon
 {
     /// <summary>
-    /// Classifies a room's gameplay role within the dungeon graph.
-    /// Used by the generator to enforce placement rules (e.g. exactly one Start,
-    /// Boss always at the end of the main path) and by the RoomController to
-    /// decide which runtime systems to activate (wave spawning, loot drops, etc.).
+    /// Clasifica el rol de jugabilidad de una sala dentro del grafo de la mazmorra.
+    /// Utilizado por el generador para hacer cumplir las reglas de colocación (ej. exactamente un Start,
+    /// Boss siempre al final del camino principal) y por el RoomController para
+    /// decidir qué sistemas de ejecución activar (generación de oleadas, caída de botín, etc.).
     /// </summary>
     public enum RoomType
     {
-        /// <summary>Player spawn room. No enemies, safe zone.</summary>
+        /// <summary>Sala de aparición (spawn) del jugador. Sin enemigos, zona segura.</summary>
         Start,
 
-        /// <summary>Standard combat encounter — waves of enemies.</summary>
+        /// <summary>Encuentro de combate estándar — oleadas de enemigos.</summary>
         Combat,
 
-        /// <summary>Reward room with chests or pickups — no enemies.</summary>
+        /// <summary>Sala de recompensa con cofres u objetos recogibles — sin enemigos.</summary>
         Treasure,
 
-        /// <summary>End-of-floor boss encounter. Always terminal on the main path.</summary>
+        /// <summary>Encuentro con el jefe de final del piso. Siempre terminal en el camino principal.</summary>
         Boss,
 
-        /// <summary>Narrow connector between major rooms — optional encounters.</summary>
+        /// <summary>Conector estrecho entre salas principales — encuentros opcionales.</summary>
         Corridor,
 
-        /// <summary>Contains the key required to unlock the Boss door.</summary>
+        /// <summary>Contiene la llave requerida para desbloquear la puerta del Boss.</summary>
         Key
     }
 
     /// <summary>
-    /// Cardinal direction of a <see cref="RoomSocket"/> relative to the room's
-    /// local space.  North = +Z, East = +X, South = −Z, West = −X.
-    /// The generator uses opposing pairs (North ↔ South, East ↔ West) to
-    /// snap rooms together with correct alignment.
+    /// Dirección cardinal de un <see cref="RoomSocket"/> relativa al espacio local
+    /// de la sala. North = +Z, East = +X, South = −Z, West = −X.
+    /// El generador utiliza pares opuestos (North ↔ South, East ↔ West) para
+    /// encajar las salas entre sí con la alineación correcta.
     /// </summary>
     public enum SocketDirection
     {
-        /// <summary>+Z local axis — pairs with <see cref="South"/>.</summary>
+        /// <summary>Eje local +Z — se empareja con <see cref="South"/>.</summary>
         North,
 
-        /// <summary>−Z local axis — pairs with <see cref="North"/>.</summary>
+        /// <summary>Eje local −Z — se empareja con <see cref="North"/>.</summary>
         South,
 
-        /// <summary>+X local axis — pairs with <see cref="West"/>.</summary>
+        /// <summary>Eje local +X — se empareja con <see cref="West"/>.</summary>
         East,
 
-        /// <summary>−X local axis — pairs with <see cref="East"/>.</summary>
+        /// <summary>Eje local −X — se empareja con <see cref="East"/>.</summary>
         West
     }
 }

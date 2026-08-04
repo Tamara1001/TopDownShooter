@@ -4,9 +4,9 @@ using UnityEngine;
 namespace TopDownShooter.Inventory
 {
     /// <summary>
-    /// Abstract data blueprint shared by every item archetype.
-    /// Subclass this to create <see cref="WeaponDataSO"/>,
-    /// <see cref="RelicDataSO"/>, or <see cref="ConsumableDataSO"/>.
+    /// Plantilla de datos abstracta compartida por cada arquetipo de objeto.
+    /// Subclasifique esto para crear <see cref="WeaponDataSO"/>,
+    /// <see cref="RelicDataSO"/> o <see cref="ConsumableDataSO"/>.
     /// </summary>
     public abstract class ItemDataSO : ScriptableObject
     {
@@ -15,11 +15,10 @@ namespace TopDownShooter.Inventory
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Identity")]
-        [Tooltip("Unique string identifier used by save systems, achievement " +
-                 "trackers, and analytics. Must be unique across all ItemDataSO assets.")]
+        [Tooltip("Identificador único de cadena utilizado por sistemas de guardado, logros y analíticas. Debe ser único en todos los assets ItemDataSO.")]
         [SerializeField] private string _itemID;
 
-        [Tooltip("Human-readable name shown in the HUD, tooltips, and save files.")]
+        [Tooltip("Nombre legible por humanos que se muestra en el HUD, tooltips y archivos de guardado.")]
         [SerializeField] private string _displayName;
 
         // ─────────────────────────────────────────────────────────────────────
@@ -27,8 +26,7 @@ namespace TopDownShooter.Inventory
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Visuals")]
-        [Tooltip("Icon displayed in the inventory HUD slot. " +
-                 "Recommended size: 128×128 or 256×256 pixels.")]
+        [Tooltip("Icono mostrado en la ranura del HUD del inventario. Tamaño recomendado: 128×128 o 256×256 píxeles.")]
         [SerializeField] private Sprite _icon;
 
         // ─────────────────────────────────────────────────────────────────────
@@ -36,28 +34,26 @@ namespace TopDownShooter.Inventory
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("World Object")]
-        [Tooltip("The prefab spawned onto the floor when this item is dropped " +
-                 "(swapped out of inventory). Must have an ItemPickup component, " +
-                 "a SphereCollider (Is Trigger = true), and a Collider for visuals.")]
+        [Tooltip("El prefab generado en el suelo cuando se suelta este objeto (se retira del inventario). Debe tener un componente ItemPickup, un SphereCollider (Is Trigger = true) y un Collider para los elementos visuales.")]
         [SerializeField] private GameObject _dropPrefab;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PUBLIC READ-ONLY GETTERS
-        //  External systems read these; only the SO asset editor writes them.
+        //  GETTERS PÚBLICOS DE SOLO LECTURA
+        //  Los sistemas externos leen estos; solo el editor de assets del SO escribe en ellos.
         // ─────────────────────────────────────────────────────────────────────
 
-        /// <summary>Unique string identifier for this item archetype.</summary>
+        /// <summary>Identificador único de cadena para este arquetipo de objeto.</summary>
         public string     ItemID      => _itemID;
 
-        /// <summary>Display-friendly name for HUD and tooltips.</summary>
+        /// <summary>Nombre amigable para mostrar en HUD y tooltips.</summary>
         public string     DisplayName => _displayName;
 
-        /// <summary>Icon sprite for the inventory HUD slot.</summary>
+        /// <summary>Sprite del icono para la ranura del HUD del inventario.</summary>
         public Sprite     Icon        => _icon;
 
         /// <summary>
-        /// Prefab spawned at the player's position when this item is dropped.
-        /// Must contain an <see cref="ItemPickup"/> component.
+        /// Prefab generado en la posición del jugador cuando se suelta este objeto.
+        /// Debe contener un componente <see cref="ItemPickup"/>.
         /// </summary>
         public GameObject DropPrefab  => _dropPrefab;
 

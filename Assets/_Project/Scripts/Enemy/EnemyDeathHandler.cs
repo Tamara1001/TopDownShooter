@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -9,10 +9,10 @@ using UnityEngine;
 [RequireComponent(typeof(HealthComponent))]
 public class EnemyDeathHandler : MonoBehaviour
 {
-    [Tooltip("Seconds the death animation plays before the corpse is destroyed.")]
+    [Tooltip("Segundos que dura la animación de muerte antes de que se destruya el cadáver.")]
     [SerializeField] private float _destroyDelay = 2f;
 
-    [Tooltip("Optional particle prefab instantiated at the death position (blood, smoke, etc.).")]
+    [Tooltip("Prefab de partículas opcional instanciado en la posición de muerte (sangre, humo, etc.).")]
     [SerializeField] private GameObject _deathVFXPrefab;
 
     private void Awake()

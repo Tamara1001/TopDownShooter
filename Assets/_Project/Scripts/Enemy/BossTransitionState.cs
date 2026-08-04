@@ -2,8 +2,8 @@
 using UnityEngine;
 
 /// <summary>
-/// Played once when the boss crosses its Phase 2 health threshold.
-/// Grants temporary invulnerability during the transition animation.
+/// Se reproduce una vez cuando el jefe cruza su umbral de salud para la Fase 2.
+/// Otorga invulnerabilidad temporal durante la animación de transición.
 /// </summary>
 public class BossTransitionState : EnemyStateBase
 {
@@ -11,7 +11,7 @@ public class BossTransitionState : EnemyStateBase
     //  CONFIGURATION
     // ─────────────────────────────────────────────────────────────────────
 
-    /// <summary>How long (seconds) the transition animation lasts.</summary>
+    /// <summary>Cuánto tiempo (en segundos) dura la animación de transición.</summary>
     private const float TransitionDuration = 2.5f;
 
     // ─────────────────────────────────────────────────────────────────────
@@ -29,15 +29,15 @@ public class BossTransitionState : EnemyStateBase
     {
         Debug.Log($"[BossTransitionState] '{Brain.name}': Phase 2 transition started.");
 
-        // Stop all movement — the boss stands still for its cinematic.
+        // Detener todo el movimiento — el jefe permanece inmóvil para su cinemática.
         Brain.Agent.isStopped = true;
         Brain.Agent.ResetPath();
 
-        // Make the boss immune to damage during the animation.
+        // Hacer al jefe inmune al daño durante la animación.
         _health = Brain.GetComponent<HealthComponent>();
         if (_health != null) _health.IsInvulnerable = true;
 
-        // Fire the transition animation trigger (designer sets this up in Animator).
+        // Disparar el trigger de animación de transición (el diseñador configura esto en el Animator).
         if (Brain.Anim != null)
             Brain.Anim.SetTrigger("PhaseTransition");
 
@@ -56,7 +56,7 @@ public class BossTransitionState : EnemyStateBase
 
     public override void Exit()
     {
-        // Restore vulnerability so Phase 2 can be lethal.
+        // Restaurar la vulnerabilidad para que la Fase 2 pueda ser letal.
         if (_health != null) _health.IsInvulnerable = false;
 
         Debug.Log($"[BossTransitionState] '{Brain.name}': Transition complete — Phase 2 active.");

@@ -4,37 +4,37 @@ using UnityEngine;
 namespace TopDownShooter.Loot
 {
     /// <summary>
-    /// Detects player trigger entry and delegates collection to the
-    /// <see cref="ICollectible"/> found on this GameObject or its children.
-    /// Strictly centralises object destruction after a successful pickup.
+    /// Detecta la entrada del disparador (trigger) del jugador y delega la recolección al
+    /// <see cref="ICollectible"/> que se encuentra en este GameObject o en sus hijos.
+    /// Centraliza estrictamente la destrucción del objeto tras una recolección exitosa.
     /// </summary>
     [RequireComponent(typeof(Collider))]
     public sealed class AutoPickupTrigger : MonoBehaviour
     {
         // ----------------------------------------------------------
-        // PRIVATE STATE
+        // ESTADO PRIVADO
         // ----------------------------------------------------------
 
         /// <summary>
-        /// Cached reference to the ICollectible strategy on this
-        /// GameObject or any of its children. Resolved once in Awake.
+        /// Referencia almacenada en caché de la estrategia ICollectible en este
+        /// GameObject o cualquiera de sus hijos. Se resuelve una vez en Awake.
         /// </summary>
         private ICollectible _collectible;
 
         // ----------------------------------------------------------
-        // UNITY LIFECYCLE
+        // CICLO DE VIDA DE UNITY
         // ----------------------------------------------------------
 
         /// <summary>
-        /// Resolves and caches the <see cref="ICollectible"/> strategy.
-        /// Logs an error if none is found so the issue is immediately
-        /// visible in the Console rather than silently failing at runtime.
+        /// Resuelve y almacena en caché la estrategia <see cref="ICollectible"/>.
+        /// Registra un error si no se encuentra ninguna para que el problema sea inmediatamente
+        /// visible en la Consola en lugar de fallar silenciosamente en tiempo de ejecución.
         /// </summary>
         private void Awake()
         {
-            // Search this GameObject first, then all children.
-            // This allows the collectible logic to live on a child object
-            // (e.g., a visual mesh) without breaking the architecture.
+            // Buscar primero en este GameObject y luego en todos los hijos.
+            // Esto permite que la lógica del objeto recolectable viva en un objeto hijo
+            // (por ejemplo, una malla visual) sin romper la arquitectura.
             _collectible = GetComponent<ICollectible>() ?? GetComponentInChildren<ICollectible>();
 
             if (_collectible == null)
@@ -49,32 +49,32 @@ namespace TopDownShooter.Loot
         }
 
         // ----------------------------------------------------------
-        // TRIGGER DETECTION
+        // DETECCIÓN DE DISPARADORES (TRIGGER)
         // ----------------------------------------------------------
 
         /// <summary>
-        /// Called by Unity's physics engine when another Collider enters
-        /// this trigger volume. If the entering object is tagged "Player"
-        /// and a valid <see cref="ICollectible"/> strategy is cached,
-        /// executes the collection and then destroys this GameObject.
+        /// Llamado por el motor de física de Unity cuando otro Collider entra en
+        /// este volumen de disparador. Si el objeto que ingresa tiene la etiqueta "Player"
+        /// y se almacena en caché una estrategia <see cref="ICollectible"/> válida,
+        /// ejecuta la recolección y luego destruye este GameObject.
         /// </summary>
         /// <param name="other">The Collider that entered the trigger.</param>
         private void OnTriggerEnter(Collider other)
         {
-            // Early-out guard: only process player collisions.
+            // Guardia de salida temprana: solo procesar colisiones con el jugador.
             if (!other.CompareTag("Player")) return;
 
-            // Early-out guard: do nothing if setup failed in Awake.
+            // Guardia de salida temprana: no hacer nada si la configuración falló en Awake.
             if (_collectible == null) return;
 
-            // Delegate the pickup effect to the concrete strategy.
-            // The ICollectible implementation is responsible only for
-            // applying its effect. It must NOT call Destroy itself.
+            // Delegar el efecto de recolección a la estrategia concreta.
+            // La implementación de ICollectible es responsable únicamente de
+            // aplicar su efecto. NO debe llamar a Destroy por sí misma.
             _collectible.Collect(other.gameObject);
 
-            // Strictly centralised destruction: this is the ONLY place
-            // in the entire loot system where Destroy is called on the
-            // pickup object. All ICollectible implementations must omit Destroy.
+            // Destrucción estrictamente centralizada: este es el ÚNICO lugar
+            // en todo el sistema de botín donde se llama a Destroy en el
+            // objeto de recolección. Todas las implementaciones de ICollectible deben omitir Destroy.
             Destroy(gameObject);
         }
     }

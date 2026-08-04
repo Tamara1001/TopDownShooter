@@ -6,8 +6,8 @@ using UnityEngine;
 namespace TopDownShooter.Inventory
 {
     /// <summary>
-    /// ScriptableObject blueprint for single-use consumable items.
-    /// Consumed via the Consume input action (Q key); clears the slot on use.
+    /// Plantilla ScriptableObject para objetos consumibles de un solo uso.
+    /// Se consume a través de la acción de entrada Consume (tecla Q); vacía la ranura al usarse.
     /// </summary>
     [CreateAssetMenu(
         fileName = "NewConsumableData",
@@ -19,10 +19,7 @@ namespace TopDownShooter.Inventory
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Quest Item")]
-        [Tooltip("When true, this consumable is a quest item (e.g. a Key). " +
-                 "PlayerInventory will block the Q-key consume path so it " +
-                 "cannot be accidentally destroyed. Use E to interact with " +
-                 "world objects that require this item.")]
+        [Tooltip("Cuando es verdadero, este consumible es un objeto de misión (ej. una Llave). PlayerInventory bloqueará la ruta de consumo con la tecla Q para que no se destruya accidentalmente. Use E para interactuar con objetos del mundo que requieran este objeto.")]
         [SerializeField] private bool _isQuestItem = false;
 
         // ─────────────────────────────────────────────────────────────────────
@@ -30,18 +27,15 @@ namespace TopDownShooter.Inventory
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Consumable Effect")]
-        [Tooltip("Flat hit points restored immediately on use. " +
-                 "0 = no healing (e.g. speed boost only). Clamped to MaxHealth.")]
+        [Tooltip("Puntos de vida planos restaurados inmediatamente al usar. 0 = sin curación (ej. solo aumento de velocidad). Limitado a MaxHealth.")]
         [Min(0)]
         [SerializeField] private int _healAmount = 30;
 
-        [Tooltip("Duration in seconds for any timed effect (e.g. speed boost). " +
-                 "0 = instantaneous (healing potions, one-shot buffs).")]
+        [Tooltip("Duración en segundos para cualquier efecto temporal (ej. aumento de velocidad). 0 = instantáneo (pociones de curación, potenciadores de un solo disparo).")]
         [Min(0f)]
         [SerializeField] private float _effectDuration = 0f;
 
-        [Tooltip("Percentage speed boost applied for EffectDuration seconds. " +
-                 "0 = no speed change. Read by PlayerStats in Part 2.")]
+        [Tooltip("Porcentaje de aumento de velocidad aplicado durante EffectDuration segundos. 0 = sin cambio de velocidad. Leído por PlayerStats en la Parte 2.")]
         [Range(0f, 5f)]
         [SerializeField] private float _speedBoostMultiplier = 0f;
 
@@ -50,18 +44,18 @@ namespace TopDownShooter.Inventory
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// When true this item is a quest item (e.g. a Key) and cannot be
-        /// consumed via the Q key. Use E to interact with world objects.
+        /// Cuando es verdadero, este objeto es un objeto de misión (ej. una Llave) y no puede ser
+        /// consumido a través de la tecla Q. Use E para interactuar con objetos del mundo.
         /// </summary>
         public bool  IsQuestItem         => _isQuestItem;
 
-        /// <summary>Flat health points restored when this consumable is used.</summary>
+        /// <summary>Puntos de salud planos restaurados cuando se usa este consumible.</summary>
         public int   HealAmount          => _healAmount;
 
-        /// <summary>Duration in seconds for any timed buff/effect. 0 = instant.</summary>
+        /// <summary>Duración en segundos para cualquier potenciador/efecto temporal. 0 = instantáneo.</summary>
         public float EffectDuration      => _effectDuration;
 
-        /// <summary>Fractional speed boost multiplier for timed effects.</summary>
+        /// <summary>Multiplicador fraccionario de aumento de velocidad para efectos temporales.</summary>
         public float SpeedBoostMultiplier => _speedBoostMultiplier;
     }
 }

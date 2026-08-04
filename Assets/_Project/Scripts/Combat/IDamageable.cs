@@ -1,20 +1,20 @@
 
 /// <summary>
-/// Universal contract for any entity that can receive damage.
-/// Implement this interface on any MonoBehaviour that should
-/// participate in the damage system.
+/// Contrato universal para cualquier entidad que pueda recibir daño.
+/// Implemente esta interfaz en cualquier MonoBehaviour que deba
+/// participar en el sistema de daño.
 /// </summary>
 public interface IDamageable
 {
     /// <summary>
-    /// Applies the specified amount of damage to this entity.
-    /// Implementations are responsible for their own health
-    /// management, clamping, and death logic.
+    /// Aplica la cantidad especificada de daño a esta entidad.
+    /// Las implementaciones son responsables de su propia gestión
+    /// de vida, limitación y lógica de muerte.
     /// </summary>
     /// <param name="amount">
-    /// The raw damage amount to apply. Must be a positive integer.
-    /// Negative values (healing) are intentionally excluded from
-    /// this contract to keep the interface's responsibility clear.
+    /// La cantidad bruta de daño a aplicar. Debe ser un entero positivo.
+    /// Los valores negativos (curación) se excluyen intencionadamente de
+    /// este contrato para mantener clara la responsabilidad de la interfaz.
     /// </param>
     void TakeDamage(int amount);
 }

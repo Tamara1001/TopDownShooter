@@ -2,8 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Direct visual bridge between the GameManager FSM and the UI layer.
-/// Listens to global state changes and activates or deactivates the corresponding panels.
+/// Puente visual directo entre la FSM de GameManager y la capa de UI.
+/// Escucha los cambios de estado globales y activa o desactiva los paneles correspondientes.
 ///
 /// Reglas de Arquitectura:
 /// - No contiene logica de juego ni manipula el tiempo directamente.
@@ -14,19 +14,18 @@ public class UIManager : MonoBehaviour
     // -------------------------------------------------------------------------
     // Inspector Fields — Panels
     // -------------------------------------------------------------------------
-    [Header("Main UI Panels")]
+    [Header("Paneles Principales de UI")]
     [SerializeField] private GameObject mainMenuPanel;
     [SerializeField] private GameObject playingHUDPanel;
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private GameObject victoryPanel;
 
-    [Header("Overlay Panels")]
+    [Header("Paneles de Superposición")]
     [SerializeField] private GameObject optionsPanel;
     [SerializeField] private GameObject pausePanel;
 
-    [Header("Special Buttons")]
-    [Tooltip("'Continue' button on the Main Menu. Automatically disabled " +
-             "when no active session exists (GameManager.HasActiveSession == false).")]
+    [Header("Botones Especiales")]
+    [Tooltip("Botón 'Continuar' en el Menú Principal. Se desactiva automáticamente cuando no existe una sesión activa (GameManager.HasActiveSession == false).")]
     [SerializeField] private Button continueButton;
 
     // -------------------------------------------------------------------------
@@ -44,7 +43,7 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        // Sync to the current FSM state instead of forcing a hard transition to Main Menu.
+        // Sincronizar con el estado actual de la FSM en lugar de forzar una transición brusca al Menú Principal.
         if (GameManager.Instance != null)
         {
             HandleStateChanged(GameManager.Instance.CurrentState);
@@ -60,7 +59,7 @@ public class UIManager : MonoBehaviour
     // -------------------------------------------------------------------------
     private void HandleStateChanged(GameManager.GameState newState)
     {
-        // Cleanup: close any overlay panels (e.g. options) on every state transition.
+        // Limpieza: cerrar cualquier panel de superposición (por ejemplo, opciones) en cada transición de estado.
         CloseOptionsPanel();
 
         switch (newState)
@@ -97,7 +96,7 @@ public class UIManager : MonoBehaviour
         gameOverPanel?.SetActive(false);
         victoryPanel?.SetActive(false);
 
-        // Enable the Continue button only when there is an ongoing session to return to.
+        // Habilitar el botón Continuar solo cuando haya una sesión en curso a la cual regresar.
         if (continueButton != null)
             continueButton.interactable = GameManager.Instance != null &&
                                           GameManager.Instance.HasActiveSession;
@@ -149,11 +148,11 @@ public class UIManager : MonoBehaviour
     // -------------------------------------------------------------------------
 
     /// <summary>
-    /// Bound to the 'Play' or 'New Game' button on the Main Menu.
+    /// Vinculado al botón 'Jugar' o 'Nueva Partida' en el Menú Principal.
     /// </summary>
     /// <summary>
-    /// Bound to the 'Continue' button on the Main Menu.
-    /// Only interactable when <see cref="GameManager.HasActiveSession"/> is true.
+    /// Vinculado al botón 'Continuar' en el Menú Principal.
+    /// Solo es interactuable cuando <see cref="GameManager.HasActiveSession"/> es verdadero.
     /// </summary>
     public void OnContinueClicked()
     {
@@ -165,25 +164,25 @@ public class UIManager : MonoBehaviour
         GameManager.Instance.StartNewGame();
     }
 
-    /// <summary>Bound to the 'Resume' button inside the Pause menu.</summary>
+    /// <summary>Vinculado al botón 'Reanudar' dentro del menú de Pausa.</summary>
     public void OnResumeButtonClicked()
     {
         GameManager.Instance.ResumeFromPause();
     }
 
-    /// <summary>Bound to the 'Retry' button on the Game Over screen.</summary>
+    /// <summary>Vinculado al botón 'Reintentar' en la pantalla de Game Over.</summary>
     public void OnRestartButtonClicked()
     {
         GameManager.Instance.StartNewGame();
     }
 
-    /// <summary>Bound to the 'Return to Menu' button from Pause or Game Over screens.</summary>
+    /// <summary>Vinculado al botón 'Volver al Menú' desde las pantallas de Pausa o Game Over.</summary>
     public void OnReturnToMenuClicked()
     {
         GameManager.Instance.ReturnToMainMenu();
     }
 
-    /// <summary>Optionally bound to an on-screen pause button inside the HUD.</summary>
+    /// <summary>Vinculado opcionalmente a un botón de pausa en pantalla dentro del HUD.</summary>
     public void OnPauseButtonClicked()
     {
         GameManager.Instance.ChangeState(GameManager.GameState.Pause);
@@ -199,7 +198,7 @@ public class UIManager : MonoBehaviour
         CloseOptionsPanel();
     }
 
-    /// <summary>Bound to the 'Quit' button on the Main Menu.</summary>
+    /// <summary>Vinculado al botón 'Salir' en el Menú Principal.</summary>
     public void OnQuitClicked()
     {
 #if UNITY_EDITOR

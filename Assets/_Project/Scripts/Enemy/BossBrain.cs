@@ -3,70 +3,65 @@ using UnityEngine;
 using TopDownShooter.Combat;
 
 /// <summary>
-/// Multi-phase boss controller. Inherits EnemyBrain's FSM and adds
-/// a weapon arsenal, a health-threshold phase trigger, and a
-/// BossTransitionState / BossPhase2State pair.
+/// Controlador de jefe multifase. Hereda la FSM de EnemyBrain y añade
+/// un arsenal de armas, un activador de fase por umbral de salud, y el
+/// par BossTransitionState / BossPhase2State.
 /// </summary>
 public class BossBrain : EnemyBrain
 {
     // ─────────────────────────────────────────────────────────────────────
-    //  INSPECTOR FIELDS
+    //  CAMPOS DEL INSPECTOR
     // ─────────────────────────────────────────────────────────────────────
 
     [Header("Boss Arsenal")]
-    [Tooltip("All weapons available to the boss. Must implement IWeapon. " +
-             "Index 0 = Phase 1 primary, Index 1 = Phase 2 ranged, etc.")]
+    [Tooltip("Todas las armas disponibles para el jefe. Deben implementar IWeapon. Índice 0 = primaria de Fase 1, Índice 1 = a distancia de Fase 2, etc.")]
     [SerializeField] private MonoBehaviour[] _bossWeapons;
 
     [Header("Identity")]
-    [Tooltip("Display name shown in the Boss HUD. Change per-prefab so the " +
-             "string is never hardcoded in RoomController.")]
+    [Tooltip("Nombre en pantalla que se muestra en el HUD del Jefe. Cámbielo por prefab para que la cadena nunca esté hardcodeada en RoomController.")]
     [SerializeField] private string _bossDisplayName = "Crypt King";
 
     [Header("Phases")]
-    [Tooltip("Normalised health (0–1) at which Phase 2 triggers. " +
-             "Default 0.5 = triggers at 50 % HP.")]
+    [Tooltip("Salud normalizada (0–1) en la cual se activa la Fase 2. Por defecto 0.5 = se activa al 50 % de HP.")]
     [SerializeField] private float _phase2HealthThreshold = 0.5f;
 
-    [Tooltip("World-space position the boss retreats to at the start of Phase 2. " +
-             "Defaults to scene origin if left at zero.")]
+    [Tooltip("Posición en espacio de mundo a la que se retira el jefe al inicio de la Fase 2. Por defecto es el origen de la escena si se deja en cero.")]
     [SerializeField] private Vector3 _phase2AnchorPoint = Vector3.zero;
 
     // ─────────────────────────────────────────────────────────────────────
-    //  PRIVATE STATE
+    //  ESTADO PRIVADO
     // ─────────────────────────────────────────────────────────────────────
 
     private IWeapon[] _equippedBossWeapons;
     private HealthComponent _bossHealth;
 
     // ─────────────────────────────────────────────────────────────────────
-    //  PUBLIC STATE
+    //  ESTADO PÚBLICO
     // ─────────────────────────────────────────────────────────────────────
 
-    /// <summary>Display name used by the Boss HUD. Set in the Inspector.</summary>
+    /// <summary>Nombre de visualización utilizado por el HUD del Jefe. Configurado en el Inspector.</summary>
     public string BossDisplayName => _bossDisplayName;
 
-    /// <summary>True once Phase 2 has been triggered (never resets).</summary>
+    /// <summary>Verdadero una vez que se ha activado la Fase 2 (nunca se restablece).</summary>
     public bool IsInPhase2 { get; private set; }
 
-    /// <summary>Anchor position the boss moves to in Phase 2.</summary>
+    /// <summary>Posición de anclaje a la que se mueve el jefe en la Fase 2.</summary>
     public Vector3 Phase2AnchorPoint => _phase2AnchorPoint;
 
     // ─────────────────────────────────────────────────────────────────────
-    //  LIFECYCLE
+    //  CICLO DE VIDA
     // ─────────────────────────────────────────────────────────────────────
 
     protected override void Awake()
     {
-        // Run all base-class wiring first (agent, health, FSM, etc.)
+        // Primero realizar todo el cableado de la clase base (agente, salud, FSM, etc.)
         base.Awake();
 
-        // Procedural Dungeon Fix: If the inspector anchor is zero, assume the 
-        // room center is the exact spawn point of the Boss.
+        // Solución para mazmorra procedimental: si el anclaje del inspector es cero, asumir que el centro de la sala es el punto de aparición exacto del Jefe.
         if (_phase2AnchorPoint == Vector3.zero) 
             _phase2AnchorPoint = transform.position;
 
-        // ── Parse the inspector array into IWeapon[] ─────────────────────
+        // ── Analizar el arreglo del inspector en IWeapon[] ─────────────────
         _equippedBossWeapons = new IWeapon[_bossWeapons != null ? _bossWeapons.Length : 0];
         for (int i = 0; i < _equippedBossWeapons.Length; i++)
         {
@@ -84,7 +79,7 @@ public class BossBrain : EnemyBrain
             }
         }
 
-        // ── Subscribe to health for phase-change detection ───────────────
+        // ── Suscribirse a la salud para la detección de cambios de fase ───
         _bossHealth = GetComponent<HealthComponent>();
         if (_bossHealth != null)
         {
@@ -100,26 +95,26 @@ public class BossBrain : EnemyBrain
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    //  FSM OVERRIDE
+    //  SOBREESCRITURA DE FSM
     // ─────────────────────────────────────────────────────────────────────
 
     protected override void BuildStates()
     {
-        // Register base states first so GetState<IdleState> etc. still work.
+        // Registrar primero los estados base para que GetState<IdleState> etc. sigan funcionando.
         base.BuildStates();
 
-        // Append boss-exclusive states.
+        // Añadir estados exclusivos del jefe.
         RegisterState(new BossTransitionState());
         RegisterState(new BossPhase2State());
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    //  PHASE LOGIC
+    //  LÓGICA DE FASES
     // ─────────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Receives normalised health from HealthComponent.OnHealthChanged.
-    /// Triggers phase 2 exactly once when the threshold is crossed.
+    /// Recibe la salud normalizada de HealthComponent.OnHealthChanged.
+    /// Activa la fase 2 exactamente una vez cuando se cruza el umbral.
     /// </summary>
     private void HandleBossHealth(float normalized)
     {
@@ -132,12 +127,12 @@ public class BossBrain : EnemyBrain
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    //  WEAPON API & ATTACK OVERRIDE
+    //  API DE ARMAS Y SOBREESCRITURA DE ATAQUE
     // ─────────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Wires the standard Phase 1 AttackState directly into the boss arsenal 
-    /// instead of the base _equippedWeapon.
+    /// Conecta el AttackState estándar de la Fase 1 directamente en el arsenal del jefe
+    /// en lugar de la base _equippedWeapon.
     /// </summary>
     public override void PerformAttack()
     {
@@ -145,8 +140,8 @@ public class BossBrain : EnemyBrain
     }
 
     /// <summary>
-    /// Fires the weapon at the given index in the boss arsenal.
-    /// Null-safe: out-of-range or unassigned weapons are silently skipped.
+    /// Dispara el arma en el índice dado en el arsenal del jefe.
+    /// Seguro contra nulos: las armas fuera de rango o no asignadas se omiten silenciosamente.
     /// </summary>
     public void ExecuteBossWeapon(int index)
     {
@@ -167,8 +162,8 @@ public class BossBrain : EnemyBrain
     }
 
     /// <summary>
-    /// Fetches the cooldown of the weapon at the given index.
-    /// Returns 1f as a safe fallback if the weapon is missing.
+    /// Obtiene el enfriamiento (cooldown) del arma en el índice dado.
+    /// Devuelve 1f como respaldo seguro si falta el arma.
     /// </summary>
     public float GetBossWeaponCooldown(int index)
     {

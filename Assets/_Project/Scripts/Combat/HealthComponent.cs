@@ -3,60 +3,59 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// A universal health state manager implementing <see cref="IDamageable"/>.
-/// Uses C# events to notify subscribers of health changes and death,
-/// following the Observer Pattern.
+/// Un gestor de estado de vida universal que implementa <see cref="IDamageable"/>.
+/// Utiliza eventos de C# para notificar a los suscriptores sobre cambios de vida y muerte,
+/// siguiendo el Patrón Observer.
 /// </summary>
 public class HealthComponent : MonoBehaviour, IDamageable
 {
     // ----------------------------------------------------------
     // INSPECTOR FIELDS
-    // All state is private. [SerializeField] exposes them to the
-    // Unity Inspector without breaking encapsulation.
+    // Todo el estado es privado. [SerializeField] los expone al
+    // Inspector de Unity sin romper la encapsulación.
     // ----------------------------------------------------------
 
     [Header("Health Settings")]
 
-    [Tooltip("The maximum health points this entity starts with.")]
+    [Tooltip("Los puntos de vida máximos con los que comienza esta entidad.")]
     [SerializeField] private int maxHealth = 100;
 
     // ----------------------------------------------------------
     // PRIVATE STATE
-    // Runtime state is kept private to prevent external mutation.
+    // El estado en tiempo de ejecución se mantiene privado para evitar la mutación externa.
     // ----------------------------------------------------------
 
-    /// <summary>The entity's current health at runtime.</summary>
+    /// <summary>La vida actual de la entidad en tiempo de ejecución.</summary>
     private int currentHealth;
 
     /// <summary>
-    /// Guard flag that prevents any further processing once the
-    /// entity has died. Checked at the top of TakeDamage().
+    /// Bandera de guardia que evita cualquier procesamiento adicional una vez que la entidad ha muerto. Se verifica al principio de TakeDamage().
     /// </summary>
     private bool isDead;
 
     // ----------------------------------------------------------
-    // PUBLIC EVENTS (Observer Pattern)
-    // External systems subscribe to these to react to health
-    // changes. This component never knows who is listening.
+    // EVENTOS PÚBLICOS (Patrón Observer)
+    // Los sistemas externos se suscriben a estos para reaccionar a los cambios
+    // de vida. Este componente nunca sabe quién está escuchando.
     // ----------------------------------------------------------
 
     /// <summary>
-    /// Fired whenever health changes. Passes the normalized health
-    /// fraction (0.0 = empty, 1.0 = full) for use by UI health bars.
+    /// Se dispara cada vez que cambia la vida. Pasa la fracción de vida
+    /// normalizada (0.0 = vacía, 1.0 = completa) para uso de las barras de vida de la UI.
     /// </summary>
     public event Action<float> OnHealthChanged;
 
     /// <summary>
-    /// Fired once, exactly when health reaches zero for the first time.
-    /// Listeners can use this to play death animations, trigger FSM
-    /// transitions, award score, etc.
+    /// Se dispara una vez, exactamente cuando la vida llega a cero por primera vez.
+    /// Los oyentes pueden usar esto para reproducir animaciones de muerte, activar
+    /// transiciones FSM, otorgar puntuación, etc.
     /// </summary>
     public event Action OnDied;
 
     /// <summary>
-    /// When true, all incoming damage is silently ignored.
-    /// Set by BossTransitionState during a phase-change cinematic
-    /// so the boss cannot be killed during its animation.
+    /// Cuando es verdadero, todo el daño entrante se ignora silenciosamente.
+    /// Establecido por BossTransitionState durante una cinemática de cambio de fase
+    /// para que el jefe no pueda morir durante su animación.
     /// </summary>
     public bool IsInvulnerable { get; set; } = false;
 
@@ -65,8 +64,8 @@ public class HealthComponent : MonoBehaviour, IDamageable
     // ----------------------------------------------------------
 
     /// <summary>
-    /// Initialises health to its maximum value and resets the
-    /// dead flag on component start.
+    /// Inicializa la vida a su valor máximo y restablece la
+    /// bandera de muerte al iniciar el componente.
     /// </summary>
     private void Awake()
     {
@@ -86,64 +85,64 @@ public class HealthComponent : MonoBehaviour, IDamageable
     // ----------------------------------------------------------
 
     /// <summary>
-    /// Applies damage to this entity, clamping health to a minimum
-    /// of zero. Fires <see cref="OnHealthChanged"/> on every hit and
-    /// <see cref="OnDied"/> exactly once when health reaches zero.
+    /// Aplica daño a esta entidad, limitando la vida a un mínimo
+    /// de cero. Dispara <see cref="OnHealthChanged"/> en cada golpe y
+    /// <see cref="OnDied"/> exactamente una vez cuando la vida llega a cero.
     /// </summary>
     /// <param name="amount">
-    /// Positive integer damage value to subtract from current health.
+    /// Valor de daño entero positivo para restar de la vida actual.
     /// </param>
     public void TakeDamage(int amount)
     {
-        // Guard: silently ignore all damage while invulnerable.
+        // Guardia: ignorar silenciosamente todo el daño mientras sea invulnerable.
         if (IsInvulnerable) return;
 
-        // Guard: silently ignore all damage once the entity is dead.
-        // This prevents double-death triggers (e.g., two projectiles
-        // hitting in the same frame) and keeps event logic clean.
+        // Guardia: ignorar silenciosamente todo el daño una vez que la entidad esté muerta.
+        // Esto evita disparadores de muerte doble (por ejemplo, dos proyectiles
+        // impactando en el mismo frame) y mantiene limpia la lógica del evento.
         if (isDead) return;
 
-        // Validate input to prevent accidental negative-damage exploits
-        // that would effectively heal the entity through this method.
+        // Validar la entrada para evitar exploits accidentales de daño negativo
+        // que efectivamente curarían a la entidad a través de este método.
         if (amount <= 0) return;
 
-        // Subtract damage and clamp so health never goes below zero.
+        // Restar daño y limitar para que la vida nunca baje de cero.
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-        // Always notify health-change listeners (e.g., UI health bar).
+        // Notificar siempre a los oyentes de cambios de vida (por ejemplo, barra de vida de UI).
         OnHealthChanged?.Invoke(GetNormalizedHealth());
 
-        // Check for death condition.
+        // Verificar la condición de muerte.
         if (currentHealth <= 0)
         {
             isDead = true;
 
-            // Notify death listeners (FSM, animation controller, game
-            // manager, etc.). This component's job ends here — what
-            // happens next is the listener's responsibility.
+            // Notificar a los oyentes de muerte (FSM, controlador de animación, gestor de juego,
+            // etc.). El trabajo de este componente termina aquí — lo que
+            // suceda a continuación es responsabilidad del oyente.
             OnDied?.Invoke();
         }
     }
 
     /// <summary>
-    /// Restores health to this entity, clamping to <see cref="maxHealth"/>.
-    /// Silently ignored if the entity is already dead or the amount is
-    /// non-positive, preserving the same defensive contract as TakeDamage.
+    /// Restaura vida a esta entidad, limitándola a <see cref="maxHealth"/>.
+    /// Se ignora silenciosamente si la entidad ya está muerta o la cantidad es
+    /// no positiva, preservando el mismo contrato defensivo que TakeDamage.
     /// </summary>
-    /// <param name="amount">Positive integer amount of health to restore.</param>
+    /// <param name="amount">Cantidad entera positiva de vida a restaurar.</param>
     public void Heal(int amount)
     {
-        // Guard: cannot heal a dead entity.
+        // Guardia: no se puede curar a una entidad muerta.
         if (isDead) return;
 
-        // Validate input — negative heal would effectively deal damage.
+        // Validar entrada — una curación negativa efectivamente causaría daño.
         if (amount <= 0) return;
 
         currentHealth += amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-        // Notify health-change listeners (e.g., UI health bar).
+        // Notificar a los oyentes de cambios de vida (por ejemplo, barra de vida de UI).
         OnHealthChanged?.Invoke(GetNormalizedHealth());
     }
 
@@ -170,11 +169,9 @@ public class HealthComponent : MonoBehaviour, IDamageable
         OnHealthChanged?.Invoke(GetNormalizedHealth());
     }
 
-    // ----------------------------------------------------------
-    // PUBLIC READ-ONLY ACCESSORS
-    // Expose read-only state without breaking encapsulation.
-    // No public setters exist — only TakeDamage() / Heal() mutate state.
-    // ----------------------------------------------------------
+    // ACCESORES PÚBLICOS DE SÓLO LECTURA
+    // Expone el estado de sólo lectura sin romper la encapsulación.
+    // No existen setters públicos — sólo TakeDamage() / Heal() mutan el estado.
 
     /// <summary>Devuelve la vida actual (útil para UI de texto y Debug).</summary>
     public int CurrentHealth => currentHealth;
@@ -183,10 +180,10 @@ public class HealthComponent : MonoBehaviour, IDamageable
     public int MaxHealth => maxHealth;
 
     /// <summary>
-    /// Returns the current health as a normalised float between 0 and 1.
-    /// Useful for driving UI sliders or shader effects.
+    /// Devuelve la vida actual como un float normalizado entre 0 y 1.
+    /// Útil para controlar sliders de UI o efectos de shader.
     /// </summary>
-    /// <returns>A float in the range [0.0, 1.0].</returns>
+    /// <returns>Un float en el rango [0.0, 1.0].</returns>
     public float GetNormalizedHealth()
     {
         // Guard against division by zero if maxHealth is misconfigured.
@@ -195,7 +192,7 @@ public class HealthComponent : MonoBehaviour, IDamageable
     }
 
     /// <summary>
-    /// Returns <c>true</c> if this entity's health has reached zero.
+    /// Devuelve <c>true</c> si la vida de esta entidad ha llegado a cero.
     /// </summary>
     public bool IsDead => isDead;
 }

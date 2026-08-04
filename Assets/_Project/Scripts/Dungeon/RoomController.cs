@@ -10,10 +10,10 @@ using TopDownShooter.Managers.UI;
 namespace TopDownShooter.Dungeon
 {
     /// <summary>
-    /// Central hub for a room instance. Auto-discovers all
-    /// <see cref="RoomSocket"/> and <see cref="EntitySpawnerNode"/>
-    /// components in children during <c>Awake()</c>.
-    /// Attach to the root GameObject of every room prefab.
+    /// Centro neurálgico de una instancia de sala. Descubre automáticamente todos los
+    /// componentes <see cref="RoomSocket"/> y <see cref="EntitySpawnerNode"/>
+    /// en los hijos durante el <c>Awake()</c>.
+    /// Adjuntar al GameObject raíz de cada prefab de sala.
     /// </summary>
     [RequireComponent(typeof(Collider))]
     public sealed class RoomController : MonoBehaviour
@@ -25,8 +25,7 @@ namespace TopDownShooter.Dungeon
         private enum RoomState { Waiting, Active, Cleared }
 
         [Header("Room Identity")]
-        [Tooltip("The gameplay role of this room. Must match the RoomDataSO Type used " +
-                 "to spawn this prefab so the generator selects the correct door prefab.")]
+        [Tooltip("El rol de jugabilidad de esta sala. Debe coincidir con el Type de RoomDataSO utilizado para generar este prefab para que el generador seleccione el prefab de puerta correcto.")]
         [SerializeField] private RoomType _roomType;
 
         [Header("Spawning")]
@@ -34,9 +33,9 @@ namespace TopDownShooter.Dungeon
         [SerializeField] private GameObject[] _environmentPrefabs;
         [SerializeField] private GameObject[] _lootPrefabs;
 
-        // Auto-populated in Awake() via GetComponentsInChildren.
-        // Using List<T> internally so we can populate from the array,
-        // while exposing IReadOnlyList<T> externally for safety.
+        // Rellenado automáticamente en Awake() a través de GetComponentsInChildren.
+        // Usando List<T> internamente para poder rellenarlo desde el arreglo,
+        // mientras se expone IReadOnlyList<T> externamente para mayor seguridad.
         private List<RoomSocket>        _sockets  = new List<RoomSocket>();
         private List<EntitySpawnerNode> _spawners = new List<EntitySpawnerNode>();
 
@@ -50,30 +49,30 @@ namespace TopDownShooter.Dungeon
         private GameObject _playerGameObject;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  READ-ONLY PROPERTIES
+        //  PROPIEDADES DE SOLO LECTURA
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// The gameplay role of this room as set in the prefab Inspector.
-        /// Used by <see cref="DungeonGenerator"/> to pick the correct door prefab
-        /// when connecting two rooms — this is the single authoritative source.
+        /// El rol de jugabilidad de esta sala tal como se define en el Inspector del prefab.
+        /// Utilizado por <see cref="DungeonGenerator"/> para elegir el prefab de puerta correcto
+        /// al conectar dos salas — esta es la única fuente autoritativa.
         /// </summary>
         public RoomType Type => _roomType;
 
         /// <summary>
-        /// All doorway sockets discovered in this room's hierarchy.
-        /// Read-only view — external systems can iterate but not mutate.
+        /// Todos los sockets de entrada descubiertos en la jerarquía de esta sala.
+        /// Vista de solo lectura — los sistemas externos pueden iterar pero no mutar.
         /// </summary>
         public IReadOnlyList<RoomSocket> Sockets => _sockets;
 
         /// <summary>
-        /// All entity spawner nodes discovered in this room's hierarchy.
-        /// Read-only view — external systems can iterate but not mutate.
+        /// Todos los nodos de aparición de entidades descubiertos en la jerarquía de esta sala.
+        /// Vista de solo lectura — los sistemas externos pueden iterar pero no mutar.
         /// </summary>
         public IReadOnlyList<EntitySpawnerNode> Spawners => _spawners;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  UNITY LIFECYCLE
+        //  CICLO DE VIDA DE UNITY
         // ─────────────────────────────────────────────────────────────────────
 
         private void Awake()
@@ -87,13 +86,13 @@ namespace TopDownShooter.Dungeon
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Scans the entire child hierarchy once and populates the socket
-        /// and spawner lists.  Called in Awake() — zero per-frame cost.
+        /// Escanea toda la jerarquía de hijos una vez y rellena las listas de sockets
+        /// y de spawner. Llamado en Awake() — costo cero por frame.
         /// </summary>
         private void DiscoverChildComponents()
         {
-            // GetComponentsInChildren includes the root GameObject itself
-            // and all descendants, which is exactly what we want.
+            // GetComponentsInChildren incluye al GameObject raíz en sí
+            // y a todos los descendientes, que es exactamente lo que queremos.
             _sockets.AddRange(GetComponentsInChildren<RoomSocket>());
             _spawners.AddRange(GetComponentsInChildren<EntitySpawnerNode>());
         }
@@ -103,9 +102,9 @@ namespace TopDownShooter.Dungeon
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Logs actionable warnings if the room prefab is missing expected
-        /// child components.  Runs once in Awake() during development to
-        /// surface prefab setup errors immediately.
+        /// Registra advertencias accionables si al prefab de la sala le faltan componentes
+        /// hijos esperados. Se ejecuta una vez en Awake() durante el desarrollo para
+        /// sacar a la luz los errores de configuración del prefab de inmediato.
         /// </summary>
         private void ValidateSetup()
         {
@@ -130,13 +129,13 @@ namespace TopDownShooter.Dungeon
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PUBLIC API  (Shell — to be expanded)
+        //  API PÚBLICA  (Esqueleto — a expandir)
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Returns the first unconnected socket that faces the given direction,
-        /// or <c>null</c> if none is available.
-        /// Used by the dungeon generator to find attachment points.
+        /// Devuelve el primer socket no conectado que apunta en la dirección dada,
+        /// o <c>null</c> si no hay ninguno disponible.
+        /// Utilizado por el generador de mazmorras para encontrar puntos de conexión.
         /// </summary>
         public RoomSocket GetAvailableSocket(SocketDirection direction)
         {
@@ -175,9 +174,9 @@ namespace TopDownShooter.Dungeon
         }
 
         /// <summary>
-        /// Returns all spawner nodes of a specific type.
-        /// Used by the WaveManager (Enemy), LootSpawner (Loot), or
-        /// PropPlacer (Environment) to find their respective spawn points.
+        /// Devuelve todos los nodos de aparición de un tipo específico.
+        /// Utilizado por el WaveManager (Enemy), LootSpawner (Loot) o
+        /// PropPlacer (Environment) para encontrar sus respectivos puntos de aparición.
         /// </summary>
         public List<EntitySpawnerNode> GetSpawnersByType(EntitySpawnerNode.SpawnerType type)
         {

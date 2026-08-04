@@ -4,19 +4,19 @@ using UnityEngine;
 namespace TopDownShooter.Loot
 {
     /// <summary>
-    /// Strategy interface for collectible items.
-    /// Any pickup effect — healing, coins, ammo, buffs — must implement
-    /// this contract to integrate with the <see cref="AutoPickupTrigger"/> system.
+    /// Interfaz de estrategia para objetos recolectables.
+    /// Cualquier efecto de recolección — curación, monedas, munición, potenciadores — debe implementar
+    /// este contrato para integrarse con el sistema <see cref="AutoPickupTrigger"/>.
     /// </summary>
     public interface ICollectible
     {
         /// <summary>
-        /// Applies this collectible's effect to the given player GameObject.
-        /// Called by <see cref="AutoPickupTrigger"/> when the player enters
-        /// the trigger volume. Implementations must NOT call Destroy here;
-        /// object lifetime is strictly managed by <see cref="AutoPickupTrigger"/>.
+        /// Aplica el efecto de este recolectable al GameObject del jugador especificado.
+        /// Llamado por <see cref="AutoPickupTrigger"/> cuando el jugador entra en
+        /// el volumen del disparador. Las implementaciones NO deben llamar a Destroy aquí;
+        /// la vida útil del objeto es gestionada estrictamente por <see cref="AutoPickupTrigger"/>.
         /// </summary>
-        /// <param name="player">The player's root GameObject that entered the trigger.</param>
+        /// <param name="player">El GameObject raíz del jugador que entró en el disparador.</param>
         void Collect(GameObject player);
     }
 }

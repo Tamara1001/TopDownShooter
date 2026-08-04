@@ -3,15 +3,15 @@
 namespace TopDownShooter.Dungeon
 {
     /// <summary>
-    /// Veto contract consumed by <see cref="DoorController.OpenDoor"/>.
-    /// Any sibling component on the door GameObject that implements this
-    /// interface can block the door from opening until the lock is cleared.
+    /// Contrato de veto consumido por <see cref="DoorController.OpenDoor"/>.
+    /// Cualquier componente hermano en el GameObject de la puerta que implemente esta
+    /// interfaz puede bloquear la apertura de la puerta hasta que se libere el bloqueo.
     /// </summary>
     public interface IDoorLock
     {
         /// <summary>
-        /// <c>true</c> while the door is locked and must not open.
-        /// <c>false</c> once the lock condition has been satisfied.
+        /// <c>true</c> mientras la puerta esté bloqueada y no deba abrirse.
+        /// <c>false</c> una vez que se haya cumplido la condición de desbloqueo.
         /// </summary>
         bool IsLocked { get; }
     }

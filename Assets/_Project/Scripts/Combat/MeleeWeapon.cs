@@ -8,14 +8,14 @@ using TopDownShooter.Inventory;
 namespace TopDownShooter.Enemy
 {
     /// <summary>
-    /// Concrete <see cref="IWeapon"/> strategy for melee attacks.
-    /// Also implements <see cref="IWeaponConfigurable"/> so a Context
-    /// (e.g. <see cref="TopDownShooter.Combat.PlayerCombat"/> or
-    /// <see cref="EnemyBrain"/>) can push <see cref="WeaponDataSO"/> stats
-    /// at runtime without this class importing the SO directly.
-    /// Uses a Physics overlap sphere combined with a dot-product
-    /// cone check to hit only targets in front of the attacker within
-    /// a configurable arc — with zero per-call heap allocations.
+    /// Estrategia concreta de <see cref="IWeapon"/> para ataques cuerpo a cuerpo.
+    /// También implementa <see cref="IWeaponConfigurable"/> para que un Contexto
+    /// (por ejemplo, <see cref="TopDownShooter.Combat.PlayerCombat"/> o
+    /// <see cref="EnemyBrain"/>) pueda inyectar estadísticas de <see cref="WeaponDataSO"/>
+    /// en tiempo de ejecución sin que esta clase importe el SO directamente.
+    /// Utiliza una esfera de superposición de Physics combinada con una verificación de cono
+    /// de producto punto para golpear solo a los objetivos frente al atacante dentro de
+    /// un arco configurable, con cero asignaciones de heap por llamada.
     /// </summary>
     public sealed class MeleeWeapon : MonoBehaviour, IWeapon, IWeaponConfigurable
     {
@@ -24,12 +24,11 @@ namespace TopDownShooter.Enemy
         // ----------------------------------------------------------
 
         [Header("Damage")]
-        [Tooltip("Damage dealt per weapon hit. Overridden by WeaponDataSO.BaseDamage " +
-                 "when Configure() is called. Inspector value is the safe fallback.")]
+        [Tooltip("Daño infligido por golpe de arma. Sobrescrito por WeaponDataSO.BaseDamage al llamar a Configure(). El valor del Inspector es la alternativa segura.")]
         [SerializeField] private int _damage = 10;
 
         [Header("Cooldown Settings")]
-        [Tooltip("Fallback attack cooldown if no WeaponDataSO configures this weapon.")]
+        [Tooltip("Enfriamiento de ataque alternativo si ningún WeaponDataSO configura esta arma.")]
         [SerializeField] private float _defaultCooldown = 1f;
 
         // ----------------------------------------------------------
@@ -38,36 +37,30 @@ namespace TopDownShooter.Enemy
 
         public float Cooldown => _baseCooldown * _cooldownMultiplier;
 
-        // Base cooldown, before any multipliers are applied.
+        // Enfriamiento base, antes de aplicar cualquier multiplicador.
         private float _baseCooldown;
 
-        // Dungeon Master multipliers
+        // Multiplicadores del Dungeon Master
         private float _damageMultiplier = 1f;
         private float _cooldownMultiplier = 1f;
 
         [Header("Hit Detection")]
-        [Tooltip("Radius of the OverlapSphere centered on this transform. " +
-                 "Should match (or be slightly larger than) EnemyStatsSO.AttackRange.")]
+        [Tooltip("Radio de la OverlapSphere centrada en este transform. Debe coincidir con (o ser ligeramente mayor que) EnemyStatsSO.AttackRange.")]
         [SerializeField] private float _attackRadius = 2f;
 
-        [Tooltip("Half-angle of the attack cone in degrees. " +
-                 "90° = full hemisphere in front, 45° = focused forward cone.")]
+        [Tooltip("Semiángulo del cono de ataque en grados. 90° = hemisferio completo en el frente, 45° = cono delantero enfocado.")]
         [Range(1f, 180f)]
         [SerializeField] private float _attackAngle = 45f;
 
-        [Tooltip("LayerMask for potential targets. Assign the 'Player' layer so the " +
-                 "overlap sphere only considers player colliders, skipping terrain, " +
-                 "props, and other enemies — no TryGetComponent calls wasted.")]
+        [Tooltip("LayerMask para objetivos potenciales. Asigne la capa 'Player' para que la esfera de superposición solo considere colisionadores de jugadores, omitiendo terreno, props y otros enemigos — sin llamadas desperdiciadas a TryGetComponent.")]
         [SerializeField] private LayerMask _targetMask;
 
         [Header("Buffer")]
-        [Tooltip("Maximum number of colliders the overlap sphere will record per swing. " +
-                 "Increase only if multiple damageable targets can overlap simultaneously.")]
+        [Tooltip("Número máximo de colisionadores que la esfera de superposición registrará por swing. Incremente solo si múltiples objetivos dañables pueden superponerse simultáneamente.")]
         [SerializeField] private int _hitBufferSize = 8;
 
         [Header("Game Feel")]
-        [Tooltip("CinemachineImpulseSource triggered once per swing if at least one " +
-                 "IDamageable target was hit. Leave unassigned to skip (null-safe).")]
+        [Tooltip("CinemachineImpulseSource activado una vez por swing si se golpeó al menos un objetivo IDamageable. Dejar sin asignar para omitir (seguro contra nulos).")]
         [SerializeField] private CinemachineImpulseSource _impulseSource;
 
         [Header("VFX")]
@@ -80,19 +73,19 @@ namespace TopDownShooter.Enemy
         // PRIVATE STATE
         // ----------------------------------------------------------
 
-        // Pre-allocated buffer — filled by OverlapSphereNonAlloc().
-        // Allocated once in Awake() using the Inspector value; never
-        // re-allocated at runtime, eliminating per-attack GC pressure.
+        // Buffer preasignado — llenado por OverlapSphereNonAlloc().
+        // Asignado una vez en Awake() usando el valor del Inspector; nunca
+        // se vuelve a asignar en tiempo de ejecución, eliminando la presión del GC por ataque.
         private Collider[] _hitBuffer;
 
-        // Cached dot-product threshold.
-        // cos(attackAngle) is computed once in Awake() from the Inspector
-        // value so the Tick-rate hot path performs only a single Dot().
-        // Dot(forward, dir) > cosHalfAngle  ⟺  angle < attackAngle / 2
+        // Umbral de producto punto almacenado en caché.
+        // cos(attackAngle) se calcula una vez en Awake() a partir del valor del Inspector
+        // para que la ruta crítica de la tasa de ticks realice solo un único Dot().
+        // Dot(forward, dir) > cosHalfAngle  ⟺  ángulo < attackAngle / 2
         private float _cosHalfAngle;
 
-        // Cached transform reference — avoids the property overhead of
-        // accessing UnityEngine.Object.transform in a tight loop.
+        // Referencia de transform almacenada en caché — evita la sobrecarga de propiedad al
+        // acceder a UnityEngine.Object.transform en un bucle cerrado.
         private Transform _transform;
 
         // Simple inline pool para evitar instanciar efectos de slash sin fin.
@@ -117,75 +110,75 @@ namespace TopDownShooter.Enemy
         // ----------------------------------------------------------
 
         /// <summary>
-        /// Called by <see cref="EnemyBrain.PerformAttack"/> on every
-        /// completed attack cooldown cycle.
+        /// Llamado por <see cref="EnemyBrain.PerformAttack"/> en cada
+        /// ciclo de enfriamiento de ataque completado.
         ///
-        /// ALGORITHM:
-        ///   1. OverlapSphereNonAlloc fills _hitBuffer with colliders
-        ///      on the _targetMask layer — no allocation.
-        ///   2. For each collider, compute the normalised direction from
-        ///      the enemy to the target.
-        ///   3. Dot product against the enemy's forward vector gives
-        ///      cos(θ). If cos(θ) ≥ cos(halfAngle) the target is inside
-        ///      the cone.
-        ///   4. TryGetComponent<IDamageable> and apply damage. Using
-        ///      TryGetComponent avoids a null-check allocation path.
+        /// ALGORITMO:
+        ///   1. OverlapSphereNonAlloc llena _hitBuffer con colisionadores
+        ///      en la capa _targetMask — sin asignación.
+        ///   2. Para cada colisionador, calcula la dirección normalizada desde
+        ///      el enemigo hacia el objetivo.
+        ///   3. El producto punto contra el vector forward del enemigo da
+        ///      cos(θ). Si cos(θ) ≥ cos(halfAngle), el objetivo está dentro
+        ///      del cono.
+        ///   4. TryGetComponent<IDamageable> y aplica daño. El uso de
+        ///      TryGetComponent evita una ruta de asignación de verificación de nulos.
         /// </summary>
         public void ExecuteAttack()
         {
-            // ── Step 1: broad-phase sphere cast ─────────────────
-            // NonAlloc version writes into the pre-allocated buffer.
-            // Returns the number of colliders found (≤ _hitBufferSize).
+            // ── Paso 1: cast de esfera en fase ancha ─────────────────
+            // La versión NonAlloc escribe en el buffer preasignado.
+            // Devuelve el número de colisionadores encontrados (≤ _hitBufferSize).
             int hitCount = Physics.OverlapSphereNonAlloc(
                 _transform.position,
                 _attackRadius,
                 _hitBuffer,
                 _targetMask);
 
-            // Track whether at least one target was damaged this swing
-            // so we fire the camera impulse exactly once (no multi-shake).
+            // Realizar un seguimiento de si al menos un objetivo resultó dañado en este swing
+            // para que disparemos el impulso de la cámara exactamente una vez (sin sacudida múltiple).
             bool hitAnything = false;
 
-            // ── Step 2 & 3: narrow-phase cone filter ────────────
+            // ── Paso 2 y 3: filtro de cono de fase estrecha ────────────
             for (int i = 0; i < hitCount; i++)
             {
                 Collider hit = _hitBuffer[i];
 
-                // Direction from enemy centre to the collider's centre.
-                // We zero the Y component to stay on the horizontal plane,
-                // matching the XZ-only facing rotation used in AttackState.
+                // Dirección desde el centro del enemigo hacia el centro del colisionador.
+                // Ponemos en cero el componente Y para permanecer en el plano horizontal,
+                // coincidiendo con la rotación de orientación XZ únicamente utilizada en AttackState.
                 Vector3 toTarget = hit.transform.position - _transform.position;
                 toTarget.y = 0f;
 
-                // Skip the target if they are at exactly the same position
-                // (degenerate case — Normalize would produce a zero vector).
+                // Omitir el objetivo si está exactamente en la misma posición
+                // (caso degenerado — Normalize produciría un vector cero).
                 if (toTarget == Vector3.zero) continue;
 
                 // dot(forward, dir_normalized) ≥ cos(halfAngle)
-                // ⟹ target is within the forward cone.
-                // sqrMagnitude is used to normalise without Sqrt until needed.
+                // ⟹ el objetivo está dentro del cono delantero.
+                // sqrMagnitude se utiliza para normalizar sin Sqrt hasta que sea necesario.
                 float dot = Vector3.Dot(_transform.forward, toTarget.normalized);
 
-                if (dot < _cosHalfAngle) continue; // Outside cone — skip.
+                if (dot < _cosHalfAngle) continue; // Fuera del cono — omitir.
 
-                // ── Step 4: apply damage ─────────────────────────
-                // TryGetComponent<T> is allocation-free in modern Unity.
+                // ── Paso 4: aplicar daño ─────────────────────────
+                // TryGetComponent<T> está libre de asignación en el Unity moderno.
                 if (hit.TryGetComponent<IDamageable>(out IDamageable target))
                 {
                     int finalDamage = Mathf.Max(1, Mathf.RoundToInt(_damage * _damageMultiplier));
                     target.TakeDamage(finalDamage);
                     hitAnything = true;
 
-                    // Logging scoped to the Editor; stripped from builds.
+                    // Logging exclusivo del Editor; eliminado de las builds.
 #if UNITY_EDITOR
                     Debug.Log($"[MeleeWeapon] '{name}' hit '{hit.name}' for {finalDamage} damage.");
 #endif
                 }
             }
 
-            // ── Step 5: camera impulse on successful hit ────────────────────
-            // Fires once per swing regardless of how many targets were hit,
-            // preventing jarring multi-shake when cleaving through a crowd.
+            // ── Paso 5: impulso de cámara al golpear con éxito ────────────────────
+            // Se dispara una vez por swing independientemente de cuántos objetivos hayan sido golpeados,
+            // evitando sacudidas múltiples molestas al tajar a través de una multitud.
             if (hitAnything)
                 _impulseSource?.GenerateImpulse();
 
@@ -223,9 +216,9 @@ namespace TopDownShooter.Enemy
                 }
             }
 
-            // ── Step 7: clear buffer references ─────────────────────────
-            // Nulling used slots prevents the GC from keeping
-            // destroyed colliders alive after the buffer is reused.
+            // ── Paso 7: limpiar las referencias del buffer ─────────────────────────
+            // Anular las ranuras usadas evita que el GC mantenga
+            // vivos los colisionadores destruidos después de reutilizar el buffer.
             for (int i = 0; i < hitCount; i++)
                 _hitBuffer[i] = null;
         }
@@ -242,21 +235,21 @@ namespace TopDownShooter.Enemy
         // ----------------------------------------------------------
 
         /// <summary>
-        /// Called once by the Context (e.g. <see cref="TopDownShooter.Combat.PlayerCombat"/>)
-        /// immediately after this component is instantiated or activated.
-        /// Overwrites the Inspector-default <see cref="_damage"/> with
-        /// <see cref="WeaponDataSO.BaseDamage"/> so a single prefab can serve
-        /// multiple weapon archetypes with different power levels.
+        /// Llamado una vez por el Contexto (por ejemplo, <see cref="TopDownShooter.Combat.PlayerCombat"/>)
+        /// inmediatamente después de instanciarse o activarse este componente.
+        /// Sobrescribe la <see cref="_damage"/> predeterminada del Inspector con
+        /// <see cref="WeaponDataSO.BaseDamage"/> para que un solo prefab pueda servir
+        /// a múltiples arquetipos de armas con diferentes niveles de potencia.
         ///
         /// <para>
-        /// Only <c>_damage</c> is injected here. Geometric fields
+        /// Solo se inyecta <c>_damage</c> aquí. Los campos geométricos
         /// (<c>_attackRadius</c>, <c>_attackAngle</c>, <c>_cosHalfAngle</c>)
-        /// remain under Inspector control because they define the shape of the
-        /// hitbox — a shared prefab concern, not a per-SO data concern.
+        /// permanecen bajo el control del Inspector porque definen la forma del
+        /// hitbox — un asunto del prefab compartido, no de los datos individuales del SO.
         /// </para>
         /// </summary>
-        /// <param name="stats">The <see cref="WeaponDataSO"/> of the equipped weapon.
-        /// Passing <c>null</c> is a no-op: existing Inspector values are kept.</param>
+        /// <param name="stats">El <see cref="WeaponDataSO"/> del arma equipada.
+        /// Pasar <c>null</c> no tiene efecto: se mantienen los valores del Inspector existentes.</param>
         public void Configure(WeaponDataSO stats)
         {
             if (stats == null)
@@ -269,8 +262,8 @@ namespace TopDownShooter.Enemy
             _damage = stats.BaseDamage;
             _baseCooldown = stats.AttackCooldown;
 
-            // ► Part 3: inject stats.AttackRange into _attackRadius here
-            //             once WeaponDataSO gains a dedicated range field.
+            // ► Parte 3: inyectar stats.AttackRange en _attackRadius aquí
+            //             una vez que WeaponDataSO tenga un campo dedicado de rango.
 
 #if UNITY_EDITOR
             Debug.Log($"[MeleeWeapon] '{name}': Configured via SO — " +
@@ -283,10 +276,10 @@ namespace TopDownShooter.Enemy
         // ----------------------------------------------------------
 
         /// <summary>
-        /// Checks that the Inspector is configured correctly and logs
-        /// actionable error messages if not. Disables the component
-        /// rather than throwing an exception so the rest of the scene
-        /// can still run during iteration.
+        /// Verifica que el Inspector esté configurado correctamente y registra
+        /// mensajes de error procesables si no es así. Deshabilita el componente
+        /// en lugar de lanzar una excepción para que el resto de la escena
+        /// pueda seguir ejecutándose durante la iteración.
         /// </summary>
         private void ValidateSetup()
         {
@@ -322,16 +315,16 @@ namespace TopDownShooter.Enemy
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
-            // Draw the full sphere radius in transparent red.
+            // Dibujar el radio completo de la esfera en rojo transparente.
             Gizmos.color = new Color(1f, 0.1f, 0.1f, 0.1f);
             Gizmos.DrawSphere(transform.position, _attackRadius);
 
-            // Draw the attack cone boundary rays on the horizontal plane.
-            // Visualises the half-angle on both sides of the forward vector.
+            // Dibujar los rayos límite del cono de ataque en el plano horizontal.
+            // Visualiza el semiángulo en ambos lados del vector forward.
             float halfAngleRad = _attackAngle * 0.5f * Mathf.Deg2Rad;
             Vector3 forward    = transform.forward;
 
-            // Left and right cone edges (XZ plane).
+            // Bordes izquierdo y derecho del cono (plano XZ).
             Vector3 leftEdge  = Quaternion.Euler(0f,  _attackAngle * 0.5f, 0f) * forward;
             Vector3 rightEdge = Quaternion.Euler(0f, -_attackAngle * 0.5f, 0f) * forward;
 
@@ -340,7 +333,7 @@ namespace TopDownShooter.Enemy
             Gizmos.DrawRay(transform.position, leftEdge  * _attackRadius);
             Gizmos.DrawRay(transform.position, rightEdge * _attackRadius);
 
-            // Label in Scene view.
+            // Etiqueta en la vista de Scene.
             UnityEditor.Handles.Label(
                 transform.position + Vector3.up * 0.3f,
                 $"Melee: {_attackAngle}° / {_attackRadius}m");

@@ -18,34 +18,34 @@ namespace TopDownShooter.World
     public class LockedBossDoor : MonoBehaviour, IWorldInteractable, IDoorLock
     {
         [Header("Lock Configuration")]
-        [Tooltip("The ScriptableObject key required in the player's consumable slot to unlock this door.")]
+        [Tooltip("El key (ScriptableObject) requerido en la ranura de consumible del jugador para desbloquear esta puerta.")]
         [SerializeField] private ConsumableDataSO _requiredKey;
         
-        [Tooltip("The visual and physical door controller to act upon when unlocked.")]
+        [Tooltip("El controlador visual y físico de la puerta sobre el cual actuar al desbloquearse.")]
         [SerializeField] private DoorController _doorController;
 
         [Header("Visual Feedback")]
-        [Tooltip("HDR color pulsed onto the door emission when the player is in range.")]
+        [Tooltip("Color HDR pulsado en la emisión de la puerta cuando el jugador está en el rango.")]
         [SerializeField] private Color _approachGlowColor = new Color(1.2f, 0.8f, 0f, 1f);  // amber HDR
 
-        [Tooltip("HDR color briefly flashed when the player tries to open without the key.")]
+        [Tooltip("Color HDR parpadeado brevemente cuando el jugador intenta abrir sin la llave.")]
         [SerializeField] private Color _denyFlashColor = new Color(2.5f, 0.1f, 0f, 1f);     // red HDR
 
-        [Tooltip("Duration (seconds) of the deny flash cycle.")]
+        [Tooltip("Duración (segundos) del ciclo de parpadeo de denegación.")]
         [SerializeField] [Range(0.1f, 1f)] private float _flashDuration = 0.35f;
 
-        // ── IDoorLock implementation ──────────────────────────────────────────
-        // DoorController queries this via the interface to veto OpenDoor().
-        // IsLocked is true until the player uses the correct key.
+        // ── Implementación de IDoorLock ────────────────────────────────────────
+        // DoorController consulta esto a través de la interfaz para vetar OpenDoor().
+        // IsLocked es verdadero hasta que el jugador usa la llave correcta.
         public bool IsLocked => !IsUnlocked;
 
-        // Exposed so external systems (e.g. debug tools) can read the state.
+        // Expuesto para que los sistemas externos (ej. herramientas de depuración) puedan leer el estado.
         public bool IsUnlocked { get; private set; } = false;
 
-        // ── Renderer cache for emission effects ──────────────────────────────
-        // Cached once in Awake — zero GetComponent calls during gameplay.
-        // MaterialPropertyBlock lets us tint per-renderer without creating
-        // new Material instances, keeping the asset database clean.
+        // ── Caché de Renderer para efectos de emisión ────────────────────────
+        // Almacenado en caché una vez en Awake — cero llamadas a GetComponent durante el juego.
+        // MaterialPropertyBlock nos permite teñir por renderer sin crear
+        // nuevas instancias de Material, manteniendo la base de datos de assets limpia.
         private Renderer[] _renderers;
         private MaterialPropertyBlock _propBlock;
         private Coroutine _flashCoroutine;
@@ -76,10 +76,10 @@ namespace TopDownShooter.World
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Call this when the player enters the interaction radius of this door.
-        /// Lights up a subtle amber emission to signal "this object is interactive".
-        /// Wire up from InteractionDebugger, a ProximityTrigger, or
-        /// PlayerInventory.TryWorldInteract (before the Interact() call).
+        /// Llame a esto cuando el jugador entre en el radio de interacción de esta puerta.
+        /// Enciende una sutil emisión ámbar para indicar "este objeto es interactivo".
+        /// Conectar desde InteractionDebugger, un ProximityTrigger o
+        /// PlayerInventory.TryWorldInteract (antes de la llamada a Interact()).
         /// </summary>
         public void OnPlayerApproach()
         {
@@ -88,12 +88,12 @@ namespace TopDownShooter.World
         }
 
         /// <summary>
-        /// Call this when the player leaves the interaction radius.
-        /// Extinguishes the approach glow (unless a deny flash is running).
+        /// Llame a esto cuando el jugador salga del radio de interacción.
+        /// Apaga el resplandor de aproximación (a menos que se esté ejecutando un parpadeo de denegación).
         /// </summary>
         public void OnPlayerLeave()
         {
-            if (_flashCoroutine != null) return;   // Let the flash finish first.
+            if (_flashCoroutine != null) return;   // Dejar que el parpadeo termine primero.
             SetEmission(Color.black);
         }
 
@@ -102,11 +102,11 @@ namespace TopDownShooter.World
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Called by PlayerInventory when the player presses the Interact input.
+        /// Llamado por PlayerInventory cuando el jugador presiona la entrada Interact.
         /// </summary>
         public void Interact(PlayerInventory inventory)
         {
-            // Guard clauses
+            // Cláusulas de salvaguarda
             if (IsUnlocked || _doorController == null) return;
 
             if (_requiredKey == null)
@@ -115,20 +115,20 @@ namespace TopDownShooter.World
                 return;
             }
 
-            // Evaluate if the player is holding the required key
+            // Evaluar si el jugador sostiene la llave requerida
             if (inventory != null && inventory.CurrentConsumable == _requiredKey)
             {
                 Debug.Log("[LockedBossDoor] Key accepted! Unlocking boss door.");
-                IsUnlocked = true;  // IDoorLock.IsLocked becomes false — DoorController.OpenDoor() unblocked.
+                IsUnlocked = true;  // IDoorLock.IsLocked se vuelve falso — DoorController.OpenDoor() desbloqueado.
 
-                // Kill any active flash before opening — the door is going away.
+                // Apagar cualquier parpadeo activo antes de abrir — la puerta va a desaparecer.
                 StopDenyFlash();
                 SetEmission(Color.black);
 
                 _doorController.OpenDoor();
                 
-                // Disable this script (and optionally its collider if it's strictly for interaction)
-                // so the prompt never appears again.
+                // Deshabilitar este script (y opcionalmente su colisionador si es estrictamente para interacción)
+                // para que el prompt nunca vuelva a aparecer.
                 this.enabled = false;
                 
                 Collider col = GetComponent<Collider>();
@@ -143,28 +143,28 @@ namespace TopDownShooter.World
                 Debug.Log($"[LockedBossDoor] Locked. Requires '{_requiredKey.DisplayName}', " +
                           $"but player holds '{held}'.");
 
-                // ── Deny flash ───────────────────────────────────────────────
-                // Briefly pulse the door red to give clear visual feedback that
-                // the interaction was rejected. The flash restores the emission
-                // to its idle state (black) when done.
+                // ── Parpadeo de denegación ───────────────────────────────────
+                // Pulsar brevemente la puerta en rojo para dar un feedback visual claro de que
+                // la interacción fue rechazada. El parpadeo restaura la emisión
+                // a su estado inactivo (negro) al terminar.
                 StopDenyFlash();
                 _flashCoroutine = StartCoroutine(FlashDenyColor());
             }
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  VISUAL FEEDBACK HELPERS
+        //  AYUDANTES DE FEEDBACK VISUAL
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Fades emission to <see cref="_denyFlashColor"/>, holds briefly,
-        /// then fades it back to black. One pulse only — clean and readable.
+        /// Desvanece la emisión a <see cref="_denyFlashColor"/>, se sostiene brevemente,
+        /// luego la desvanece de regreso a negro. Un solo pulso — limpio y legible.
         /// </summary>
         private IEnumerator FlashDenyColor()
         {
             float half = _flashDuration * 0.5f;
 
-            // Ramp UP to deny color
+            // Rampa ascendente hacia el color de denegación
             float t = 0f;
             while (t < half)
             {
@@ -175,7 +175,7 @@ namespace TopDownShooter.World
 
             SetEmission(_denyFlashColor);
 
-            // Ramp DOWN back to black
+            // Rampa descendente de regreso a negro
             t = 0f;
             while (t < half)
             {
@@ -189,9 +189,9 @@ namespace TopDownShooter.World
         }
 
         /// <summary>
-        /// Stops any running deny flash coroutine immediately.
-        /// Called before starting a new flash (prevents two running at once)
-        /// and when the door unlocks (cleans up without waiting for it to end).
+        /// Detiene cualquier corrutina de parpadeo de denegación en ejecución de inmediato.
+        /// Llamado antes de comenzar un nuevo parpadeo (evita que dos se ejecuten a la vez)
+        /// y cuando la puerta se desbloquea (limpia sin esperar a que termine).
         /// </summary>
         private void StopDenyFlash()
         {
@@ -203,10 +203,10 @@ namespace TopDownShooter.World
         }
 
         /// <summary>
-        /// Applies <paramref name="color"/> to the <c>_EmissionColor</c> property
-        /// of every cached Renderer via a MaterialPropertyBlock.
-        /// Using a property block avoids instantiating new Material objects,
-        /// keeping the asset database and memory clean.
+        /// Aplica el <paramref name="color"/> a la propiedad <c>_EmissionColor</c>
+        /// de cada Renderer almacenado en caché a través de un MaterialPropertyBlock.
+        /// El uso de un bloque de propiedades evita instanciar nuevos objetos Material,
+        /// manteniendo limpia la base de datos de assets y la memoria.
         /// </summary>
         private void SetEmission(Color color)
         {
@@ -221,14 +221,14 @@ namespace TopDownShooter.World
         }
 
         // ----------------------------------------------------------
-        // EDITOR UTILITIES
+        // UTILIDADES DE EDITOR
         // ----------------------------------------------------------
 
         /// <summary>
-        /// One-click fix for a BoxCollider that is buried inside the door mesh
-        /// and therefore invisible to PlayerInventory's OverlapSphere.
-        /// Run via right-click → "Reset Collider Size" in the Inspector.
-        /// Adjust the size to match your door prefab after running this.
+        /// Corrección de un clic para un BoxCollider que está enterrado dentro de la malla de la puerta
+        /// y, por lo tanto, es invisible para el OverlapSphere de PlayerInventory.
+        /// Ejecutar a través de clic derecho → "Reset Collider Size" en el Inspector.
+        /// Ajuste el tamaño para que coincida con su prefab de puerta después de ejecutar esto.
         /// </summary>
         [ContextMenu("Reset Collider Size")]
         private void ResetColliderSize()
@@ -242,7 +242,7 @@ namespace TopDownShooter.World
             }
 
             box.center = Vector3.zero;
-            box.size   = new Vector3(3f, 5f, 2f);   // Visible, walk-through interactable volume.
+            box.size   = new Vector3(3f, 5f, 2f);   // Volumen interactivo visible y transitable.
 
 #if UNITY_EDITOR
             EditorUtility.SetDirty(this);
@@ -252,17 +252,17 @@ namespace TopDownShooter.World
         }
 
         // ----------------------------------------------------------
-        // EDITOR GIZMOS
+        // GIZMOS DE EDITOR
         // ----------------------------------------------------------
 
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
-            // Draw a red wire cube at the lock's position
+            // Dibujar un cubo de alambre rojo en la posición de la cerradura
             Gizmos.color = Color.red;
             Gizmos.DrawWireCube(transform.position + Vector3.up * 1f, new Vector3(2f, 2f, 0.5f));
             
-            // Draw a label above it
+            // Dibujar una etiqueta por encima
             Handles.Label(transform.position + Vector3.up * 2.5f,
                 $"[Locked Boss Door]\n{(IsUnlocked ? "UNLOCKED" : "LOCKED")}");
         }

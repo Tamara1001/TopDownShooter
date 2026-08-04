@@ -5,7 +5,7 @@ using TopDownShooter.Combat;
 namespace TopDownShooter.Loot
 {
     /// <summary>
-    /// A struct defining a single item that can drop, paired with its drop chance.
+    /// Estructura que define un único objeto que puede soltarse, emparejado con su probabilidad de caída.
     /// </summary>
     [Serializable]
     public struct LootEntry
@@ -15,20 +15,20 @@ namespace TopDownShooter.Loot
     }
 
     /// <summary>
-    /// Listens to a HealthComponent's death event and spawns a random
-    /// number of loot prefabs based on a weighted table.
+    /// Escucha el evento de muerte de un HealthComponent y genera un número aleatorio
+    /// de prefabs de botín basándose en una tabla ponderada.
     /// </summary>
     [RequireComponent(typeof(HealthComponent))]
     public sealed class LootDropper : MonoBehaviour
     {
         [Header("Drop Settings")]
-        [Tooltip("Minimum number of items to drop.")]
+        [Tooltip("Número mínimo de objetos a soltar.")]
         [SerializeField] private int _minDrops = 1;
         
-        [Tooltip("Maximum number of items to drop.")]
+        [Tooltip("Número máximo de objetos a soltar.")]
         [SerializeField] private int _maxDrops = 3;
         
-        [Tooltip("List of items that can drop. Selection uses cumulative weighted random — every entry's chance is proportional to its DropChance weight.")]
+        [Tooltip("Lista de objetos que pueden soltarse. La selección utiliza un valor aleatorio ponderado acumulativo — la probabilidad de cada entrada es proporcional al peso de su DropChance.")]
         [SerializeField] private LootEntry[] _lootTable;
 
         private HealthComponent _health;
@@ -41,11 +41,11 @@ namespace TopDownShooter.Loot
 
         private void HandleDeath()
         {
-            // Unsubscribe to prevent multiple executions if OnDied fires again.
+            // Desuscribirse para evitar múltiples ejecuciones si OnDied se dispara nuevamente.
             _health.OnDied -= HandleDeath;
 
-            // --- Cumulative Weighted Random Setup ---
-            // Sum the DropChance of every valid entry to form the total weight pool.
+            // --- Configuración Aleatoria Ponderada Acumulativa ---
+            // Sumar la DropChance de cada entrada válida para formar el conjunto de peso total.
             float totalWeight = 0f;
             foreach (LootEntry entry in _lootTable)
             {
@@ -53,16 +53,16 @@ namespace TopDownShooter.Loot
                     totalWeight += entry.DropChance;
             }
 
-            // Nothing to drop if the table is empty or all weights are zero.
+            // Nada que soltar si la tabla está vacía o todos los pesos son cero.
             if (totalWeight <= 0f) return;
 
-            // Determine how many items we are going to drop.
+            // Determinar cuántos objetos vamos a soltar.
             int dropCount = UnityEngine.Random.Range(_minDrops, _maxDrops + 1);
 
             for (int i = 0; i < dropCount; i++)
             {
-                // Roll once against the full weight pool so every item's probability
-                // is proportional to its DropChance, regardless of array position.
+                // Tirar una vez contra el conjunto de peso total para que la probabilidad de cada objeto
+                // sea proporcional a su DropChance, independientemente de la posición en el arreglo.
                 float roll = UnityEngine.Random.Range(0f, totalWeight);
 
                 for (int j = 0; j < _lootTable.Length; j++)
@@ -71,14 +71,14 @@ namespace TopDownShooter.Loot
 
                     if (entry.Prefab == null) continue;
 
-                    // Consume this entry's weight from the roll.
+                    // Consumir el peso de esta entrada a partir de la tirada.
                     roll -= entry.DropChance;
 
-                    // When roll is exhausted, this entry wins the selection.
+                    // Cuando la tirada se agota, esta entrada gana la selección.
                     if (roll <= 0f)
                     {
-                        // Spawn with a small random horizontal jitter so simultaneous
-                        // drops don't perfectly overlap each other.
+                        // Generar con una pequeña fluctuación (jitter) horizontal aleatoria para que las
+                        // caídas simultáneas no se superpongan perfectamente entre sí.
                         Vector3 jitter = new Vector3(
                             UnityEngine.Random.Range(-0.3f, 0.3f),
                             0.5f,
@@ -86,7 +86,7 @@ namespace TopDownShooter.Loot
 
                         Instantiate(entry.Prefab, transform.position + jitter, Quaternion.identity);
 
-                        // Item selected for this iteration — move to the next drop.
+                        // Objeto seleccionado para esta iteración — pasar a la siguiente caída.
                         break;
                     }
                 }

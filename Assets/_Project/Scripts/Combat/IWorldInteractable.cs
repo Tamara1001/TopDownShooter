@@ -4,20 +4,20 @@ using TopDownShooter.Player;
 namespace TopDownShooter.Interaction
 {
     /// <summary>
-    /// Contract for any world object that can respond to the player's
-    /// Interact (E) input. The inventory passed as parameter gives the
-    /// implementor read-only access to what the player is currently holding.
+    /// Contrato para cualquier objeto del mundo que pueda responder a la entrada de
+    /// Interactuar (E) del jugador. El inventario pasado como parámetro le da al
+    /// implementador acceso de sólo lectura a lo que el jugador sostiene actualmente.
     /// </summary>
     public interface IWorldInteractable
     {
         /// <summary>
-        /// Called by <see cref="PlayerInventory"/> when the player presses the
-        /// Interact key while within range of this object.
+        /// Llamado por <see cref="PlayerInventory"/> cuando el jugador presiona la
+        /// tecla de interactuar mientras está dentro del alcance de este objeto.
         /// </summary>
         /// <param name="inventory">
-        /// The player's inventory. Implementors may read
-        /// <see cref="PlayerInventory.CurrentConsumable"/> (and other slots)
-        /// to validate conditions without coupling to the Player prefab directly.
+        /// El inventario del jugador. Los implementadores pueden leer
+        /// <see cref="PlayerInventory.CurrentConsumable"/> (y otras ranuras)
+        /// para validar condiciones sin acoplarse directamente al prefab del jugador.
         /// </param>
         void Interact(PlayerInventory inventory);
     }

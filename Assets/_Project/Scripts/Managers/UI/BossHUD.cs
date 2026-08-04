@@ -11,12 +11,12 @@ namespace TopDownShooter.Managers.UI
     {
         public static BossHUD Instance { get; private set; }
 
-        [Header("UI References")]
+        [Header("Referencias de UI")]
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private Image _healthFill;
         [SerializeField] private TextMeshProUGUI _bossNameText;
 
-        [Header("Settings")]
+        [Header("Ajustes")]
         [SerializeField] private float _fadeDuration = 1f;
 
         private HealthComponent _currentBossHealth;

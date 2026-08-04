@@ -10,23 +10,23 @@ namespace TopDownShooter.Inventory
     // ─────────────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Determines which player resource (if any) is consumed per attack.
-    /// Configured on the <see cref="WeaponDataSO"/> asset and read by
-    /// <see cref="TopDownShooter.Combat.PlayerCombat"/> before each shot.
+    /// Determina qué recurso del jugador (si existe alguno) se consume por ataque.
+    /// Configurado en el asset <see cref="WeaponDataSO"/> y leído por
+    /// <see cref="TopDownShooter.Combat.PlayerCombat"/> antes de cada disparo.
     /// </summary>
     public enum WeaponResourceType
     {
-        /// <summary>This weapon has no resource cost. Always fires freely.</summary>
+        /// <summary>Esta arma no tiene costo de recursos. Siempre se dispara libremente.</summary>
         None,
-        /// <summary>Consumes Mana. Used by magical weapons (staves, grimoires).</summary>
+        /// <summary>Consume Maná. Usado por armas mágicas (báculos, grimorios).</summary>
         Mana,
-        /// <summary>Consumes Energy. Used by physical weapons (daggers, bows).</summary>
+        /// <summary>Consume Energía. Usado por armas físicas (dagas, arcos).</summary>
         Energy
     }
 
     /// <summary>
-    /// ScriptableObject blueprint for equippable weapon items.
-    /// Drop into a slot and the player gains access to a new attack pattern.
+    /// Plantilla ScriptableObject para objetos de arma equipables.
+    /// Colóquela en una ranura y el jugador obtendrá acceso a un nuevo patrón de ataque.
     /// </summary>
     [CreateAssetMenu(
         fileName = "NewWeaponData",
@@ -38,11 +38,11 @@ namespace TopDownShooter.Inventory
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Weapon Stats")]
-        [Tooltip("Base damage dealt per hit. Read by the IWeapon strategy.")]
+        [Tooltip("Daño base infligido por impacto. Leído por la estrategia IWeapon.")]
         [Min(1)]
         [SerializeField] private int _baseDamage = 10;
 
-        [Tooltip("Minimum seconds between consecutive shots / swings.")]
+        [Tooltip("Segundos mínimos entre disparos / golpes consecutivos.")]
         [Min(0.05f)]
         [SerializeField] private float _attackCooldown = 0.25f;
 
@@ -51,12 +51,10 @@ namespace TopDownShooter.Inventory
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Resource Cost")]
-        [Tooltip("Which player resource this weapon consumes on each attack. " +
-                 "None = free to use, Mana = magical, Energy = physical.")]
+        [Tooltip("Qué recurso del jugador consume esta arma en cada ataque. None = de uso gratuito, Mana = mágico, Energy = físico.")]
         [SerializeField] private WeaponResourceType _resourceType = WeaponResourceType.None;
 
-        [Tooltip("Amount of the chosen resource consumed per attack. " +
-                 "Ignored when ResourceType is None.")]
+        [Tooltip("Cantidad del recurso elegido consumido por ataque. Se ignora cuando ResourceType es None.")]
         [Min(0)]
         [SerializeField] private int _resourceCost = 0;
 
@@ -65,10 +63,7 @@ namespace TopDownShooter.Inventory
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Weapon Logic")]
-        [Tooltip("A prefab whose root MonoBehaviour implements IWeapon (e.g. MagicWand, " +
-                 "MeleeWeapon, RangedWeapon). PlayerCombat will Instantiate this as a " +
-                 "child of the Player and call IWeaponConfigurable.Configure() on it. " +
-                 "The prefab MUST have exactly one IWeapon component on its root.")]
+        [Tooltip("Un prefab cuyo MonoBehaviour raíz implementa IWeapon (ej. MagicWand, MeleeWeapon, RangedWeapon). PlayerCombat instanciará esto como hijo del Player y llamará a IWeaponConfigurable.Configure() en él. El prefab DEBE tener exactamente un componente IWeapon en su raíz.")]
         [SerializeField] private MonoBehaviour _weaponLogicPrefab;
 
         // ─────────────────────────────────────────────────────────────────────
@@ -86,21 +81,21 @@ namespace TopDownShooter.Inventory
         //  PUBLIC GETTERS
         // ─────────────────────────────────────────────────────────────────────
 
-        /// <summary>Base damage per attack, used by the IWeapon strategy.</summary>
+        /// <summary>Daño base por ataque, utilizado por la estrategia IWeapon.</summary>
         public int                BaseDamage        => _baseDamage;
 
-        /// <summary>Minimum interval in seconds between consecutive attacks.</summary>
+        /// <summary>Intervalo mínimo en segundos entre ataques consecutivos.</summary>
         public float              AttackCooldown     => _attackCooldown;
 
         /// <summary>
-        /// Which resource (Mana, Energy, or None) this weapon spends per shot.
-        /// Read by <see cref="TopDownShooter.Combat.PlayerCombat"/> before each attack.
+        /// Qué recurso (Maná, Energía o Ninguno) gasta esta arma por disparo.
+        /// Leído por <see cref="TopDownShooter.Combat.PlayerCombat"/> antes de cada ataque.
         /// </summary>
         public WeaponResourceType ResourceType       => _resourceType;
 
         /// <summary>
-        /// How much of <see cref="ResourceType"/> is consumed per attack.
-        /// Ignored when <see cref="ResourceType"/> is <see cref="WeaponResourceType.None"/>.
+        /// Cuánto de <see cref="ResourceType"/> se consume por ataque.
+        /// Se ignora cuando <see cref="ResourceType"/> es <see cref="WeaponResourceType.None"/>.
         /// </summary>
         public int                ResourceCost       => _resourceCost;
 

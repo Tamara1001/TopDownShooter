@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -16,21 +16,21 @@ class Program
                 string content = File.ReadAllText(file);
                 string relativePath = file.Substring(dir.Length + 1);
                 
-                // 1. Find empty Unity lifecycle methods
+                // 1. Buscar métodos de ciclo de vida de Unity vacíos
                 var emptyMethods = Regex.Matches(content, @"void\s+(Awake|Start|Update|FixedUpdate|LateUpdate|OnEnable|OnDisable|OnDestroy)\s*\([^)]*\)\s*\{\s*\}", RegexOptions.Singleline);
                 foreach (Match m in emptyMethods)
                 {
                     sw.WriteLine(string.Format("[EMPTY_METHOD] {0}: {1}", relativePath, m.Groups[1].Value));
                 }
                 
-                // 2. Find public fields (not properties, not constants, not readonly)
+                // 2. Buscar campos públicos (no propiedades, constantes ni de solo lectura)
                 var publicFields = Regex.Matches(content, @"^\s*public\s+(?!readonly|const|class|struct|enum|interface|event|delegate)[A-Za-z0-9_<>[\]]+\s+[a-z_][A-Za-z0-9_]*\s*(?:=|;)", RegexOptions.Multiline);
                 foreach (Match m in publicFields)
                 {
                     sw.WriteLine(string.Format("[PUBLIC_FIELD] {0}: {1}", relativePath, m.Value.Trim()));
                 }
                 
-                // 3. Extract some comments to check language and quality
+                // 3. Extraer algunos comentarios para verificar el idioma y la calidad
                 var comments = Regex.Matches(content, @"//(.*?)$", RegexOptions.Multiline);
                 int commentCount = 0;
                 foreach (Match m in comments)
@@ -45,7 +45,7 @@ class Program
                     }
                 }
                 
-                // 4. Extract declarations to check code language
+                // 4. Extraer declaraciones para verificar el idioma del código
                 var decls = Regex.Matches(content, @"(?:class|struct|enum|interface)\s+([A-Za-z0-9_]+)|(?:public|private|protected|internal)\s+(?:[A-Za-z0-9_<>[\]]+\s+)?([A-Za-z0-9_]+)\s*(?:\(|;|=|{)", RegexOptions.Multiline);
                 int declCount = 0;
                 foreach (Match m in decls)
@@ -60,7 +60,7 @@ class Program
                     }
                 }
                 
-                // 5. Look for commented code (very basic heuristic: ends with ; or contains { })
+                // 5. Buscar código comentado (heurística muy básica: termina con ; o contiene { })
                 var commentedCode = Regex.Matches(content, @"//\s*([A-Za-z0-9_]+\s*\([^)]*\)\s*;|.*\{.*\}|.*=.*;)", RegexOptions.Multiline);
                 foreach (Match m in commentedCode)
                 {

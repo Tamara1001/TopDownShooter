@@ -21,7 +21,7 @@ public class AudioManager : MonoBehaviour
     public static AudioManager Instance { get; private set; }
 
     // -------------------------------------------------------------------------
-    // Constants — AudioMixer parameters and PlayerPrefs keys
+    // Constantes — Parámetros de AudioMixer y claves de PlayerPrefs
     // -------------------------------------------------------------------------
     private const string MIXER_PARAM_MUSIC = "MusicVolume";
     private const string MIXER_PARAM_SFX = "SFXVolume";
@@ -32,14 +32,14 @@ public class AudioManager : MonoBehaviour
     private const float DEFAULT_VOLUME = 1f;
 
     // -------------------------------------------------------------------------
-    // Serializable Mapping Structs
+    // Estructuras de mapeo serializables
     // -------------------------------------------------------------------------
     [Serializable]
     public struct SFXEntry
     {
-        [Tooltip("Unique string ID used to play this effect (e.g. 'sfx_laser', 'sfx_coin').")]
+        [Tooltip("ID de cadena único utilizado para reproducir este efecto (por ejemplo, 'sfx_laser', 'sfx_coin').")]
         [SerializeField] private string _id;
-        [Tooltip("The AudioClip to play for this entry.")]
+        [Tooltip("El AudioClip que se reproducirá para esta entrada.")]
         [SerializeField] private AudioClip _clip;
 
         /// <summary>Identificador único de este efecto de sonido.</summary>
@@ -51,9 +51,9 @@ public class AudioManager : MonoBehaviour
     [Serializable]
     public struct BGMEntry
     {
-        [Tooltip("Unique string ID for this background music track (e.g. 'bgm_dungeon', 'bgm_boss').")]
+        [Tooltip("ID de cadena único para esta pista de música de fondo (por ejemplo, 'bgm_dungeon', 'bgm_boss').")]
         [SerializeField] private string _id;
-        [Tooltip("The AudioClip for this BGM entry.")]
+        [Tooltip("El AudioClip para esta entrada de BGM.")]
         [SerializeField] private AudioClip _clip;
 
         /// <summary>Identificador único de esta pista de música de fondo.</summary>
@@ -63,33 +63,33 @@ public class AudioManager : MonoBehaviour
     }
 
     // -------------------------------------------------------------------------
-    // Inspector — Audio Mixer Channels
+    // Inspector — Canales de Audio Mixer
     // -------------------------------------------------------------------------
     [Header("Audio Mixer Groups")]
     [SerializeField] private AudioMixerGroup _musicMixerGroup;
     [SerializeField] private AudioMixerGroup _sfxMixerGroup;
 
     // -------------------------------------------------------------------------
-    // Inspector — Sound Libraries
+    // Inspector — Librerías de Sonido
     // -------------------------------------------------------------------------
     [Header("Sound Libraries")]
     [SerializeField] private List<SFXEntry> _sfxLibrary = new List<SFXEntry>();
     [SerializeField] private List<BGMEntry> _bgmLibrary = new List<BGMEntry>();
 
-    [Tooltip("Music that plays automatically on the Main Menu.")]
+    [Tooltip("Música que se reproduce automáticamente en el Menú Principal.")]
     [SerializeField] private AudioClip _mainMenuMusic;
 
     [Header("Transition Settings")]
     [SerializeField][Range(0f, 1f)] private float _musicTargetVolume = 1f;
 
     // -------------------------------------------------------------------------
-    // Runtime — Audio Sources and Internal State
+    // Runtime — Fuentes de audio y estado interno
     // -------------------------------------------------------------------------
     private AudioSource _musicSource;
     private AudioSource _sfxSource;
     private Coroutine _fadeCoroutine;
 
-    // O(1) lookup dictionaries — populated in Awake from the serialized libraries.
+    // Diccionarios de búsqueda O(1) — poblados en Awake a partir de las librerías serializadas.
     private Dictionary<string, AudioClip> _sfxDict;
     private Dictionary<string, AudioClip> _bgmDict;
 
@@ -98,7 +98,7 @@ public class AudioManager : MonoBehaviour
     // -------------------------------------------------------------------------
     private void Awake()
     {
-        // Singleton guard — destroy any duplicate that loads after the first instance.
+        // Guardia Singleton — destruye cualquier duplicado que se cargue después de la primera instancia.
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -108,7 +108,7 @@ public class AudioManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // AudioSources are created dynamically to keep the prefab hierarchy clean.
+        // Los AudioSources se crean dinámicamente para mantener limpia la jerarquía del prefab.
         _musicSource = CreateAudioSource("MusicSource", _musicMixerGroup, loop: true);
         _sfxSource = CreateAudioSource("SFXSource", _sfxMixerGroup, loop: false);
 
@@ -119,7 +119,7 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-        // Volumes are loaded in Start (one frame after Awake) to ensure the Mixer is fully initialised.
+        // Los volúmenes se cargan en Start (un frame después de Awake) para asegurar que el Mixer esté completamente inicializado.
         LoadSavedVolumePreferences();
 
         if (_mainMenuMusic != null)
@@ -287,7 +287,7 @@ public class AudioManager : MonoBehaviour
         float elapsed = 0f;
         while (elapsed < duration)
         {
-            // unscaledDeltaTime ensures fades work correctly even when Time.timeScale is 0 (Pause screen).
+            // unscaledDeltaTime asegura que los desvanecimientos funcionen correctamente incluso cuando Time.timeScale es 0 (pantalla de pausa).
             elapsed += Time.unscaledDeltaTime;
             _musicSource.volume = Mathf.Lerp(fromVolume, toVolume, elapsed / duration);
             yield return null;

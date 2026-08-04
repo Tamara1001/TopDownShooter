@@ -4,12 +4,12 @@ using TopDownShooter.Inventory;
 namespace TopDownShooter.Combat
 {
     /// <summary>
-    /// Optional interface implemented by weapon MonoBehaviours that wish to
-    /// receive their runtime stats from a <see cref="TopDownShooter.Inventory.WeaponDataSO"/>
-    /// upon instantiation.
+    /// Interfaz opcional implementada por los MonoBehaviours de armas que deseen
+    /// recibir sus estadísticas en tiempo de ejecución de un <see cref="TopDownShooter.Inventory.WeaponDataSO"/>
+    /// al ser instanciados.
     ///
     /// <para>
-    /// <b>Usage pattern in <see cref="PlayerCombat"/>:</b>
+    /// <b>Patrón de uso en <see cref="PlayerCombat"/>:</b>
     /// <code>
     /// if (instance is IWeaponConfigurable configurable)
     ///     configurable.Configure(weaponData);
@@ -17,25 +17,25 @@ namespace TopDownShooter.Combat
     /// </para>
     ///
     /// <para>
-    /// Weapons that have fully hardcoded stats may omit this interface entirely —
-    /// <see cref="PlayerCombat"/> performs the cast defensively and skips if null.
+    /// Las armas que tienen estadísticas completamente hardcodeadas pueden omitir esta interfaz por completo —
+    /// <see cref="PlayerCombat"/> realiza el cast de forma defensiva y lo omite si es nulo.
     /// </para>
     /// </summary>
     public interface IWeaponConfigurable
     {
         /// <summary>
-        /// Called once by <see cref="PlayerCombat"/> immediately after the weapon
-        /// logic MonoBehaviour is instantiated as a child of the Player.
+        /// Llamado una vez por <see cref="PlayerCombat"/> inmediatamente después de que el
+        /// MonoBehaviour de lógica del arma se instancie como hijo de Player.
         ///
         /// <para>
-        /// Implementations should read only the properties they care about from
-        /// <paramref name="stats"/> and store them locally. The SO reference itself
-        /// should NOT be stored long-term to keep data ownership clear.
+        /// Las implementaciones deben leer solo las propiedades que les interesen de
+        /// <paramref name="stats"/> y almacenarlas localmente. La referencia al SO en sí
+        /// NO debe almacenarse a largo plazo para mantener clara la propiedad de los datos.
         /// </para>
         /// </summary>
         /// <param name="stats">
-        /// The <see cref="WeaponDataSO"/> of the item that was just picked up.
-        /// Contains fire rate, base damage, and any other weapon-specific fields.
+        /// El <see cref="WeaponDataSO"/> del objeto que se acaba de recoger.
+        /// Contiene la cadencia de fuego, el daño base y cualquier otro campo específico del arma.
         /// </param>
         void Configure(WeaponDataSO stats);
     }

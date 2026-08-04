@@ -6,8 +6,8 @@ using UnityEngine;
 namespace TopDownShooter.Inventory
 {
     /// <summary>
-    /// ScriptableObject blueprint for passive relic items.
-    /// Equipped in the Relic slot; grants stat modifiers while held.
+    /// Plantilla ScriptableObject para objetos de reliquia pasiva.
+    /// Se equipa en la ranura de Reliquia; otorga modificadores de estadísticas mientras se posea.
     /// </summary>
     [CreateAssetMenu(
         fileName = "NewRelicData",
@@ -19,17 +19,14 @@ namespace TopDownShooter.Inventory
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Passive Modifiers")]
-        [Tooltip("Percentage movement speed bonus while this relic is equipped. " +
-                 "0 = no bonus, 0.2 = +20%. Read by PlayerStats in Part 2.")]
+        [Tooltip("Porcentaje de bonificación de velocidad de movimiento mientras esta reliquia está equipada. 0 = sin bonificación, 0.2 = +20%. Leído por PlayerStats en la Parte 2.")]
         [Range(-1f, 5f)]
         [SerializeField] private float _moveSpeedModifier = 0f;
 
-        [Tooltip("Flat bonus added to the player's maximum health while equipped. " +
-                 "Can be negative (cursed relics). Read by PlayerStats in Part 2.")]
+        [Tooltip("Bonificación plana agregada a la salud máxima del jugador mientras está equipada. Puede ser negativa (reliquias malditas). Leído por PlayerStats en la Parte 2.")]
         [SerializeField] private int _maxHealthBonus = 0;
 
-        [Tooltip("Percentage damage multiplier while equipped. " +
-                 "0 = no change, 0.5 = +50% damage. Read by PlayerStats in Part 2.")]
+        [Tooltip("Multiplicador de daño porcentual mientras está equipada. 0 = sin cambios, 0.5 = +50% de daño. Leído por PlayerStats en la Parte 2.")]
         [Range(-1f, 5f)]
         [SerializeField] private float _damageModifier = 0f;
 
@@ -37,13 +34,13 @@ namespace TopDownShooter.Inventory
         //  PUBLIC GETTERS
         // ─────────────────────────────────────────────────────────────────────
 
-        /// <summary>Fractional speed multiplier applied by PlayerStats while equipped.</summary>
+        /// <summary>Multiplicador fraccionario de velocidad aplicado por PlayerStats mientras está equipada.</summary>
         public float MoveSpeedModifier => _moveSpeedModifier;
 
-        /// <summary>Flat max-health bonus applied by PlayerStats while equipped.</summary>
+        /// <summary>Bonificación plana de salud máxima aplicada por PlayerStats mientras está equipada.</summary>
         public int   MaxHealthBonus    => _maxHealthBonus;
 
-        /// <summary>Fractional damage multiplier applied by PlayerStats while equipped.</summary>
+        /// <summary>Multiplicador fraccionario de daño aplicado por PlayerStats mientras está equipada.</summary>
         public float DamageModifier    => _damageModifier;
     }
 }

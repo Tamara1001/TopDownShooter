@@ -6,8 +6,8 @@ using TopDownShooter.Inventory;
 namespace TopDownShooter.UI
 {
     /// <summary>
-    /// Visual component for a single inventory slot.
-    /// Call <see cref="UpdateSlot"/> to set or clear the displayed icon.
+    /// Componente visual para una única ranura de inventario.
+    /// Llame a <see cref="UpdateSlot"/> para establecer o limpiar el icono mostrado.
     /// </summary>
     public sealed class UI_InventorySlot : MonoBehaviour
     {
@@ -15,9 +15,8 @@ namespace TopDownShooter.UI
         //  INSPECTOR FIELDS
         // ─────────────────────────────────────────────────────────────────────
 
-        [Header("Slot Visuals")]
-        [Tooltip("The Image component that renders the item icon inside this slot. " +
-                 "Assign the child Image that sits over the slot background art.")]
+        [Header("Visuales de Ranura")]
+        [Tooltip("El componente Image que renderiza el icono del objeto dentro de esta ranura. Asigne el Image hijo que se superpone al arte de fondo de la ranura.")]
         [SerializeField] private Image _iconImage;
 
         // ─────────────────────────────────────────────────────────────────────
@@ -38,11 +37,11 @@ namespace TopDownShooter.UI
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Updates this slot's visual to reflect the given item blueprint.
+        /// Actualiza la visual de esta ranura para reflejar el blueprint del objeto proporcionado.
         /// </summary>
         /// <param name="itemData">
-        /// The item to display. Pass <c>null</c> to clear the slot
-        /// (e.g. when the item was consumed or dropped).
+        /// El objeto a mostrar. Pase <c>null</c> para limpiar la ranura
+        /// (por ejemplo, cuando el objeto fue consumido o soltado).
         /// </param>
         public void UpdateSlot(ItemDataSO itemData)
         {
@@ -50,14 +49,14 @@ namespace TopDownShooter.UI
 
             if (itemData == null)
             {
-                // Slot is empty — hide the icon to avoid lingering ghost art.
+                // La ranura está vacía — ocultar el icono para evitar que quede arte fantasma.
                 _iconImage.sprite  = null;
                 _iconImage.enabled = false;
             }
             else
             {
-                // Display the item's icon. Enabled even if Icon is null so the
-                // designer can spot missing sprite assignments easily at runtime.
+                // Mostrar el icono del objeto. Se habilita incluso si el Icon es nulo para que
+                // el diseñador pueda detectar fácilmente asignaciones de sprites faltantes en tiempo de ejecución.
                 _iconImage.sprite  = itemData.Icon;
                 _iconImage.enabled = true;
             }

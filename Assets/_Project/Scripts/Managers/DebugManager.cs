@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR || DEVELOPMENT_BUILD
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
 
 using System.Collections;
 using System.Text;
@@ -63,7 +63,7 @@ public class DebugManager : MonoBehaviour
         if (variablesText == null) return;
         _sb.Clear();
 
-        // 1. GLOBAL STATE
+        // 1. ESTADO GLOBAL
         _sb.AppendLine("<color=#FFD700><b>--- GLOBAL STATE ---</b></color>");
         if (GameManager.Instance != null)
         {
@@ -73,7 +73,7 @@ public class DebugManager : MonoBehaviour
         }
         _sb.AppendLine();
 
-        // 2. PLAYER
+        // 2. JUGADOR
         _sb.AppendLine("<color=#FFD700><b>--- PLAYER ---</b></color>");
         GameObject player = GameObject.FindGameObjectWithTag("Player");
 

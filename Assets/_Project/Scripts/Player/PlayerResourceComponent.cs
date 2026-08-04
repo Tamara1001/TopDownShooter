@@ -5,40 +5,40 @@ using UnityEngine;
 namespace TopDownShooter.Player
 {
     /// <summary>
-    /// Manages the player's Mana and Energy resources.
-    /// Exposes <see cref="TryConsumeMana"/> and <see cref="TryConsumeEnergy"/>
-    /// for combat/movement systems, and normalized events for the UI.
+    /// Gestiona los recursos de Maná y Energía del jugador.
+    /// Expone <see cref="TryConsumeMana"/> y <see cref="TryConsumeEnergy"/>
+    /// para los sistemas de combate/movimiento, y eventos normalizados para la interfaz de usuario (UI).
     /// </summary>
     public sealed class PlayerResourceComponent : MonoBehaviour
     {
         // ─────────────────────────────────────────────────────────────────────
-        //  INSPECTOR FIELDS — MANA
+        //  CAMPOS DEL INSPECTOR — MANÁ
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Mana")]
-        [Tooltip("Maximum mana points. Consumed by magical weapons and spells.")]
+        [Tooltip("Puntos de maná máximos. Consumidos por armas mágicas y hechizos.")]
         [Min(1)]
         [SerializeField] private int _maxMana = 100;
 
-        [Tooltip("Mana points regenerated per second while below maximum.")]
+        [Tooltip("Puntos de maná regenerados por segundo mientras esté por debajo del máximo.")]
         [Min(0f)]
         [SerializeField] private float _manaRegenPerSecond = 5f;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  INSPECTOR FIELDS — ENERGY
+        //  CAMPOS DEL INSPECTOR — ENERGÍA
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Energy")]
-        [Tooltip("Maximum energy points. Consumed by physical weapons and Dash.")]
+        [Tooltip("Puntos de energía máximos. Consumidos por armas físicas y el Desplazamiento (Dash).")]
         [Min(1)]
         [SerializeField] private int _maxEnergy = 100;
 
-        [Tooltip("Energy points regenerated per second while below maximum.")]
+        [Tooltip("Puntos de energía regenerados por segundo mientras esté por debajo del máximo.")]
         [Min(0f)]
         [SerializeField] private float _energyRegenPerSecond = 15f;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PRIVATE STATE  (float for smooth regen; exposed as int via properties)
+        //  ESTADO PRIVADO  (float para una regeneración suave; expuesto como int a través de propiedades)
         // ─────────────────────────────────────────────────────────────────────
 
         private float _currentMana;
@@ -50,35 +50,35 @@ namespace TopDownShooter.Player
         private float _manaCostMultiplier = 1f;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  EVENTS  (Observer Pattern — pass normalized 0-1 values to the UI)
+        //  EVENTOS  (Patrón Observador — pasa valores normalizados 0-1 a la interfaz de usuario (UI))
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Fired whenever mana changes (consumption or regen).
-        /// Passes the normalized fraction [0, 1] for driving fill-bars and shaders.
+        /// Se activa cada vez que cambia el maná (consumo o regeneración).
+        /// Pasa la fracción normalizada [0, 1] para controlar las barras de llenado y los shaders.
         /// </summary>
         public event Action<float> OnManaChanged;
 
         /// <summary>
-        /// Fired whenever energy changes (consumption or regen).
-        /// Passes the normalized fraction [0, 1] for driving fill-bars and shaders.
+        /// Se activa cada vez que cambia la energía (consumo o regeneración).
+        /// Pasa la fracción normalizada [0, 1] para controlar las barras de llenado y los shaders.
         /// </summary>
         public event Action<float> OnEnergyChanged;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PUBLIC READ-ONLY PROPERTIES  (int surface over float state)
+        //  PROPIEDADES PÚBLICAS DE SÓLO LECTURA  (interfaz int sobre estado float)
         // ─────────────────────────────────────────────────────────────────────
 
-        /// <summary>Current mana as an integer (truncated, not rounded).</summary>
+        /// <summary>Maná actual como un entero (truncado, no redondeado).</summary>
         public int CurrentMana   => (int)_currentMana;
 
-        /// <summary>Maximum mana configured in the Inspector.</summary>
+        /// <summary>Maná máximo configurado en el Inspector.</summary>
         public int MaxMana       => _maxMana;
 
-        /// <summary>Current energy as an integer (truncated, not rounded).</summary>
+        /// <summary>Energía actual como un entero (truncado, no redondeado).</summary>
         public int CurrentEnergy => (int)_currentEnergy;
 
-        /// <summary>Maximum energy configured in the Inspector.</summary>
+        /// <summary>Energía máxima configurada en el Inspector.</summary>
         public int MaxEnergy     => _maxEnergy;
 
         /// <summary>
@@ -100,20 +100,20 @@ namespace TopDownShooter.Player
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  UNITY LIFECYCLE
+        //  CICLO DE VIDA DE UNITY
         // ─────────────────────────────────────────────────────────────────────
 
         private void Awake()
         {
-            // Start at full resources. Float precision gives regen the full range.
+            // Comenzar con los recursos llenos. La precisión de flotante le da a la regeneración todo el rango.
             _currentMana   = _maxMana;
             _currentEnergy = _maxEnergy;
         }
 
         private void Start()
         {
-            // Push initial normalized values so any UI that subscribed in OnEnable
-            // receives the correct starting fill without waiting for a change event.
+            // Enviar los valores iniciales normalizados para que cualquier UI que se haya suscrito en OnEnable
+            // reciba el llenado inicial correcto sin esperar a un evento de cambio.
             OnManaChanged?.Invoke(GetNormalizedMana());
             OnEnergyChanged?.Invoke(GetNormalizedEnergy());
         }
@@ -125,16 +125,16 @@ namespace TopDownShooter.Player
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PUBLIC API — CONSUMPTION
+        //  API PÚBLICA — CONSUMO
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Attempts to spend <paramref name="amount"/> mana.
+        /// Intenta gastar <paramref name="amount"/> de maná.
         /// </summary>
-        /// <param name="amount">Positive integer cost to deduct.</param>
+        /// <param name="amount">Costo entero positivo a deducir.</param>
         /// <returns>
-        /// <c>true</c> if mana was sufficient and has been deducted.
-        /// <c>false</c> if insufficient — no state is changed.
+        /// <c>true</c> si el maná fue suficiente y se ha deducido.
+        /// <c>false</c> si es insuficiente — no se cambia ningún estado.
         /// </returns>
         public bool TryConsumeMana(int amount)
         {
@@ -157,12 +157,12 @@ namespace TopDownShooter.Player
         }
 
         /// <summary>
-        /// Attempts to spend <paramref name="amount"/> energy.
+        /// Intenta gastar <paramref name="amount"/> de energía.
         /// </summary>
-        /// <param name="amount">Positive integer cost to deduct.</param>
+        /// <param name="amount">Costo entero positivo a deducir.</param>
         /// <returns>
-        /// <c>true</c> if energy was sufficient and has been deducted.
-        /// <c>false</c> if insufficient — no state is changed.
+        /// <c>true</c> si la energía fue suficiente y se ha deducido.
+        /// <c>false</c> si es insuficiente — no se cambia ningún estado.
         /// </returns>
         public bool TryConsumeEnergy(int amount)
         {
@@ -181,18 +181,18 @@ namespace TopDownShooter.Player
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PUBLIC API — NORMALIZED QUERIES
-        //  Exposed for UI polling at bind time without waiting for an event.
+        //  API PÚBLICA — CONSULTAS NORMALIZADAS
+        //  Expuesto para el sondeo de la UI al momento de la vinculación sin esperar a un evento.
         // ─────────────────────────────────────────────────────────────────────
 
-        /// <summary>Returns current mana as a normalized fraction [0, 1].</summary>
+        /// <summary>Devuelve el maná actual como una fracción normalizada [0, 1].</summary>
         public float GetNormalizedMana()
         {
             if (_maxMana <= 0) return 0f;
             return Mathf.Clamp01(_currentMana / _maxMana);
         }
 
-        /// <summary>Returns current energy as a normalized fraction [0, 1].</summary>
+        /// <summary>Devuelve la energía actual como una fracción normalizada [0, 1].</summary>
         public float GetNormalizedEnergy()
         {
             if (_maxEnergy <= 0) return 0f;
@@ -200,13 +200,13 @@ namespace TopDownShooter.Player
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PRIVATE REGEN HELPERS
+        //  AYUDANTES PRIVADOS DE REGENERACIÓN
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Regenerates mana by <see cref="_manaRegenPerSecond"/> × deltaTime.
-        /// Only fires <see cref="OnManaChanged"/> when the value actually changes
-        /// (avoids flooding the UI with events every frame when already full).
+        /// Regenera el maná por <see cref="_manaRegenPerSecond"/> × deltaTime.
+        /// Solo activa <see cref="OnManaChanged"/> cuando el valor realmente cambia
+        /// (evita inundar la UI con eventos en cada frame cuando ya está lleno).
         /// </summary>
         private void RegenerateMana()
         {
@@ -216,7 +216,7 @@ namespace TopDownShooter.Player
             _currentMana = Mathf.Clamp(_currentMana + _manaRegenPerSecond * Time.deltaTime,
                                         0f, _maxMana);
 
-            // Only fire the event if the value meaningfully changed.
+            // Solo activar el evento si el valor cambió significativamente.
             if (!Mathf.Approximately(_currentMana, previous))
             {
                 OnManaChanged?.Invoke(GetNormalizedMana());
@@ -224,8 +224,8 @@ namespace TopDownShooter.Player
         }
 
         /// <summary>
-        /// Regenerates energy by <see cref="_energyRegenPerSecond"/> × deltaTime.
-        /// Only fires <see cref="OnEnergyChanged"/> when the value actually changes.
+        /// Regenera la energía por <see cref="_energyRegenPerSecond"/> × deltaTime.
+        /// Solo activa <see cref="OnEnergyChanged"/> cuando el valor realmente cambia.
         /// </summary>
         private void RegenerateEnergy()
         {
@@ -242,12 +242,12 @@ namespace TopDownShooter.Player
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  EDITOR GIZMOS / DEBUG
+        //  GIZMOS DE EDITOR / DEPURACIÓN
         // ─────────────────────────────────────────────────────────────────────
 
 #if UNITY_EDITOR
-        // Expose readable values in the Inspector at runtime without breaking
-        // encapsulation — the fields are still private; these are read-only labels.
+        // Expone valores legibles en el Inspector en tiempo de ejecución sin romper
+        // el encapsulamiento — los campos siguen siendo privados; estas son etiquetas de solo lectura.
         private void OnValidate()
         {
             if (_maxMana <= 0)

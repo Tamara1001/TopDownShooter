@@ -60,10 +60,10 @@ public class GameManager : MonoBehaviour
     public static event Action<GameState> OnStateChanged;
 
     /// <summary>
-    /// Fired whenever <see cref="RegisterPlayer"/> is called — including on
-    /// respawn. Systems that need an immediate reference to the player
-    /// (e.g. EnemyBrain in Tier-3 resolution) can subscribe here instead
-    /// of polling every frame.
+    /// Se dispara cada vez que se llama a <see cref="RegisterPlayer"/>, incluyendo al
+    /// reaparecer. Los sistemas que necesiten una referencia inmediata al jugador
+    /// (por ejemplo, EnemyBrain en resolución de Tier-3) pueden suscribirse aquí en lugar
+    /// de realizar encuestas en cada frame.
     /// </summary>
     public static event Action<Transform> OnPlayerRegistered;
 
@@ -86,8 +86,8 @@ public class GameManager : MonoBehaviour
     // Guarda el estado en el que estábamos antes de pausar (útil si hay estados extra luego).
     private GameState _stateBeforePause;
 
-    // Flag set by StartNewGame() before reloading the scene so OnSceneLoaded
-    // knows it must initialise a fresh session once the new scene is ready.
+    // Bandera establecida por StartNewGame() antes de recargar la escena para que OnSceneLoaded
+    // sepa que debe inicializar una nueva sesión una vez que la nueva escena esté lista.
     private bool _pendingRestart = false;
 
     // -------------------------------------------------------------------------
@@ -95,10 +95,10 @@ public class GameManager : MonoBehaviour
     // -------------------------------------------------------------------------
 
     /// <summary>
-    /// True while an active run exists in the loaded scene.
-    /// Set to true inside <see cref="OnSceneLoaded"/> after a scene restart,
-    /// and to false when the session ends (GameOver or Victory).
-    /// Used by <see cref="UIManager"/> to gate the "Continue" button.
+    /// Verdadero mientras exista una partida activa en la escena cargada.
+    /// Se establece en verdadero dentro de <see cref="OnSceneLoaded"/> después de reiniciar la escena,
+    /// y en falso cuando finaliza la sesión (GameOver o Victory).
+    /// Utilizado por <see cref="UIManager"/> para habilitar/deshabilitar el botón "Continuar".
     /// </summary>
     public bool HasActiveSession { get; private set; }
 
@@ -132,10 +132,10 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Fired by Unity after every scene load completes — including the reload
-    /// triggered by <see cref="StartNewGame"/>.
-    /// When <see cref="_pendingRestart"/> is set, this is the earliest safe moment
-    /// to initialise game state, because all scene objects are fully awake.
+    /// Disparado por Unity después de que se completa la carga de cada escena, incluyendo la recarga
+    /// iniciada por <see cref="StartNewGame"/>.
+    /// Cuando se establece <see cref="_pendingRestart"/>, este es el momento seguro más temprano
+    /// para inicializar el estado del juego, ya que todos los objetos de la escena están completamente despiertos.
     /// </summary>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -209,7 +209,7 @@ public class GameManager : MonoBehaviour
         }
 
         // --- Manejo del TimeScale ---
-        // Freeze on Pause, GameOver, or Victory; unfreeze for everything else.
+        // Pausar en Pause, GameOver, o Victory; reanudar para todo lo demás.
         switch (newState)
         {
             case GameState.Pause:
@@ -280,8 +280,8 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Resumes an in-progress run from the Main Menu without reloading the scene.
-    /// Only valid when <see cref="HasActiveSession"/> is true.
+    /// Reanuda una partida en progreso desde el Menú Principal sin recargar la escena.
+    /// Solo es válido cuando <see cref="HasActiveSession"/> es verdadero.
     /// </summary>
     public void ContinueGame()
     {
@@ -332,25 +332,25 @@ public class GameManager : MonoBehaviour
     // -------------------------------------------------------------------------
 
     /// <summary>
-    /// The current player's Transform, registered at runtime by
-    /// <see cref="PlayerRegistration"/> via <see cref="RegisterPlayer"/>.
+    /// El Transform del jugador actual, registrado en tiempo de ejecución por
+    /// <see cref="PlayerRegistration"/> a través de <see cref="RegisterPlayer"/>.
     /// <para>
-    /// Read-only to all external systems. Only <see cref="RegisterPlayer"/>
-    /// and <see cref="UnregisterPlayer"/> may write this value, ensuring
-    /// a single, authoritative reference that survives scene reloads,
-    /// respawns, and arbitrary enemy spawn order.
+    /// Solo lectura para todos los sistemas externos. Solo <see cref="RegisterPlayer"/>
+    /// y <see cref="UnregisterPlayer"/> pueden escribir este valor, asegurando
+    /// una referencia única y autoritativa que sobrevive a las recargas de escena,
+    /// reapariciones y orden de spawn arbitrario de enemigos.
     /// </para>
     /// </summary>
     public Transform PlayerTransform { get; private set; }
 
     /// <summary>
-    /// Called by <see cref="PlayerRegistration"/> (attached to the Player
-    /// prefab) in Awake/Start to publish the player's Transform.
-    /// Safe to call multiple times: respawning with a new instance simply
-    /// replaces the old reference and fires <see cref="OnPlayerRegistered"/>
-    /// again so all subscribers (EnemyBrain, minimap, etc.) update.
+    /// Llamado por <see cref="PlayerRegistration"/> (adjunto al prefab del jugador)
+    /// en Awake/Start para publicar el Transform del jugador.
+    /// Es seguro llamarlo múltiples veces: reaparecer con una nueva instancia simplemente
+    /// reemplaza la referencia anterior y dispara <see cref="OnPlayerRegistered"/>
+    /// nuevamente para que todos los suscriptores (EnemyBrain, minimapa, etc.) se actualicen.
     /// </summary>
-    /// <param name="player">The player's root Transform. Must not be null.</param>
+    /// <param name="player">El Transform raíz del jugador. No debe ser nulo.</param>
     public void RegisterPlayer(Transform player)
     {
         if (player == null)
@@ -363,14 +363,14 @@ public class GameManager : MonoBehaviour
         PlayerTransform = player;
         Debug.Log($"[GameManager] Player registered: '{player.name}'.");
 
-        // Notify all subscribers (e.g. EnemyBrain.WaitForPlayer coroutines)
-        // that a valid player reference is now available.
+        // Notificar a todos los suscriptores (por ejemplo, las corrutinas EnemyBrain.WaitForPlayer)
+        // que una referencia válida del jugador ya está disponible.
         OnPlayerRegistered?.Invoke(PlayerTransform);
     }
 
     /// <summary>
-    /// Called when the player is permanently removed (game over, not respawning).
-    /// Clears the reference so enemies fall back to idle safely.
+    /// Llamado cuando el jugador es eliminado permanentemente (fin de la partida, sin reaparición).
+    /// Limpia la referencia para que los enemigos regresen al estado inactivo de forma segura.
     /// </summary>
     public void UnregisterPlayer()
     {

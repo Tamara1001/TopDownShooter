@@ -5,8 +5,8 @@ using UnityEngine;
 namespace TopDownShooter.Dungeon
 {
     /// <summary>
-    /// ScriptableObject holding all generation parameters for a dungeon floor.
-    /// Created via <c>Create → Dungeon → Dungeon Config</c>.
+    /// ScriptableObject que contiene todos los parámetros de generación para un piso de mazmorra.
+    /// Creado a través de <c>Create → Dungeon → Dungeon Config</c>.
     /// </summary>
     [CreateAssetMenu(
         fileName = "NewDungeonConfig",
@@ -15,43 +15,40 @@ namespace TopDownShooter.Dungeon
     public sealed class DungeonConfigSO : ScriptableObject
     {
         // ─────────────────────────────────────────────────────────────────────
-        //  INSPECTOR FIELDS
+        //  CAMPOS DEL INSPECTOR
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Path Parameters")]
-        [Tooltip("Number of rooms along the main path (Start → Boss inclusive). " +
-                 "Minimum 2 (Start + Boss).")]
+        [Tooltip("Número de salas a lo largo del camino principal (Start → Boss inclusive). Mínimo 2 (Start + Boss).")]
         [Min(2)]
         [SerializeField] private int _mainPathLength = 6;
 
-        [Tooltip("Maximum number of branch corridors allowed to sprout from " +
-                 "the main path. 0 = linear dungeon with no side rooms.")]
+        [Tooltip("Número máximo de caminos secundarios (ramas) permitidos a partir del camino principal. 0 = mazmorra lineal sin salas secundarias.")]
         [Min(0)]
         [SerializeField] private int _maxBranches = 3;
 
         [Header("Room Pool")]
-        [Tooltip("All room archetypes the generator can choose from. " +
-                 "Include at least one Start and one Boss room.")]
+        [Tooltip("Todos los arquetipos de sala que el generador puede elegir. Incluya al menos una sala Start y una sala Boss.")]
         [SerializeField] private RoomDataSO[] _availableRooms;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  READ-ONLY PROPERTIES
+        //  PROPIEDADES DE SOLO LECTURA
         // ─────────────────────────────────────────────────────────────────────
 
-        /// <summary>Number of rooms along the main path (Start → Boss).</summary>
+        /// <summary>Número de salas a lo largo del camino principal (Start → Boss).</summary>
         public int MainPathLength => _mainPathLength;
 
-        /// <summary>Maximum branches allowed to sprout from the main path.</summary>
+        /// <summary>Ramas máximas permitidas a partir del camino principal.</summary>
         public int MaxBranches => _maxBranches;
 
         /// <summary>
-        /// Read-only view of the room pool. Prevents callers from accidentally
-        /// mutating the SO's internal array at runtime.
+        /// Vista de solo lectura del conjunto de salas. Evita que los llamadores muten
+        /// accidentalmente el arreglo interno del SO en tiempo de ejecución.
         /// </summary>
         public IReadOnlyList<RoomDataSO> AvailableRooms => _availableRooms;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  EDITOR VALIDATION
+        //  VALIDACIÓN EN EDITOR
         // ─────────────────────────────────────────────────────────────────────
 
 #if UNITY_EDITOR

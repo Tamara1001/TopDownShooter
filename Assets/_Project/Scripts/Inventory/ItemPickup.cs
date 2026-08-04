@@ -6,45 +6,43 @@ using UnityEngine;
 namespace TopDownShooter.Inventory
 {
     /// <summary>
-    /// Physical ground item. Attach to the item prefab alongside a trigger
-    /// <see cref="SphereCollider"/>. Queried by <see cref="PlayerInventory"/>
-    /// via <see cref="Physics.OverlapSphere"/> on the Interact input.
+    /// Objeto físico en el suelo. Se adjunta al prefab del objeto junto con un disparador
+    /// <see cref="SphereCollider"/>. Consultado por <see cref="PlayerInventory"/>
+    /// a través de <see cref="Physics.OverlapSphere"/> en la entrada Interact.
     /// </summary>
     [RequireComponent(typeof(SphereCollider))]
     public sealed class ItemPickup : MonoBehaviour
     {
         // ─────────────────────────────────────────────────────────────────────
-        //  INSPECTOR FIELDS
+        //  CAMPOS DEL INSPECTOR
         // ─────────────────────────────────────────────────────────────────────
 
         [Header("Item Data")]
-        [Tooltip("The ScriptableObject blueprint that describes this item " +
-                 "(type, stats, icon, drop prefab). Assign the matching " +
-                 "WeaponDataSO, RelicDataSO, or ConsumableDataSO asset here.")]
+        [Tooltip("La plantilla ScriptableObject que describe este objeto (tipo, estadísticas, icono, prefab de caída). Asigne el asset WeaponDataSO, RelicDataSO o ConsumableDataSO correspondiente aquí.")]
         [SerializeField] private ItemDataSO _itemData;
 
         [Header("Hover Animation (optional)")]
-        [Tooltip("Amplitude of the sine-wave hover in world units. 0 = disabled.")]
+        [Tooltip("Amplitud de la flotación senoidal en unidades de mundo. 0 = deshabilitado.")]
         [SerializeField] private float _hoverAmplitude = 0.15f;
 
-        [Tooltip("Speed of the hover oscillation in cycles per second.")]
+        [Tooltip("Velocidad de la oscilación de flotación en ciclos por segundo.")]
         [SerializeField] private float _hoverFrequency = 1.2f;
 
-        [Tooltip("Degrees per second for the idle Y-axis spin.")]
+        [Tooltip("Grados por segundo para el giro inactivo en el eje Y.")]
         [SerializeField] private float _spinSpeed = 45f;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PRIVATE STATE
+        //  ESTADO PRIVADO
         // ─────────────────────────────────────────────────────────────────────
 
-        // Cached reference for performance (avoids repeated property access).
+        // Referencia almacenada en caché para rendimiento (evita el acceso repetido a propiedades).
         private Transform _transform;
 
-        // World-space Y position recorded at spawn; hover oscillates around it.
+        // Posición Y en espacio de mundo registrada al aparecer; la flotación oscila a su alrededor.
         private float _baseY;
 
         // ─────────────────────────────────────────────────────────────────────
-        //  UNITY LIFECYCLE
+        //  CICLO DE VIDA DE UNITY
         // ─────────────────────────────────────────────────────────────────────
 
         private void Awake()
@@ -57,7 +55,7 @@ namespace TopDownShooter.Inventory
 
         private void Update()
         {
-            // Hover + spin — purely cosmetic, independent of game logic.
+            // Flotación + giro — puramente cosmético, independiente de la lógica del juego.
             if (_hoverAmplitude > 0f)
             {
                 Vector3 pos = _transform.position;
@@ -71,37 +69,37 @@ namespace TopDownShooter.Inventory
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  PUBLIC API  (called by PlayerInventory)
+        //  API PÚBLICA  (llamada por PlayerInventory)
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Returns the <see cref="ItemDataSO"/> blueprint for this ground item.
+        /// Devuelve la plantilla <see cref="ItemDataSO"/> para este objeto en el suelo.
         /// <para>
-        /// <see cref="PlayerInventory"/> reads this to determine which inventory
-        /// slot to fill and what stats the item carries.
+        /// <see cref="PlayerInventory"/> lee esto para determinar qué ranura de inventario
+        /// llenar y qué estadísticas lleva el objeto.
         /// </para>
         /// </summary>
         /// <returns>
-        /// The assigned <see cref="ItemDataSO"/>, or <c>null</c> if misconfigured.
+        /// El <see cref="ItemDataSO"/> asignado, o <c>null</c> si está mal configurado.
         /// </returns>
         public ItemDataSO GetItemData() => _itemData;
 
         /// <summary>
-        /// Removes this world object from the scene after it has been collected.
-        /// Called by <see cref="PlayerInventory"/> immediately after the item
-        /// data has been read and placed into an inventory slot.
+        /// Elimina este objeto del mundo de la escena después de haber sido recolectado.
+        /// Llamado por <see cref="PlayerInventory"/> inmediatamente después de que se hayan
+        /// leído los datos del objeto y se hayan colocado en una ranura de inventario.
         ///
-        /// POOLING HOOK: Replace <c>Destroy(gameObject)</c> with a pool Release
-        /// call in Part 2 if the level uses item pooling.
+        /// GANCHO DE POOLING: Reemplace <c>Destroy(gameObject)</c> con una llamada Release
+        /// del pool en la Parte 2 si el nivel utiliza pooling de objetos.
         /// </summary>
         public void DestroyPickup()
         {
-            // ► POOL HOOK: objectPool?.Release(this);
+            // ► GANCHO DE POOL: objectPool?.Release(this);
             Destroy(gameObject);
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  VALIDATION
+        //  VALIDACIÓN
         // ─────────────────────────────────────────────────────────────────────
 
         private void ValidateSetup()
@@ -113,7 +111,7 @@ namespace TopDownShooter.Inventory
                                "RelicDataSO, or ConsumableDataSO in the Inspector.", this);
             }
 
-            // Verify the SphereCollider is set as a trigger.
+            // Verificar que el SphereCollider esté configurado como disparador (trigger).
             var col = GetComponent<SphereCollider>();
             if (col != null && !col.isTrigger)
             {
@@ -124,7 +122,7 @@ namespace TopDownShooter.Inventory
         }
 
         // ─────────────────────────────────────────────────────────────────────
-        //  EDITOR GIZMOS
+        //  GIZMOS DE EDITOR
         // ─────────────────────────────────────────────────────────────────────
 
 #if UNITY_EDITOR

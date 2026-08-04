@@ -8,59 +8,59 @@ using TopDownShooter.Combat; // IWeapon — Strategy Pattern contract
 
 
 
-#region ── FSM Base ────────────────────────────────────────────
+#region ── Base FSM ────────────────────────────────────────────
 
 /// <summary>
-/// Abstract base for every enemy FSM state.
-/// Each concrete state receives a reference to its owner
-/// (<see cref="EnemyBrain"/>) so it can read stats and steer
-/// the NavMeshAgent without being tightly coupled to any specific
-/// enemy subclass.
+/// Base abstracta para cada estado FSM del enemigo.
+/// Cada estado concreto recibe una referencia a su propietario
+/// (<see cref="EnemyBrain"/>) para que pueda leer las estadísticas y dirigir
+/// el NavMeshAgent sin estar estrechamente acoplado a ninguna subclase específica
+/// de enemigo.
 /// </summary>
 public abstract class EnemyStateBase
 {
-    // ---- protected reference to the owning brain ----
-    // States read stats and call brain helpers but NEVER
-    // access private fields directly — only through protected
-    // or public API exposed by EnemyBrain.
+    // ---- referencia protegida al cerebro propietario ----
+    // Los estados leen estadísticas y llaman a ayudantes del cerebro, pero NUNCA
+    // acceden a campos privados directamente — solo a través de la API protegida
+    // o pública expuesta por EnemyBrain.
     protected EnemyBrain Brain { get; private set; }
 
     /// <summary>
-    /// Injects the owning <see cref="EnemyBrain"/> reference.
-    /// Called once by EnemyBrain when the state is constructed.
+    /// Inyecta la referencia al <see cref="EnemyBrain"/> propietario.
+    /// Llamado una vez por EnemyBrain cuando se construye el estado.
     /// </summary>
     public void Initialise(EnemyBrain brain) => Brain = brain;
 
-    // ---- Lifecycle hooks called by the FSM driver ----
+    // ---- Ganchos de ciclo de vida llamados por el controlador FSM ----
 
-    /// <summary>Called once when this state becomes active.</summary>
+    /// <summary>Llamado una vez cuando este estado se activa.</summary>
     public abstract void Enter();
 
-    /// <summary>Called every frame while this state is active (from Update).</summary>
+    /// <summary>Llamado en cada frame mientras este estado está activo (desde Update).</summary>
     public abstract void Tick();
 
-    /// <summary>Called once just before transitioning to another state.</summary>
+    /// <summary>Llamado una vez justo antes de la transición a otro estado.</summary>
     public abstract void Exit();
 }
 
 #endregion
 
 // ==============================================================
-#region ── Concrete States ─────────────────────────────────────
+#region ── Estados Concretos ─────────────────────────────────────
 
 // ──────────────────────────────────────────────────────────────
 /// <summary>
-/// IDLE STATE — the enemy stands still and scans for the player.
+/// ESTADO IDLE — el enemigo permanece inmóvil y busca al jugador.
 /// <para>
-/// Transition OUT: Player enters <see cref="EnemyStatsSO.DetectionRange"/>
-///                 → transitions to <see cref="ChaseState"/>.
+/// Transición de SALIDA: El jugador entra en el <see cref="EnemyStatsSO.DetectionRange"/>
+///                      → realiza la transición a <see cref="ChaseState"/>.
 /// </para>
 /// </summary>
 public class IdleState : EnemyStateBase
 {
     public override void Enter()
     {
-        // Stop the agent completely when entering Idle.
+        // Detener completamente al agente al entrar en Idle.
         Brain.Agent.isStopped = true;
         Brain.Agent.ResetPath();
         Debug.Log($"[{Brain.name}] → Idle");
@@ -68,7 +68,7 @@ public class IdleState : EnemyStateBase
 
     public override void Tick()
     {
-        // Check whether the player has walked into detection range.
+        // Comprobar si el jugador ha entrado en el rango de detección.
         if (Brain.IsPlayerInRange(Brain.Stats.DetectionRange))
         {
             Brain.ChangeState(Brain.GetState<ChaseState>());
@@ -77,23 +77,22 @@ public class IdleState : EnemyStateBase
 
     public override void Exit()
     {
-        // Resume agent movement when leaving Idle.
+        // Reanudar el movimiento del agente al salir de Idle.
         Brain.Agent.isStopped = false;
     }
 }
 
 // ──────────────────────────────────────────────────────────────
 /// <summary>
-/// CHASE STATE — the NavMeshAgent actively pursues the player
-/// each frame by setting its destination to the player's position.
+/// ESTADO CHASE — el NavMeshAgent persigue activamente al jugador
+/// en cada frame estableciendo su destino en la posición del jugador.
 /// <para>
-/// Transition OUT (attack): Player enters <see cref="EnemyStatsSO.AttackRange"/>
-///                          → transitions to <see cref="AttackState"/>.
+/// Transición de SALIDA (ataque): El jugador entra en el <see cref="EnemyStatsSO.AttackRange"/>
+///                                → realiza la transición a <see cref="AttackState"/>.
 /// </para>
 /// <para>
-/// Transition OUT (lost):   Player leaves <see cref="EnemyStatsSO.DetectionRange"/>
-///                          → returns to <see cref="IdleState"/>.
-/// </para>
+/// Transición de SALIDA (perdido): El jugador sale del <see cref="EnemyStatsSO.DetectionRange"/>
+///                                → regresa al <see cref="IdleState"/>.
 /// </para>
 /// </summary>
 public class ChaseState : EnemyStateBase
@@ -110,17 +109,17 @@ public class ChaseState : EnemyStateBase
 
     public override void Tick()
     {
-        // Always steer toward the player's current position.
+        // Dirigir siempre hacia la posición actual del jugador.
         Brain.Agent.SetDestination(Brain.PlayerTransform.position);
 
-        // ── Attack transition ────────────────────────────────
+        // ── Transición de ataque ─────────────────────────────
         if (Brain.IsPlayerInRange(Brain.Stats.AttackRange))
         {
             Brain.ChangeState(Brain.GetState<AttackState>());
             return;
         }
 
-        // ── Lost-player transition ───────────────────────────
+        // ── Transición de jugador perdido ────────────────────
         if (!Brain.IsPlayerInRange(Brain.Stats.DetectionRange))
         {
             Brain.ChangeState(Brain.GetState<IdleState>());
@@ -129,7 +128,7 @@ public class ChaseState : EnemyStateBase
 
     public override void Exit()
     {
-        // Halt the agent before transferring control to the next state.
+        // Detener al agente antes de transferir el control al siguiente estado.
         Brain.Agent.isStopped = true;
         Brain.Agent.ResetPath();
 
@@ -140,42 +139,42 @@ public class ChaseState : EnemyStateBase
 
 // ──────────────────────────────────────────────────────────────
 /// <summary>
-/// ATTACK STATE — the enemy stops moving, rotates to face the
-/// player, and repeatedly calls <see cref="EnemyBrain.PerformAttack"/>
-/// on a wall-clock timestamp cooldown.
+/// ESTADO ATTACK — el enemigo deja de moverse, gira para mirar al
+/// jugador y llama repetidamente a <see cref="EnemyBrain.PerformAttack"/>
+/// en un enfriamiento basado en la hora del reloj del sistema (timestamp).
 /// <para>
-/// Transition OUT: Player moves outside <see cref="EnemyStatsSO.AttackRange"/>
-///                 → returns to <see cref="ChaseState"/>.
+/// Transición de SALIDA: El jugador se mueve fuera del <see cref="EnemyStatsSO.AttackRange"/>
+///                      → regresa a <see cref="ChaseState"/>.
 /// </para>
 ///
-/// FIX-1 — Cooldown exploit closed:
-///   The old implementation stored a countdown timer and reset it to 0
-///   in Enter(). If the player stepped in and out of attack range rapidly,
-///   each re-entry would restart the countdown at 0, letting the enemy
-///   attack at will regardless of AttackCooldown.
+/// SOLUCIÓN-1 — Explotación del enfriamiento cerrada:
+///   La implementación anterior almacenaba un temporizador de cuenta regresiva y lo restablecía a 0
+///   en Enter(). Si el jugador entraba y salía del rango de ataque rápidamente,
+///   cada reentrada reiniciaba la cuenta regresiva en 0, lo que permitía al enemigo
+///   atacar a voluntad independientemente de AttackCooldown.
 ///
-///   The fix uses a wall-clock timestamp (<c>_lastAttackTime</c>) that is
-///   set to <c>float.NegativeInfinity</c> at field initialisation and is
-///   NEVER written in Enter(). Cooldown enforcement is:
+///   La solución utiliza una marca de tiempo de reloj del sistema (<c>_lastAttackTime</c>) que se
+///   establece en <c>float.NegativeInfinity</c> en la inicialización del campo y
+///   NUNCA se escribe en Enter(). La aplicación del enfriamiento es:
 ///     <c>Time.time >= _lastAttackTime + AttackCooldown</c>
-///   Because <c>Time.time</c> is monotonically increasing and
-///   <c>_lastAttackTime</c> is only overwritten when an attack fires,
-///   no amount of state re-entries can cheat the cooldown window.
+///   Debido a que <c>Time.time</c> aumenta monótonamente y
+///   <c>_lastAttackTime</c> solo se sobrescribe cuando se dispara un ataque,
+///   ninguna cantidad de reentradas de estado puede burlar la ventana de enfriamiento.
 /// </summary>
 public class AttackState : EnemyStateBase
 {
-    // ── FIX-1: timestamp replaces countdown ──────────────────
-    // Initialised to negative infinity so the very first attack fires
-    // immediately on Enter() without any artificial delay.
-    // Written ONLY when Brain.PerformAttack() succeeds; never in Enter().
+    // ── SOLUCIÓN-1: marca de tiempo reemplaza cuenta regresiva ──
+    // Inicializado en infinito negativo para que el primer ataque se dispare
+    // inmediatamente en Enter() sin ningún retraso artificial.
+    // Escrito SOLO cuando Brain.PerformAttack() tiene éxito; nunca en Enter().
     private float _lastAttackTime = float.NegativeInfinity;
 
     public override void Enter()
     {
-        // Stop the agent — the enemy stands still while attacking.
-        // NOTE: _lastAttackTime is intentionally NOT reset here.
-        //       Resetting it would allow rapid in/out cycling to
-        //       bypass the cooldown (the exploit this fix closes).
+        // Detener al agente — el enemigo permanece inmóvil mientras ataca.
+        // NOTA: _lastAttackTime NO se restablece aquí intencionalmente.
+        //       Restablecerlo permitiría ciclos rápidos de entrada/salida para
+        //       omitir el enfriamiento (la explotación que esta solución cierra).
         Brain.Agent.isStopped = true;
         Brain.Agent.ResetPath();
         Debug.Log($"[{Brain.name}] → Attack");
@@ -183,20 +182,20 @@ public class AttackState : EnemyStateBase
 
     public override void Tick()
     {
-        // ── Chase transition (player stepped back) ───────────
+        // ── Transición a Chase (el jugador retrocedió) ───────
         if (!Brain.IsPlayerInRange(Brain.Stats.AttackRange))
         {
             Brain.ChangeState(Brain.GetState<ChaseState>());
             return;
         }
 
-        // ── Face the player ──────────────────────────────────
+        // ── Mirar al jugador ─────────────────────────────────
         FacePlayer();
 
-        // ── Timestamp cooldown check (FIX-1) ─────────────────
-        // Compare the monotonic clock against the last recorded
-        // attack time. This check is immune to state re-entries
-        // because _lastAttackTime is never touched in Enter().
+        // ── Comprobación de enfriamiento de marca de tiempo (SOLUCIÓN-1) ──
+        // Compara el reloj monótono con el último tiempo de ataque registrado.
+        // Esta comprobación es inmune a las reentradas de estado
+        // porque _lastAttackTime nunca se toca en Enter().
         if (Time.time >= _lastAttackTime + Brain.GetCurrentWeaponCooldown())
         {
             if (Brain.Anim != null)
@@ -204,9 +203,9 @@ public class AttackState : EnemyStateBase
 
             Brain.PerformAttack();
 
-            // Record the wall-clock time of THIS attack.
-            // The next attack cannot fire until at least
-            // AttackCooldown seconds have elapsed.
+            // Registrar la hora del reloj del sistema de ESTE ataque.
+            // El próximo ataque no puede dispararse hasta que hayan transcurrido
+            // al menos los segundos de AttackCooldown.
             _lastAttackTime = Time.time;
         }
     }
@@ -217,17 +216,17 @@ public class AttackState : EnemyStateBase
     }
 
     // ──────────────────────────────────────────────────────────
-    // PRIVATE HELPERS
+    // AYUDANTES PRIVADOS
     // ──────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Smoothly rotates the enemy on the Y axis to face the player,
-    /// keeping the model upright regardless of height differences.
+    /// Gira suavemente al enemigo en el eje Y para mirar al jugador,
+    /// manteniendo el modelo erguido independientemente de las diferencias de altura.
     /// </summary>
     private void FacePlayer()
     {
         Vector3 direction = Brain.PlayerTransform.position - Brain.transform.position;
-        direction.y = 0f; // Ignore vertical offset to prevent tilting.
+        direction.y = 0f; // Ignorar el desplazamiento vertical para evitar inclinaciones.
 
         if (direction == Vector3.zero) return;
 
@@ -242,100 +241,99 @@ public class AttackState : EnemyStateBase
 #endregion
 
 // ==============================================================
-// MAIN BRAIN
+// CEREBRO PRINCIPAL
 // ==============================================================
 
 /// <summary>
-/// Central controller MonoBehaviour for every enemy entity.
-/// It owns and drives the FSM, reads configuration from an
-/// <see cref="EnemyStatsSO"/>, and reacts to the
-/// <see cref="HealthComponent.OnDied"/> event.
+/// MonoBehaviour controlador central para cada entidad enemiga.
+/// Posee y conduce la FSM, lee la configuración de un
+/// <see cref="EnemyStatsSO"/> y reacciona al evento
+/// <see cref="HealthComponent.OnDied"/>.
 /// </summary>
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(HealthComponent))]
 public class EnemyBrain : MonoBehaviour
 {
     // ----------------------------------------------------------
-    // INSPECTOR — configuration
+    // INSPECTOR — configuración
     // ----------------------------------------------------------
 
     [Header("Configuration")]
-    [Tooltip("ScriptableObject asset that defines all stats for this enemy archetype.")]
+    [Tooltip("Asset ScriptableObject que define todas las estadísticas para este arquetipo de enemigo.")]
     [SerializeField] private EnemyStatsSO _stats;
 
     // ----------------------------------------------------------
-    // WEAPON STRATEGY — Part 2
+    // ESTRATEGIA DE ARMAS — Parte 2
     // ----------------------------------------------------------
-    // We accept a MonoBehaviour in the Inspector (Unity cannot
-    // serialize interface types directly), then cast to IWeapon
-    // once in Awake. The FSM calls PerformAttack() → ExecuteAttack()
-    // and never knows whether the equipped weapon is melee or ranged.
+    // Aceptamos un MonoBehaviour en el Inspector (Unity no puede
+    // serializar tipos de interfaz directamente), luego hacemos el cast a IWeapon
+    // una vez en Awake. La FSM llama a PerformAttack() → ExecuteAttack()
+    // y nunca sabe si el arma equipada es cuerpo a cuerpo o a distancia.
     // ----------------------------------------------------------
 
     [Header("Weapon (Part 2)")]
-    [Tooltip("Assign a MeleeWeapon or RangedWeapon component (on this GameObject " +
-             "or a child). Must implement IWeapon.")]
+    [Tooltip("Asigne un componente MeleeWeapon o RangedWeapon (en este GameObject o en un hijo). Debe implementar IWeapon.")]
     [SerializeField] private MonoBehaviour _weaponComponent;
 
     /// <summary>
-    /// The active weapon strategy resolved at Awake.
-    /// Null-safe: if no weapon is assigned the enemy fights without dealing damage.
+    /// La estrategia de arma activa resuelta en Awake.
+    /// Seguro contra nulos: si no hay un arma asignada, el enemigo lucha sin infligir daño.
     /// </summary>
     private IWeapon _equippedWeapon;
 
     // ----------------------------------------------------------
-    // COMPONENT REFERENCES (resolved in Awake)
-    // Exposed as read-only properties so States can access them
-    // without reflection or FindComponent calls every frame.
+    // REFERENCIAS DE COMPONENTES (resueltas en Awake)
+    // Expuestas como propiedades de solo lectura para que los Estados puedan acceder a ellas
+    // sin llamadas por reflexión o FindComponent en cada frame.
     // ----------------------------------------------------------
 
-    /// <summary>This enemy's NavMeshAgent component.</summary>
+    /// <summary>Componente NavMeshAgent de este enemigo.</summary>
     public NavMeshAgent Agent { get; private set; }
 
-    /// <summary>Read-only access to the stats asset.</summary>
+    /// <summary>Acceso de solo lectura al asset de estadísticas.</summary>
     public EnemyStatsSO Stats { get; private set; }
 
-    /// <summary>The player's Transform, found via tag at startup.</summary>
+    /// <summary>El Transform del jugador, encontrado mediante etiqueta al inicio.</summary>
     public Transform PlayerTransform { get; private set; }
 
-    /// <summary>Exposes safe read-only access to the Animator for state controllers.</summary>
+    /// <summary>Expone un acceso seguro de solo lectura al Animator para los controladores de estado.</summary>
     public Animator Anim => _animator;
 
-    // Private references that only the brain itself needs.
+    // Referencias privadas que solo el cerebro necesita.
     private HealthComponent _health;
     private Animator _animator;
 
     // ----------------------------------------------------------
-    // FSM STORAGE
-    // A dictionary maps each State TYPE to its singleton instance
-    // so states can cross-reference each other by type without
-    // string comparisons or enum casts.
+    // ALMACENAMIENTO DE FSM
+    // Un diccionario mapea cada TIPO de Estado a su instancia singleton
+    // para que los estados puedan hacer referencias cruzadas entre sí por tipo sin
+    // comparaciones de cadenas o conversiones de enums.
     // ----------------------------------------------------------
 
     /// <summary>
-    /// All available states, keyed by their concrete type.
-    /// Populated in <see cref="BuildStates"/>; override in subclasses
-    /// to inject custom states.
+    /// Todos los estados disponibles, indexados por su tipo concreto.
+    /// Rellenado en <see cref="BuildStates"/>; sobreescribir en subclases
+    /// para inyectar estados personalizados.
     /// </summary>
     private readonly Dictionary<System.Type, EnemyStateBase> _stateMap =
         new Dictionary<System.Type, EnemyStateBase>();
 
-    /// <summary>The currently executing FSM state. Null when the FSM is halted.</summary>
+    /// <summary>El estado FSM en ejecución actualmente. Nulo cuando la FSM está detenida.</summary>
     private EnemyStateBase _currentState;
 
     /// <summary>
-    /// Guard flag set by <see cref="OnDeath"/>. When true, Update()
-    /// will not tick the FSM and no further state transitions occur.
+    /// Bandera de guardia establecida por <see cref="OnDeath"/>. Cuando es verdadera, Update()
+    /// no actualizará la FSM y no ocurrirán más transiciones de estado.
     /// </summary>
     private bool _isFSMStopped;
 
     // ----------------------------------------------------------
-    // UNITY LIFECYCLE
+    // CICLO DE VIDA DE UNITY
     // ----------------------------------------------------------
 
     protected virtual void Awake()
     {
-        // ── Resolve required components ──────────────────────
+        // ── Resolver componentes requeridos ──────────────────
         Agent = GetComponent<NavMeshAgent>();
         _health = GetComponent<HealthComponent>();
         _animator = GetComponentInChildren<Animator>();
@@ -345,7 +343,7 @@ public class EnemyBrain : MonoBehaviour
             Debug.LogWarning($"[EnemyBrain] '{name}': No Animator component found in child meshes.", this);
         }
 
-        // ── Validate the SO reference ────────────────────────
+        // ── Validar la referencia del SO ─────────────────────
         if (_stats == null)
         {
             Debug.LogError($"[EnemyBrain] '{name}': No EnemyStatsSO assigned! Disabling.", this);
@@ -353,13 +351,13 @@ public class EnemyBrain : MonoBehaviour
             return;
         }
 
-        Stats = _stats; // expose via public getter
+        Stats = _stats; // exponer a través del getter público
 
-        // ── Apply SO data to the agent ───────────────────────
+        // ── Aplicar datos del SO al agente ───────────────────
         Agent.speed = Stats.MoveSpeed;
         Agent.stoppingDistance = Mathf.Max(0f, Stats.AttackRange - 0.5f);
 
-        // ── Resolve and validate the IWeapon strategy ────────
+        // ── Resolver y validar la estrategia de IWeapon ──────
         if (_weaponComponent != null)
         {
             _equippedWeapon = _weaponComponent as IWeapon;
@@ -377,19 +375,19 @@ public class EnemyBrain : MonoBehaviour
                              "The enemy will enter Attack state but deal no damage.", this);
         }
 
-        // ── Resolve the Player reference (FIX-4) ────────────
+        // ── Resolver la referencia del Jugador (SOLUCIÓN-4) ───
         PlayerTransform = ResolvePlayerTransform();
 
-        // ── Subscribe to the death event ─────────────────────
+        // ── Suscribirse al evento de muerte ───────────────────
         _health.OnDied += OnDeath;
 
-        // ── Build & register FSM states ──────────────────────
+        // ── Construir y registrar los estados de la FSM ───────
         BuildStates();
 
-        // ── Start the FSM ────────────────────────────────────
+        // ── Iniciar la FSM ───────────────────────────────────
         ChangeState(GetState<IdleState>());
 
-        // ── Tier 3: launch the coroutine if still unresolved ─
+        // ── Nivel 3: iniciar la corrutina si aún no está resuelto ─
         if (PlayerTransform == null)
             StartCoroutine(WaitForPlayer());
     }
@@ -421,7 +419,7 @@ public class EnemyBrain : MonoBehaviour
     }
 
     // ----------------------------------------------------------
-    // FSM MANAGEMENT
+    // GESTIÓN DE LA FSM
     // ----------------------------------------------------------
 
     protected virtual void BuildStates()
@@ -461,7 +459,7 @@ public class EnemyBrain : MonoBehaviour
     }
 
     // ----------------------------------------------------------
-    // PLAYER RESOLUTION HELPERS (FIX-4)
+    // AYUDANTES DE RESOLUCIÓN DEL JUGADOR (SOLUCIÓN-4)
     // ----------------------------------------------------------
 
     private Transform ResolvePlayerTransform()
@@ -501,7 +499,7 @@ public class EnemyBrain : MonoBehaviour
     }
 
     // ----------------------------------------------------------
-    // HELPERS EXPOSED TO STATES
+    // AYUDANTES EXPUESTOS A LOS ESTADOS
     // ----------------------------------------------------------
 
     public bool IsPlayerInRange(float range)
@@ -515,7 +513,7 @@ public class EnemyBrain : MonoBehaviour
     }
 
     // ----------------------------------------------------------
-    // DEATH HANDLER
+    // MANEJADOR DE MUERTE
     // ----------------------------------------------------------
 
     private void OnDeath()
@@ -534,7 +532,7 @@ public class EnemyBrain : MonoBehaviour
     }
 
     // ----------------------------------------------------------
-    // ATTACK
+    // ATAQUE
     // ----------------------------------------------------------
 
     public virtual float GetCurrentWeaponCooldown()
@@ -548,7 +546,7 @@ public class EnemyBrain : MonoBehaviour
     }
 
     // ----------------------------------------------------------
-    // EDITOR GIZMOS
+    // GIZMOS DE EDITOR
     // ----------------------------------------------------------
 
 #if UNITY_EDITOR

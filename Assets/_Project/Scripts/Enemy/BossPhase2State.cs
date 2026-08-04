@@ -1,24 +1,23 @@
-
 using UnityEngine;
 
 /// <summary>
-/// Aggressive Phase 2 combat state. The boss repositions to a room anchor
-/// point and unleashes a rapid bullet-hell barrage using weapon index 1.
+/// Estado de combate agresivo de la Fase 2. El jefe se reposiciona a un punto de anclaje de la sala
+/// y desata una ráfaga rápida de bullet-hell usando el índice de arma 1.
 /// </summary>
 public class BossPhase2State : EnemyStateBase
 {
     // ─────────────────────────────────────────────────────────────────────
-    //  CONFIGURATION
+    //  CONFIGURACIÓN
     // ─────────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// How close (in world units) the boss must be to its anchor before
-    /// it stops repositioning and starts attacking.
+    /// Qué tan cerca (en unidades del mundo) debe estar el jefe de su anclaje antes
+    /// de que deje de reposicionarse y comience a atacar.
     /// </summary>
     private const float ArrivalThreshold = 1.5f;
 
     // ─────────────────────────────────────────────────────────────────────
-    //  PRIVATE STATE
+    //  ESTADO PRIVADO
     // ─────────────────────────────────────────────────────────────────────
 
     private BossBrain _bossBrain;
@@ -26,13 +25,13 @@ public class BossPhase2State : EnemyStateBase
     private bool _hasArrived;
 
     // ─────────────────────────────────────────────────────────────────────
-    //  FSM LIFECYCLE
+    //  CICLO DE VIDA FSM
     // ─────────────────────────────────────────────────────────────────────
 
     public override void Enter()
     {
-        // Cache the down-cast once — safe because BossPhase2State is only
-        // ever registered and called from a BossBrain.
+        // Guardar el down-cast en caché una vez — seguro porque BossPhase2State solo
+        // se registra y se llama desde un BossBrain.
         _bossBrain = Brain as BossBrain;
         if (_bossBrain == null)
         {
@@ -74,15 +73,15 @@ public class BossPhase2State : EnemyStateBase
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    //  PHASE PATTERN HELPERS
+    //  AYUDANTES DE PATRONES DE FASE
     // ─────────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Moves toward the anchor point and flips to attack mode once arrived.
+    /// Se mueve hacia el punto de anclaje y cambia al modo de ataque una vez que llega.
     /// </summary>
     private void TickRepositioning()
     {
-        // remainingDistance is only valid once a path has been computed.
+        // remainingDistance solo es válido una vez que se ha calculado una ruta.
         if (!Brain.Agent.pathPending &&
             Brain.Agent.remainingDistance <= ArrivalThreshold)
         {
@@ -98,11 +97,11 @@ public class BossPhase2State : EnemyStateBase
     }
 
     /// <summary>
-    /// Faces the player and fires weapon index 1 on a rapid cooldown.
+    /// Mira al jugador y dispara el índice de arma 1 con un enfriamiento rápido.
     /// </summary>
     private void TickBulletHell()
     {
-        // Always face the player while attacking.
+        // Siempre mirar al jugador mientras ataca.
         FacePlayer();
 
         if (Time.time >= _lastAttackTime + _bossBrain.GetBossWeaponCooldown(1))
@@ -110,7 +109,7 @@ public class BossPhase2State : EnemyStateBase
             if (Brain.Anim != null)
                 Brain.Anim.SetTrigger("Attack");
 
-            // Index 1 = Phase 2 ranged weapon in the boss arsenal.
+            // Índice 1 = arma a distancia de la Fase 2 en el arsenal del jefe.
             _bossBrain.ExecuteBossWeapon(1);
 
             _lastAttackTime = Time.time;
@@ -118,7 +117,7 @@ public class BossPhase2State : EnemyStateBase
     }
 
     /// <summary>
-    /// Instantly snaps the boss to face the player on the Y axis.
+    /// Ajusta instantáneamente al jefe para mirar al jugador en el eje Y.
     /// </summary>
     private void FacePlayer()
     {
