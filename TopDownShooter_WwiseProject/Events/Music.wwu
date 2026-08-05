@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<WwiseDocument Type="WorkUnit" ID="{A5F09C09-4106-4C3B-AD00-201AA6E88FFB}" SchemaVersion="133" RootDocumentID="{064EDF27-6794-42C8-A495-94964A8412BA}" ParentDocumentID="{064EDF27-6794-42C8-A495-94964A8412BA}">
+<WwiseDocument Type="WorkUnit" ID="{A5F09C09-4106-4C3B-AD00-201AA6E88FFB}" SchemaVersion="133">
 	<Events>
-		<WorkUnit Name="Music" ID="{A5F09C09-4106-4C3B-AD00-201AA6E88FFB}" OwnerID="{064EDF27-6794-42C8-A495-94964A8412BA}" PersistMode="Nested"/>
+		<WorkUnit Name="Music" ID="{A5F09C09-4106-4C3B-AD00-201AA6E88FFB}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Theme_1" ID="{D54EDF33-511A-42E3-9B59-88248FD2CFBD}"/>
+				<Event Name="Theme_2" ID="{AAA30EDA-C153-4EBB-ACD7-7DD752CF78D3}"/>
+				<Event Name="Boss_Theme" ID="{07468A46-A171-431C-8311-C90B00ED7BB2}">
+					<ChildrenList>
+						<Action Name="" ID="{EE3C84BE-FD81-4A3B-B948-8E7599AE139C}" ShortID="794086027">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Theme_Boss_1_Full_Song" ID="{E26C70CA-B5D8-44D8-8259-8FCDC06C510B}" WorkUnitID="{6F9DDBA6-BDD2-48CB-8AD2-02B1415923B1}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="MainMenu" ID="{3F8D2F87-7282-449C-B874-A9417EC8ED69}">
+					<ChildrenList>
+						<Action Name="" ID="{6131887F-3C62-4FBC-818A-ED3EADFFFF8B}" ShortID="394419886">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Theme_MainMenu" ID="{3A509B62-1EBA-45D6-9755-DAEF810CC17C}" WorkUnitID="{6F9DDBA6-BDD2-48CB-8AD2-02B1415923B1}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
 	</Events>
 </WwiseDocument>

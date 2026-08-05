@@ -3,7 +3,12 @@
 	<SoundBanks>
 		<WorkUnit Name="Default Work Unit" ID="{FAD67FB5-E42A-4D54-81B3-8988DDE9C901}" PersistMode="Standalone">
 			<ChildrenList>
-				<SoundBank Name="SoundBank_TopDown" ID="{C1F0BE72-4AB8-4901-8EDF-ED0DF46BE683}">
+				<SoundBank Name="SoundBank_UIMenu" ID="{C1F0BE72-4AB8-4901-8EDF-ED0DF46BE683}">
+					<ObjectInclusionList/>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList/>
+				</SoundBank>
+				<SoundBank Name="SoundBank_Gameplay" ID="{6D5A21A0-8156-403F-9DD8-6C06E4E052F9}">
 					<ObjectInclusionList/>
 					<ObjectExclusionList/>
 					<GameSyncExclusionList/>

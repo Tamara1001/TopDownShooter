@@ -1,6 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<WwiseDocument Type="WorkUnit" ID="{EC6C7A5C-4D53-40D6-974F-6CFD38A51DD7}" SchemaVersion="133" RootDocumentID="{064EDF27-6794-42C8-A495-94964A8412BA}" ParentDocumentID="{064EDF27-6794-42C8-A495-94964A8412BA}">
+<WwiseDocument Type="WorkUnit" ID="{EC6C7A5C-4D53-40D6-974F-6CFD38A51DD7}" SchemaVersion="133">
 	<Events>
-		<WorkUnit Name="SFX" ID="{EC6C7A5C-4D53-40D6-974F-6CFD38A51DD7}" OwnerID="{064EDF27-6794-42C8-A495-94964A8412BA}" PersistMode="Nested"/>
+		<WorkUnit Name="SFX" ID="{EC6C7A5C-4D53-40D6-974F-6CFD38A51DD7}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Loot_Health" ID="{97C14FF5-78A4-4AC1-90F0-FFA03E5DB34B}">
+					<ChildrenList>
+						<Action Name="" ID="{F6B44C71-D688-4051-A437-A6B953A3B374}" ShortID="199165756">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SFX_Misc_Loot_Health" ID="{9281009E-E11B-41E7-8AD2-B417EB8FC791}" WorkUnitID="{D69372EF-83D0-4218-BCD7-487EE39FB935}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{48CDC2CC-5457-4423-9AB6-9A1644B82372}" ShortID="443826886">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SFX_Mouse_OverButton" ID="{57280B74-A10C-4CEE-A29F-95D4883BFFC0}" WorkUnitID="{D69372EF-83D0-4218-BCD7-487EE39FB935}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Loot_Coin" ID="{BAC74A52-FBF7-4CCE-BAAE-15BBDA77A8BD}">
+					<ChildrenList>
+						<Action Name="" ID="{06FFC7B1-3833-4477-84C4-8543D23E8929}" ShortID="786375065">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SFX_Misc_Loot_Money" ID="{4F27B377-ACCA-48B7-A5BA-985FECAF0022}" WorkUnitID="{D69372EF-83D0-4218-BCD7-487EE39FB935}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
 	</Events>
 </WwiseDocument>

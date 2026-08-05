@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<WwiseDocument Type="WorkUnit" ID="{3719B9E4-2664-4C38-B9D7-FE03B758A219}" SchemaVersion="133" RootDocumentID="{064EDF27-6794-42C8-A495-94964A8412BA}" ParentDocumentID="{064EDF27-6794-42C8-A495-94964A8412BA}">
+<WwiseDocument Type="WorkUnit" ID="{3719B9E4-2664-4C38-B9D7-FE03B758A219}" SchemaVersion="133">
 	<Events>
-		<WorkUnit Name="Enemy" ID="{3719B9E4-2664-4C38-B9D7-FE03B758A219}" OwnerID="{064EDF27-6794-42C8-A495-94964A8412BA}" PersistMode="Nested"/>
+		<WorkUnit Name="Enemy" ID="{3719B9E4-2664-4C38-B9D7-FE03B758A219}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Enemy_1_Attack" ID="{E138485A-7F89-4798-935D-1A2C09273EBF}"/>
+				<Event Name="Enemy_2_Attack" ID="{D831FDAE-3B4A-4924-ADEE-CF70DF3EC961}"/>
+				<Event Name="Enemy_1_Hurt" ID="{2500E485-A13D-47D5-AF04-021FB92E465F}"/>
+				<Event Name="Enemy_2_Hurt" ID="{882EC73E-81DE-4BCD-B8F3-89024FAE5CB5}"/>
+			</ChildrenList>
+		</WorkUnit>
 	</Events>
 </WwiseDocument>

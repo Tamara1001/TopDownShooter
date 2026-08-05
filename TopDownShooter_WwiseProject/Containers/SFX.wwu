@@ -26,6 +26,13 @@
 					</ActiveSourceList>
 				</Sound>
 				<Sound Name="SFX_Misc_Box_Destruction" ID="{8C860DFF-9DB6-4CBB-A2DD-5CAF5B3B1571}" ShortID="369561803">
+					<PropertyList>
+						<Property Name="Pitch" Type="int32">
+							<ValueList>
+								<Value>970</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
 					<ReferenceList>
 						<Reference Name="Conversion">
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{958CF1A1-38EC-405D-994F-F3DB5B95AEB2}"/>

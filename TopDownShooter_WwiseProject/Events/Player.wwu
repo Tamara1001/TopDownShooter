@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<WwiseDocument Type="WorkUnit" ID="{C5948A27-2F07-4A66-8A2A-D07BF898A52F}" SchemaVersion="133" RootDocumentID="{064EDF27-6794-42C8-A495-94964A8412BA}" ParentDocumentID="{064EDF27-6794-42C8-A495-94964A8412BA}">
+<WwiseDocument Type="WorkUnit" ID="{C5948A27-2F07-4A66-8A2A-D07BF898A52F}" SchemaVersion="133">
 	<Events>
-		<WorkUnit Name="Player" ID="{C5948A27-2F07-4A66-8A2A-D07BF898A52F}" OwnerID="{064EDF27-6794-42C8-A495-94964A8412BA}" PersistMode="Nested"/>
+		<WorkUnit Name="Player" ID="{C5948A27-2F07-4A66-8A2A-D07BF898A52F}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Attack_Staff" ID="{217F3353-9DA0-4B18-984F-B354F5D42280}">
+					<ChildrenList>
+						<Action Name="" ID="{7013E313-4054-4541-A196-AA4848264D96}" ShortID="921100986">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SFX_Lunaria_Attack" ID="{5DB045E1-7747-45B2-9B2E-983FEA5FC8B8}" WorkUnitID="{EF1F7638-EBCB-4768-99A2-82F5D7436E96}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Attack_Bow" ID="{F9F2DDB8-8435-4281-A65F-A9A5C9739892}"/>
+				<Event Name="Attack_Axe" ID="{9DAF5F63-09DC-4B05-956D-A30B5C5AE5D2}">
+					<ChildrenList>
+						<Action Name="" ID="{2415B062-513F-4F6F-B607-E6E76F7CB853}" ShortID="774925912">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SFX_Midir_Attack" ID="{85FD632F-BD42-417E-BB7E-CF1AE6B5B607}" WorkUnitID="{EF1F7638-EBCB-4768-99A2-82F5D7436E96}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Attack_Dagger" ID="{3C7CA970-2348-41D9-BE2A-3C07639C771B}"/>
+			</ChildrenList>
+		</WorkUnit>
 	</Events>
 </WwiseDocument>

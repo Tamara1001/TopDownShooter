@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<WwiseDocument Type="WorkUnit" ID="{A3A3E729-2F2B-47D1-AA30-10226B813BD9}" SchemaVersion="133" RootDocumentID="{064EDF27-6794-42C8-A495-94964A8412BA}" ParentDocumentID="{064EDF27-6794-42C8-A495-94964A8412BA}">
+<WwiseDocument Type="WorkUnit" ID="{A3A3E729-2F2B-47D1-AA30-10226B813BD9}" SchemaVersion="133">
 	<Events>
-		<WorkUnit Name="UI" ID="{A3A3E729-2F2B-47D1-AA30-10226B813BD9}" OwnerID="{064EDF27-6794-42C8-A495-94964A8412BA}" PersistMode="Nested"/>
+		<WorkUnit Name="UI" ID="{A3A3E729-2F2B-47D1-AA30-10226B813BD9}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="ButtonHover" ID="{917C852D-6E42-4177-BC59-FCEA9A0533FA}"/>
+				<Event Name="ButtonClick" ID="{982DF279-AC8C-42FA-B579-8A78E3B78A57}">
+					<ChildrenList>
+						<Action Name="" ID="{6443D52F-C684-4124-8CA1-225E43CA1ACD}" ShortID="761365824">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SFX_Mouse_Press_Button" ID="{34C2B8F0-BF49-4EEE-9CBE-69EE660766B9}" WorkUnitID="{D69372EF-83D0-4218-BCD7-487EE39FB935}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="ButtonPlay" ID="{E2618603-3CF6-466C-969D-DA0FC1D5F493}">
+					<ChildrenList>
+						<Action Name="" ID="{7DDD68E0-42B1-4088-B588-E337EE4E2357}" ShortID="1031267526">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SFX_MainMenu_ClickJugar" ID="{51E67C50-8BAF-4BC0-8716-E126047294C2}" WorkUnitID="{D69372EF-83D0-4218-BCD7-487EE39FB935}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
 	</Events>
 </WwiseDocument>
